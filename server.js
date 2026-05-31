@@ -8,6 +8,7 @@ const problemRoutes = require('./routes/problems');
 const submissionRoutes = require('./routes/submissions');
 const rankingRoutes = require('./routes/ranking');
 const adminRoutes = require('./routes/admin');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use('/', problemRoutes);
 app.use('/', submissionRoutes);
 app.use('/', rankingRoutes);
 app.use('/admin', adminRoutes);
+app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));
 

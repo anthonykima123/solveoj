@@ -27,6 +27,11 @@ class JsonDB {
     this._save();
     return user;
   }
+  updateUser(id, updates) {
+    const u = this._d.users.find(u => u.id === id);
+    if (u) { Object.assign(u, updates); this._save(); return true; }
+    return false;
+  }
   incUser(id, field, by = 1) {
     const u = this._d.users.find(u => u.id === id);
     if (u) { u[field] = (u[field] || 0) + by; this._save(); }

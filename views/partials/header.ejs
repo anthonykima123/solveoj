@@ -24,6 +24,7 @@
       <% if (user) { %>
         <span class="username-badge"><%= user.username %></span>
         <a href="/submissions">내 제출</a>
+        <a href="/settings">설정</a>
         <form action="/logout" method="POST" class="logout-form">
           <button type="submit" class="btn-logout">로그아웃</button>
         </form>
