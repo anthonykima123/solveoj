@@ -1,0 +1,72 @@
+<% locals.title = '문제 목록' %>
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h1>문제</h1>
+</div>
+
+<div class="filter-bar">
+  <form method="GET" action="/problems" class="filter-form">
+    <div class="filter-group">
+      <label>난이도</label>
+      <select name="diff" onchange="this.form.submit()">
+        <option value="">전체</option>
+        <option value="Bronze" <%= diff === 'Bronze' ? 'selected' : '' %>>Bronze</option>
+        <option value="Silver" <%= diff === 'Silver' ? 'selected' : '' %>>Silver</option>
+        <option value="Gold" <%= diff === 'Gold' ? 'selected' : '' %>>Gold</option>
+        <option value="Platinum" <%= diff === 'Platinum' ? 'selected' : '' %>>Platinum</option>
+        <option value="Diamond" <%= diff === 'Diamond' ? 'selected' : '' %>>Diamond</option>
+      </select>
+    </div>
+    <div class="filter-group search-group">
+      <input type="text" name="search" value="<%= search %>" placeholder="문제 제목 검색..." class="search-input">
+      <button type="submit" class="btn btn-sm">검색</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-wrap">
+  <table class="table problem-table">
+    <thead>
+      <tr>
+        <th class="col-id">#</th>
+        <th class="col-title">제목</th>
+        <th class="col-diff">난이도</th>
+        <th class="col-time">시간</th>
+        <th class="col-sub">제출</th>
+        <th class="col-acc">정답률</th>
+        <% if (user) { %><th class="col-solved">풀었나요?</th><% } %>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (problems.length === 0) { %>
+        <tr><td colspan="7" class="empty-row">문제가 없습니다.</td></tr>
+      <% } %>
+      <% problems.forEach(p => { %>
+        <tr class="<%= solvedSet.has(p.id) ? 'solved-row' : '' %>">
+          <td class="col-id"><%= p.id %></td>
+          <td class="col-title">
+            <a href="/problems/<%= p.id %>"><%= p.title %></a>
+          </td>
+          <td class="col-diff">
+            <span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span>
+          </td>
+          <td class="col-time"><%= p.time_limit %>ms</td>
+          <td class="col-sub"><%= p.submission_count.toLocaleString() %></td>
+          <td class="col-acc">
+            <%= p.submission_count > 0 ? Math.round(p.accepted_count / p.submission_count * 100) + '%' : '-' %>
+          </td>
+          <% if (user) { %>
+            <td class="col-solved">
+              <% if (solvedSet.has(p.id)) { %>
+                <span class="check-mark">✔</span>
+              <% } %>
+            </td>
+          <% } %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>

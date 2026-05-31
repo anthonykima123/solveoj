@@ -1,0 +1,54 @@
+<% locals.title = '관리자 - 문제 관리' %>
+<%- include('../partials/header') %>
+
+<div class="page-header admin-header">
+  <div>
+    <h1>🛠 관리자 패널</h1>
+    <p class="page-desc">문제를 추가하거나 수정할 수 있습니다.</p>
+  </div>
+  <a href="/admin/problems/new" class="btn btn-primary">+ 새 문제 추가</a>
+</div>
+
+<% if (query.created) { %>
+  <div class="alert alert-success">문제 #<%= query.created %>이 생성되었습니다.</div>
+<% } else if (query.updated) { %>
+  <div class="alert alert-success">문제 #<%= query.updated %>이 수정되었습니다.</div>
+<% } else if (query.deleted) { %>
+  <div class="alert alert-success">문제가 삭제되었습니다.</div>
+<% } %>
+
+<div class="table-wrap">
+  <table class="table admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>제목</th>
+        <th>난이도</th>
+        <th>제한</th>
+        <th>제출/정답</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% problems.forEach(p => { %>
+        <% const tier = p.difficulty.split(' ')[0].toLowerCase() %>
+        <tr>
+          <td><%= p.id %></td>
+          <td><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
+          <td><span class="badge badge-<%= tier %>"><%= p.difficulty %></span></td>
+          <td><%= p.time_limit %>ms / <%= p.memory_limit %>MB</td>
+          <td><%= p.submission_count %> / <%= p.accepted_count %></td>
+          <td class="admin-actions">
+            <a href="/admin/problems/<%= p.id %>/edit" class="btn btn-sm btn-outline">수정</a>
+            <form action="/admin/problems/<%= p.id %>/delete" method="POST" style="display:inline"
+                  onsubmit="return confirm('문제 <%= p.id %>번을 삭제하시겠습니까?')">
+              <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,142 @@
+<% const isEdit = problem && problem.id %>
+<% locals.title = isEdit ? `문제 수정 - #${problem.id}` : '새 문제 추가' %>
+<%- include('../partials/header') %>
+
+<div class="admin-form-wrap">
+  <div class="page-header">
+    <h1><%= isEdit ? `문제 #${problem.id} 수정` : '새 문제 추가' %></h1>
+    <a href="/admin" class="btn btn-outline">← 관리자 패널</a>
+  </div>
+
+  <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+  <form action="/admin/problems/<%= isEdit ? problem.id + '/edit' : 'new' %>" method="POST" class="admin-form">
+
+    <div class="form-row">
+      <div class="form-group" style="width:120px">
+        <label>문제 번호 *</label>
+        <input type="number" name="id" class="form-input"
+               value="<%= problem ? problem.id : '' %>"
+               <%= isEdit ? 'readonly' : 'required' %>>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>제목 *</label>
+        <input type="text" name="title" class="form-input" required
+               value="<%= problem ? problem.title : '' %>">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label>난이도 * (BOJ 기준)</label>
+        <select name="difficulty" class="form-input" required>
+          <% tiers.forEach(t => { %>
+            <option value="<%= t %>" <%= (problem && problem.difficulty === t) ? 'selected' : '' %>><%= t %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group" style="width:140px">
+        <label>시간 제한 (ms)</label>
+        <input type="number" name="time_limit" class="form-input"
+               value="<%= problem ? problem.time_limit : 1000 %>">
+      </div>
+      <div class="form-group" style="width:140px">
+        <label>메모리 제한 (MB)</label>
+        <input type="number" name="memory_limit" class="form-input"
+               value="<%= problem ? problem.memory_limit : 256 %>">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>문제 설명 *</label>
+      <textarea name="description" class="form-textarea" rows="5" required><%= problem ? problem.description : '' %></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label>입력 설명</label>
+        <textarea name="input_desc" class="form-textarea" rows="3"><%= problem ? problem.input_desc : '' %></textarea>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>출력 설명</label>
+        <textarea name="output_desc" class="form-textarea" rows="3"><%= problem ? problem.output_desc : '' %></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label>예제 입력</label>
+        <textarea name="sample_input" class="form-textarea mono" rows="4"><%= problem ? problem.sample_input : '' %></textarea>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>예제 출력</label>
+        <textarea name="sample_output" class="form-textarea mono" rows="4"><%= problem ? problem.sample_output : '' %></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>제약 조건</label>
+      <input type="text" name="constraints" class="form-input"
+             value="<%= problem ? problem.constraints : '' %>">
+    </div>
+
+    <div class="form-group">
+      <label>
+        테스트 케이스 (JSON)
+        <span class="hint">형식: <code>[{"input":"1 2","output":"3"}, ...]</code></span>
+      </label>
+      <textarea name="test_cases_raw" id="tc-editor" class="form-textarea mono" rows="10" required><%= problem ? problem.test_cases : '[\n  {"input": "", "output": ""}\n]' %></textarea>
+      <div class="tc-toolbar">
+        <button type="button" class="btn btn-sm btn-outline" onclick="addTestCase()">+ 케이스 추가</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="formatTC()">정렬/포맷</button>
+        <span id="tc-status" class="tc-status"></span>
+      </div>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="btn btn-primary btn-lg">
+        <%= isEdit ? '문제 저장' : '문제 생성' %>
+      </button>
+      <a href="/admin" class="btn btn-outline btn-lg">취소</a>
+    </div>
+  </form>
+</div>
+
+<script>
+function formatTC() {
+  const ta = document.getElementById('tc-editor');
+  try {
+    const parsed = JSON.parse(ta.value);
+    ta.value = JSON.stringify(parsed, null, 2);
+    document.getElementById('tc-status').textContent = '✔ 유효한 JSON';
+    document.getElementById('tc-status').style.color = '#1a7f37';
+  } catch (e) {
+    document.getElementById('tc-status').textContent = '✗ JSON 오류: ' + e.message;
+    document.getElementById('tc-status').style.color = '#d1242f';
+  }
+}
+
+function addTestCase() {
+  const ta = document.getElementById('tc-editor');
+  try {
+    const arr = JSON.parse(ta.value);
+    arr.push({ input: '', output: '' });
+    ta.value = JSON.stringify(arr, null, 2);
+  } catch (e) {
+    ta.value = JSON.stringify([{ input: '', output: '' }], null, 2);
+  }
+}
+
+document.getElementById('tc-editor').addEventListener('input', function() {
+  try {
+    JSON.parse(this.value);
+    document.getElementById('tc-status').textContent = '✔ 유효한 JSON';
+    document.getElementById('tc-status').style.color = '#1a7f37';
+  } catch (e) {
+    document.getElementById('tc-status').textContent = '✗ JSON 오류';
+    document.getElementById('tc-status').style.color = '#d1242f';
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

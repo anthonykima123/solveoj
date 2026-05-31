@@ -1,0 +1,67 @@
+<% locals.title = '채점 결과' %>
+<%- include('partials/header') %>
+
+<div class="result-wrap">
+  <div class="result-header">
+    <h1>채점 결과</h1>
+    <p><a href="/problems/<%= sub.problem_id %>"><%= sub.problem_id %>. <%= sub.problem_title %></a></p>
+  </div>
+
+  <div class="verdict-card verdict-<%= sub.verdict.toLowerCase() %>">
+    <div class="verdict-icon">
+      <% if (sub.verdict === 'AC') { %>✔<% } else if (sub.verdict === 'WA') { %>✗<% } else if (sub.verdict === 'TLE') { %>⏱<% } else if (sub.verdict === 'CE') { %>⚙<% } else { %>!</% } %>
+    </div>
+    <div class="verdict-text">
+      <% const labels = { AC:'맞았습니다!!', WA:'틀렸습니다', TLE:'시간 초과', MLE:'메모리 초과', RE:'런타임 에러', CE:'컴파일 에러' } %>
+      <h2><%= labels[sub.verdict] || sub.verdict %></h2>
+    </div>
+  </div>
+
+  <div class="result-meta">
+    <div class="meta-item">
+      <span class="meta-label">제출자</span>
+      <span class="meta-value"><%= sub.username %></span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">언어</span>
+      <span class="meta-value"><%= LANG_LABELS[sub.language] || sub.language %></span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">실행 시간</span>
+      <span class="meta-value"><%= sub.execution_time %>ms</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">제출 시각</span>
+      <span class="meta-value"><%= new Date(sub.created_at).toLocaleString('ko-KR') %></span>
+    </div>
+  </div>
+
+  <% if (sub.error_message && (sub.verdict === 'CE' || sub.verdict === 'RE')) { %>
+  <div class="result-section">
+    <h3><%= sub.verdict === 'CE' ? '컴파일 오류' : '런타임 오류' %></h3>
+    <pre class="error-pre"><%= sub.error_message %></pre>
+  </div>
+  <% } %>
+
+  <% if (sub.code) { %>
+  <div class="result-section">
+    <h3>제출한 코드</h3>
+    <div class="code-display-wrap">
+      <textarea id="result-code" class="code-textarea" readonly><%= sub.code %></textarea>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="result-actions">
+    <a href="/problems/<%= sub.problem_id %>/submit" class="btn btn-primary">다시 제출</a>
+    <a href="/problems/<%= sub.problem_id %>" class="btn btn-outline">문제로 돌아가기</a>
+    <a href="/submissions" class="btn btn-outline">내 제출 목록</a>
+  </div>
+</div>
+
+<script>
+const lang = '<%= sub.language %>';
+const readonlyMode = true;
+</script>
+
+<%- include('partials/footer') %>

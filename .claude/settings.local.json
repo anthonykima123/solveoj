@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Sleep -Seconds 1; Invoke-WebRequest -Uri \"http://localhost:3000/problems\" -UseBasicParsing | Select-Object -ExpandProperty StatusCode)",
+      "PowerShell(Get-NetTCPConnection *)"
+    ]
+  }
+}

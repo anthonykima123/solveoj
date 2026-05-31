@@ -1,0 +1,4 @@
+node_modules/
+judge.db.json
+*.log
+.env

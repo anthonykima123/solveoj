@@ -1,0 +1,114 @@
+<% locals.title = '제출 - ' + problem.title %>
+<%- include('partials/header') %>
+
+<div class="submit-wrap">
+  <div class="submit-header">
+    <h1>코드 제출</h1>
+    <p class="submit-problem-name">
+      <a href="/problems/<%= problem.id %>"><%= problem.id %>. <%= problem.title %></a>
+    </p>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form action="/problems/<%= problem.id %>/submit" method="POST" id="submit-form">
+    <div class="form-group">
+      <label for="language">언어 선택</label>
+      <select name="language" id="language" class="lang-select" onchange="changeLanguage(this.value)">
+        <option value="cpp">C++17</option>
+        <option value="python">Python 3</option>
+        <option value="java">Java 11</option>
+      </select>
+    </div>
+
+    <div class="editor-wrap">
+      <div class="editor-toolbar">
+        <span id="lang-label" class="lang-label">C++17</span>
+        <button type="button" class="btn btn-sm" onclick="clearEditor()">초기화</button>
+      </div>
+      <textarea name="code" id="code-editor" class="code-textarea"></textarea>
+    </div>
+
+    <div class="submit-footer">
+      <div class="submit-hints">
+        <span>⌨ Tab: 들여쓰기</span>
+        <span>Ctrl+Enter: 제출</span>
+      </div>
+      <div class="submit-buttons">
+        <a href="/problems/<%= problem.id %>" class="btn btn-outline">취소</a>
+        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+          <span id="submit-text">제출하기</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+const TEMPLATES = {
+  cpp: `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    // 코드를 작성하세요
+
+    return 0;
+}`,
+  python: `import sys
+input = sys.stdin.readline
+
+# 코드를 작성하세요
+`,
+  java: `import java.util.*;
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        // 코드를 작성하세요
+    }
+}`
+};
+
+const LANG_LABELS = { cpp: 'C++17', python: 'Python 3', java: 'Java 11' };
+
+function changeLanguage(lang) {
+  document.getElementById('lang-label').textContent = LANG_LABELS[lang];
+  if (window.codeEditor) {
+    const mode = lang === 'python' ? 'python' : 'text/x-c++src';
+    window.codeEditor.setOption('mode', mode);
+    window.codeEditor.setValue(TEMPLATES[lang]);
+  }
+}
+
+function clearEditor() {
+  if (window.codeEditor) {
+    const lang = document.getElementById('language').value;
+    window.codeEditor.setValue(TEMPLATES[lang]);
+  }
+}
+
+document.getElementById('submit-form').addEventListener('submit', function() {
+  const btn = document.getElementById('submit-btn');
+  const txt = document.getElementById('submit-text');
+  btn.disabled = true;
+  txt.textContent = '채점 중...';
+  if (window.codeEditor) {
+    document.getElementById('code-editor').value = window.codeEditor.getValue();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') {
+    document.getElementById('submit-form').dispatchEvent(new Event('submit'));
+    document.getElementById('submit-form').submit();
+  }
+});
+</script>
+
+<%- include('partials/footer') %>

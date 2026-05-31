@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>SolveOJ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="logo">SolveOJ</a>
+    <nav class="nav-main">
+      <a href="/problems">문제</a>
+      <a href="/status">채점 현황</a>
+      <a href="/ranking">랭킹</a>
+      <% if (user && user.username === 'admin') { %>
+        <a href="/admin" class="nav-admin">⚙ 관리</a>
+      <% } %>
+    </nav>
+    <div class="nav-auth">
+      <% if (user) { %>
+        <span class="username-badge"><%= user.username %></span>
+        <a href="/submissions">내 제출</a>
+        <form action="/logout" method="POST" class="logout-form">
+          <button type="submit" class="btn-logout">로그아웃</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="btn-login">로그인</a>
+        <a href="/register" class="btn-register">회원가입</a>
+      <% } %>
+    </div>
+  </div>
+</header>
+<main class="main-container">

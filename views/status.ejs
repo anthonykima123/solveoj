@@ -1,0 +1,46 @@
+<% locals.title = '채점 현황' %>
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h1>채점 현황</h1>
+  <p class="page-desc">최근 100건의 제출입니다.</p>
+</div>
+
+<div class="table-wrap">
+  <table class="table submissions-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>사용자</th>
+        <th>문제</th>
+        <th>언어</th>
+        <th>결과</th>
+        <th>실행시간</th>
+        <th>제출 시각</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (submissions.length === 0) { %>
+        <tr><td colspan="7" class="empty-row">아직 제출이 없습니다.</td></tr>
+      <% } %>
+      <% submissions.forEach(s => { %>
+        <tr>
+          <td><a href="/submissions/<%= s.id %>"><%= s.id %></a></td>
+          <td><strong><%= s.username %></strong></td>
+          <td><a href="/problems/<%= s.problem_id %>"><%= s.problem_id %>. <%= s.problem_title %></a></td>
+          <td><span class="lang-tag"><%= LANG_LABELS[s.language] || s.language %></span></td>
+          <td>
+            <span class="verdict verdict-<%= s.verdict.toLowerCase() %>">
+              <% const vl = { AC:'맞았습니다!!', WA:'틀렸습니다', TLE:'시간 초과', MLE:'메모리 초과', RE:'런타임 에러', CE:'컴파일 에러' } %>
+              <%= vl[s.verdict] || s.verdict %>
+            </span>
+          </td>
+          <td><%= s.execution_time %>ms</td>
+          <td><%= new Date(s.created_at).toLocaleString('ko-KR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>

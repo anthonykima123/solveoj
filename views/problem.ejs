@@ -1,0 +1,67 @@
+<% locals.title = problem.title %>
+<%- include('partials/header') %>
+
+<div class="problem-wrap">
+  <div class="problem-header">
+    <div class="problem-meta-top">
+      <span class="problem-number"><%= problem.id %></span>
+      <span class="badge badge-<%= problem.difficulty.toLowerCase() %>"><%= problem.difficulty %></span>
+      <% if (isSolved) { %><span class="solved-tag">✔ 풀었음</span><% } %>
+    </div>
+    <h1 class="problem-title"><%= problem.title %></h1>
+    <div class="problem-limits">
+      <span>시간 제한: <strong><%= problem.time_limit %>ms</strong></span>
+      <span>메모리 제한: <strong><%= problem.memory_limit %>MB</strong></span>
+    </div>
+  </div>
+
+  <div class="problem-section">
+    <h2>문제</h2>
+    <div class="problem-desc"><%= problem.description %></div>
+  </div>
+
+  <% if (problem.input_desc) { %>
+  <div class="problem-section">
+    <h2>입력</h2>
+    <div class="problem-desc"><%= problem.input_desc %></div>
+  </div>
+  <% } %>
+
+  <% if (problem.output_desc) { %>
+  <div class="problem-section">
+    <h2>출력</h2>
+    <div class="problem-desc"><%= problem.output_desc %></div>
+  </div>
+  <% } %>
+
+  <% if (problem.constraints) { %>
+  <div class="problem-section">
+    <h2>제약 조건</h2>
+    <div class="problem-desc"><%= problem.constraints %></div>
+  </div>
+  <% } %>
+
+  <% if (problem.sample_input !== null && problem.sample_input !== undefined) { %>
+  <div class="sample-io-grid">
+    <div class="sample-box">
+      <h2>예제 입력 1</h2>
+      <pre class="sample-pre"><%= problem.sample_input || '(입력 없음)' %></pre>
+    </div>
+    <div class="sample-box">
+      <h2>예제 출력 1</h2>
+      <pre class="sample-pre"><%= problem.sample_output %></pre>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="submit-action">
+    <% if (user) { %>
+      <a href="/problems/<%= problem.id %>/submit" class="btn btn-primary btn-lg">제출하기</a>
+    <% } else { %>
+      <a href="/login?next=/problems/<%= problem.id %>/submit" class="btn btn-primary btn-lg">로그인 후 제출</a>
+    <% } %>
+    <a href="/problems" class="btn btn-outline">목록으로</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,54 @@
+<% locals.title = '홈' %>
+<%- include('partials/header') %>
+
+<div class="hero-banner">
+  <div class="hero-content">
+    <h1>SolveOJ</h1>
+    <p>알고리즘 문제를 풀고 실력을 키우세요</p>
+    <div class="hero-actions">
+      <a href="/problems" class="btn btn-primary">문제 풀기</a>
+      <% if (!user) { %><a href="/register" class="btn btn-outline">회원가입</a><% } %>
+    </div>
+  </div>
+</div>
+
+<div class="home-grid">
+  <section class="home-card">
+    <h2 class="section-title">최근 문제</h2>
+    <table class="table">
+      <thead><tr><th>#</th><th>제목</th><th>난이도</th><th>정답률</th></tr></thead>
+      <tbody>
+        <% problems.forEach(p => { %>
+          <tr>
+            <td><%= p.id %></td>
+            <td><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
+            <td><span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span></td>
+            <td><%= p.submission_count > 0 ? Math.round(p.accepted_count / p.submission_count * 100) + '%' : '-' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <a href="/problems" class="more-link">전체 문제 보기 →</a>
+  </section>
+
+  <section class="home-card">
+    <h2 class="section-title">랭킹 TOP 5</h2>
+    <table class="table">
+      <thead><tr><th>순위</th><th>사용자</th><th>푼 문제</th></tr></thead>
+      <tbody>
+        <% topUsers.forEach((u, i) => { %>
+          <tr>
+            <td>
+              <% if (i===0) { %>🥇<% } else if (i===1) { %>🥈<% } else if (i===2) { %>🥉<% } else { %><%= i+1 %><% } %>
+            </td>
+            <td><%= u.username %></td>
+            <td><strong><%= u.solved_count %></strong>문제</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <a href="/ranking" class="more-link">전체 랭킹 보기 →</a>
+  </section>
+</div>
+
+<%- include('partials/footer') %>
