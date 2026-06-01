@@ -241,6 +241,97 @@ function seedProblems() {
         { input: '2 2\n1 1\n1 1', output: '0' },
         { input: '2 2\n-1 1\n1 0', output: '1' }
       ])
+    },
+    // ───── Gold (그래프) ─────
+    { id: 1753, title: '최단경로', difficulty: 'Gold 4', time_limit: 1000, memory_limit: 256,
+      description: '방향그래프가 주어지면 주어진 시작점에서 다른 모든 정점으로의 최단 경로를 구하시오. (다익스트라 알고리즘)\n단, 모든 간선의 가중치는 10 이하의 자연수이다.',
+      input_desc: '첫째 줄에 정점 V와 간선 E가 주어진다. (1 ≤ V ≤ 20,000, 1 ≤ E ≤ 300,000)\n둘째 줄에 시작 정점 번호 K, 이후 E개의 줄에 u v w(간선)가 주어진다.',
+      output_desc: 'V개의 줄에 걸쳐 i번 정점으로의 최단 경로 값을 출력한다. 도달 불가능하면 INF를 출력한다.',
+      sample_input: '5 6\n1\n5 1 1\n1 2 2\n1 3 3\n2 3 4\n2 4 5\n3 4 6', sample_output: '0\n2\n3\n7\nINF',
+      constraints: '1 ≤ V ≤ 20,000, 1 ≤ E ≤ 300,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '5 6\n1\n5 1 1\n1 2 2\n1 3 3\n2 3 4\n2 4 5\n3 4 6', output: '0\n2\n3\n7\nINF' },
+        { input: '1 0\n1', output: '0' }
+      ])
+    },
+    { id: 11404, title: '플로이드', difficulty: 'Gold 4', time_limit: 1000, memory_limit: 256,
+      description: 'n개의 도시와 m개의 버스 노선이 있다. 모든 도시 쌍 (A,B)에 대해 A에서 B로 가는 최소 비용을 구하시오. (플로이드-워셜 알고리즘)',
+      input_desc: '첫째 줄에 도시 수 n (1 ≤ n ≤ 100), 둘째 줄에 버스 수 m, 이후 m개의 줄에 a b c가 주어진다.',
+      output_desc: 'n개의 줄에 n개의 값을 출력한다. 도달 불가능하면 0을 출력한다.',
+      sample_input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', sample_output: '0 4 2 6\n1 0 3 7\n2 3 0 4\n4 7 5 0',
+      constraints: '1 ≤ n ≤ 100, 1 ≤ m ≤ 100,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', output: '0 4 2 6\n1 0 3 7\n2 3 0 4\n4 7 5 0' },
+        { input: '1\n0', output: '0' }
+      ])
+    },
+    // ───── Platinum ─────
+    { id: 1655, title: '가운데를 말해요', difficulty: 'Platinum 5', time_limit: 500, memory_limit: 256,
+      description: '수빈이는 동생에게 숫자를 하나씩 말하고, 동생은 지금까지 들은 숫자 중 중앙값을 말해야 한다.\n숫자 개수가 짝수이면 작은 중앙값을 출력한다. 최대 힙과 최소 힙을 활용하시오.',
+      input_desc: '첫째 줄에 N (1 ≤ N ≤ 100,000), 이후 N개의 줄에 정수가 주어진다. (-10,000 ≤ 값 ≤ 10,000)',
+      output_desc: '각 수를 받을 때마다 현재까지의 중앙값을 출력한다.',
+      sample_input: '7\n1\n5\n2\n10\n-99\n7\n5', sample_output: '1\n1\n2\n2\n2\n2\n5',
+      constraints: '1 ≤ N ≤ 100,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '7\n1\n5\n2\n10\n-99\n7\n5', output: '1\n1\n2\n2\n2\n2\n5' },
+        { input: '1\n1', output: '1' },
+        { input: '3\n3\n1\n2', output: '3\n1\n2' }
+      ])
+    },
+    { id: 2357, title: '최솟값과 최댓값', difficulty: 'Platinum 4', time_limit: 2000, memory_limit: 128,
+      description: 'N개의 정수로 이루어진 배열이 있다. M개의 쿼리 (a, b)에 대해 a번째 수부터 b번째 수까지의 최솟값과 최댓값을 구하시오. (세그먼트 트리)',
+      input_desc: '첫째 줄에 N, M (1 ≤ N, M ≤ 100,000), 이후 N개의 정수, M개의 쿼리가 주어진다.',
+      output_desc: '각 쿼리에 대해 최솟값과 최댓값을 공백으로 구분하여 출력한다.',
+      sample_input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', sample_output: '5 100\n38 100\n20 52\n5 81',
+      constraints: '1 ≤ N, M ≤ 100,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', output: '5 100\n38 100\n20 52\n5 81' },
+        { input: '3 2\n1 2 3\n1 3\n2 2', output: '1 3\n2 2' }
+      ])
+    },
+    { id: 10986, title: '나머지 합', difficulty: 'Platinum 3', time_limit: 3000, memory_limit: 512,
+      description: 'N개의 수 A1, A2, ..., AN이 주어질 때 연속된 부분 구간의 합이 M으로 나누어 떨어지는 구간의 개수를 구하시오.\n누적 합과 비둘기집 원리를 활용하시오.',
+      input_desc: '첫째 줄에 N, M (1 ≤ N ≤ 10^6, 2 ≤ M ≤ 10^3), 둘째 줄에 N개의 수가 주어진다.',
+      output_desc: '조건을 만족하는 구간의 개수를 출력한다.',
+      sample_input: '5 3\n1 2 3 1 2', sample_output: '7',
+      constraints: '1 ≤ N ≤ 1,000,000, 2 ≤ M ≤ 1,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '5 3\n1 2 3 1 2', output: '7' },
+        { input: '1 1\n0', output: '1' },
+        { input: '4 2\n2 4 6 8', output: '10' }
+      ])
+    },
+    // ───── Diamond ─────
+    { id: 1208, title: '부분수열의 합 2', difficulty: 'Diamond 5', time_limit: 1000, memory_limit: 256,
+      description: 'N개의 정수로 이루어진 수열이 있을 때, 크기가 양수인 부분수열 중에서 그 수열의 원소를 다 더한 값이 S가 되는 경우의 수를 구하시오.\n반드시 Meet in the Middle 기법을 사용해야 시간 내에 해결할 수 있다.',
+      input_desc: '첫째 줄에 N (1 ≤ N ≤ 40)과 S (-10^12 ≤ S ≤ 10^12), 둘째 줄에 N개의 정수가 주어진다.',
+      output_desc: '합이 S가 되는 부분수열의 개수를 출력한다.',
+      sample_input: '5 0\n-7 -3 -2 5 8', sample_output: '1',
+      constraints: '1 ≤ N ≤ 40, -10^12 ≤ S ≤ 10^12',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '5 0\n-7 -3 -2 5 8', output: '1' },
+        { input: '4 5\n1 2 3 4', output: '2' },
+        { input: '1 1\n1', output: '1' }
+      ])
+    },
+    { id: 2261, title: '가장 가까운 두 점', difficulty: 'Diamond 4', time_limit: 10000, memory_limit: 256,
+      description: '2차원 평면 위에 n개의 점이 주어질 때, 거리가 가장 가까운 두 점을 구하시오. 거리의 제곱을 출력한다.\n분할 정복 또는 스위핑 알고리즘을 사용해야 한다. O(n log n)이 요구된다.',
+      input_desc: '첫째 줄에 n (2 ≤ n ≤ 100,000), 이후 n개의 줄에 두 정수 x, y가 주어진다. (-10,000 ≤ x, y ≤ 10,000)',
+      output_desc: '가장 가까운 두 점의 거리의 제곱을 출력한다.',
+      sample_input: '4\n0 0\n1 0\n3 0\n4 0', sample_output: '1',
+      constraints: '2 ≤ n ≤ 100,000',
+      submission_count: 0, accepted_count: 0,
+      test_cases: JSON.stringify([
+        { input: '4\n0 0\n1 0\n3 0\n4 0', output: '1' },
+        { input: '2\n0 0\n3 4', output: '25' },
+        { input: '3\n0 0\n0 1\n100 100', output: '1' }
+      ])
     }
   ];
   let added = 0;
