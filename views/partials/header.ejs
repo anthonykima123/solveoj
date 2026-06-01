@@ -22,6 +22,8 @@
     </nav>
     <div class="nav-auth">
       <% if (user) { %>
+        <% const { getTierInfo } = require('../../utils/rating'); const _ti = getTierInfo(user.rating||0); %>
+        <span class="user-tier-badge tier-<%= _ti.cls %> tier-sm"><%= _ti.tier %></span>
         <span class="username-badge"><%= user.username %></span>
         <a href="/submissions">내 제출</a>
         <a href="/settings">설정</a>

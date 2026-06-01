@@ -418,12 +418,26 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 3px; font-family: m
 .tag-chip-lg { font-size: 0.82rem; padding: 3px 10px; margin: 0 4px 4px 0; }
 .problem-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 2px; }
 
-/* ===== STAR RATING ===== */
-.problem-rating { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-.star-rating { display: flex; gap: 3px; cursor: pointer; }
-.star { font-size: 1.5rem; color: #d0d7de; transition: color 0.1s; user-select: none; }
-.star.active, .star.hover { color: #f5a623; }
-.rating-info { font-size: 0.88rem; color: var(--text-muted); }
+/* ===== RATING SCORE ===== */
+.problem-rating { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 8px 12px; background: #f6f8fa; border-radius: 6px; border: 1px solid var(--border); }
+.diff-score-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.diff-score-value { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+.diff-score-desc { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ===== USER TIER BADGE ===== */
+.user-tier-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+}
+.user-tier-badge.tier-sm { font-size: 0.72rem; padding: 2px 7px; }
+.tier-unrated  { background: #f0f0f0;   color: #666;    border: 1px solid #ddd; }
+.tier-bronze   { background: #fdf0e0;   color: #ad5600; border: 1px solid #e8c09a; }
+.tier-silver   { background: #eef2f7;   color: #435f7a; border: 1px solid #c0cfd9; }
+.tier-gold     { background: #fef9e7;   color: #b8860b; border: 1px solid #f0d580; }
+.tier-platinum { background: #e8fdf5;   color: #1a9970; border: 1px solid #9de8d0; }
+.tier-diamond  { background: #e0f4ff;   color: #0075c8; border: 1px solid #80d4f8; }
+.tier-ruby     { background: #fff0f5;   color: #d6004c; border: 1px solid #ffb0cc; }
+.rating-score  { color: var(--primary); font-size: 1rem; }
 
 /* ===== SETTINGS ===== */
 .settings-wrap { max-width: 800px; }

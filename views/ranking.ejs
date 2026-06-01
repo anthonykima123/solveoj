@@ -1,9 +1,11 @@
 <% locals.title = '랭킹' %>
 <%- include('partials/header') %>
 
+<% const { getTierInfo } = require('../utils/rating') %>
+
 <div class="page-header">
   <h1>랭킹</h1>
-  <p class="page-desc">가장 많은 문제를 푼 사용자 순위입니다.</p>
+  <p class="page-desc">레이팅 순위입니다. 문제를 풀어 레이팅을 올리세요.</p>
 </div>
 
 <div class="table-wrap">
@@ -12,24 +14,19 @@
       <tr>
         <th class="col-rank">순위</th>
         <th>사용자</th>
-        <th>푼 문제 수</th>
-        <th>제출 횟수</th>
+        <th>티어</th>
+        <th>레이팅</th>
+        <th>푼 문제</th>
         <th>가입일</th>
       </tr>
     </thead>
     <tbody>
-      <% users.forEach((u, i) => { %>
+      <% const sorted = users.slice().sort((a,b) => (b.rating||0) - (a.rating||0)) %>
+      <% sorted.forEach((u, i) => { %>
+        <% const tierInfo = getTierInfo(u.rating || 0) %>
         <tr class="<%= user && user.username === u.username ? 'my-row' : '' %>">
           <td class="col-rank">
-            <% if (i === 0) { %>
-              <span class="rank-trophy">🥇</span>
-            <% } else if (i === 1) { %>
-              <span class="rank-trophy">🥈</span>
-            <% } else if (i === 2) { %>
-              <span class="rank-trophy">🥉</span>
-            <% } else { %>
-              <span class="rank-num"><%= i + 1 %></span>
-            <% } %>
+            <% if (i===0) { %>🥇<% } else if (i===1) { %>🥈<% } else if (i===2) { %>🥉<% } else { %><span class="rank-num"><%= i+1 %></span><% } %>
           </td>
           <td>
             <span class="rank-username <%= user && user.username === u.username ? 'is-me' : '' %>">
@@ -37,14 +34,12 @@
               <% if (user && user.username === u.username) { %><span class="me-tag">나</span><% } %>
             </span>
           </td>
-          <td><strong class="solved-num"><%= u.solved_count %></strong> 문제</td>
-          <td><%= u.submission_count %> 회</td>
+          <td><span class="user-tier-badge tier-<%= tierInfo.cls %>"><%= tierInfo.tier %></span></td>
+          <td><strong class="rating-score"><%= (u.rating || 0).toLocaleString() %></strong></td>
+          <td><%= u.solved_count %> 문제</td>
           <td><%= new Date(u.created_at).toLocaleDateString('ko-KR') %></td>
         </tr>
       <% }) %>
-      <% if (users.length === 0) { %>
-        <tr><td colspan="5" class="empty-row">아직 사용자가 없습니다.</td></tr>
-      <% } %>
     </tbody>
   </table>
 </div>

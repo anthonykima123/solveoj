@@ -2,6 +2,7 @@ const express = require('express');
 const { db } = require('../database');
 const { runCode } = require('../judge/runner');
 const { requireLogin } = require('../middleware/auth');
+const { getDifficultyScore } = require('../utils/rating');
 const router = express.Router();
 
 const LANG_LABELS = { cpp: 'C++17', python: 'Python 3', java: 'Java 11' };
@@ -46,6 +47,9 @@ router.post('/problems/:id/submit', requireLogin, async (req, res) => {
     db.incProblem(problemId, 'accepted_count');
     if (db.addSolved(userId, problemId)) {
       db.incUser(userId, 'solved_count');
+      const gain = getDifficultyScore(problem.difficulty);
+      db.incUser(userId, 'rating', gain);
+      if (req.session.user) req.session.user.rating = (req.session.user.rating || 0) + gain;
     }
   }
 

@@ -78,22 +78,6 @@ class JsonDB {
     return sub;
   }
 
-  // Ratings
-  getRating(uid, pid) { return this._d.ratings?.find(r => r.user_id === uid && r.problem_id === pid) || null; }
-  setRating(uid, pid, rating) {
-    if (!this._d.ratings) this._d.ratings = [];
-    const existing = this._d.ratings.find(r => r.user_id === uid && r.problem_id === pid);
-    if (existing) existing.rating = rating;
-    else this._d.ratings.push({ user_id: uid, problem_id: pid, rating });
-    this._save();
-  }
-  getProblemRating(pid) {
-    const list = (this._d.ratings || []).filter(r => r.problem_id === pid);
-    if (!list.length) return { avg: 0, count: 0 };
-    const avg = list.reduce((s, r) => s + r.rating, 0) / list.length;
-    return { avg: Math.round(avg * 10) / 10, count: list.length };
-  }
-
   // Solved
   isSolved(uid, pid) { return this._d.solved.some(s => s.user_id === uid && s.problem_id === pid); }
   addSolved(uid, pid) {

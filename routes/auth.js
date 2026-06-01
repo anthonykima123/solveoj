@@ -18,7 +18,7 @@ router.post('/login', (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.render('login', { error: '아이디 또는 비밀번호가 잘못되었습니다.', next: redirect });
 
-  req.session.user = { id: user.id, username: user.username };
+  req.session.user = { id: user.id, username: user.username, rating: user.rating || 0 };
   res.redirect(redirect);
 });
 
@@ -45,7 +45,7 @@ router.post('/register', (req, res) => {
 
   const hash = bcrypt.hashSync(password, 10);
   const user = db.createUser({ username, email, password: hash });
-  req.session.user = { id: user.id, username: user.username };
+  req.session.user = { id: user.id, username: user.username, rating: 0 };
   res.redirect('/');
 });
 
