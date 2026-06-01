@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const { db, initDB } = require('./database');
+const { getTierInfo } = require('./utils/rating');
 
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
@@ -29,6 +30,7 @@ app.use(session({
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  res.locals.getTierInfo = getTierInfo;
   next();
 });
 
