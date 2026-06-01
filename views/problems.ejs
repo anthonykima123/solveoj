@@ -18,6 +18,15 @@
         <option value="Diamond" <%= diff === 'Diamond' ? 'selected' : '' %>>Diamond</option>
       </select>
     </div>
+    <div class="filter-group">
+      <label>태그</label>
+      <select name="tag" onchange="this.form.submit()">
+        <option value="">전체</option>
+        <% allTags.forEach(t => { %>
+          <option value="<%= t %>" <%= tag === t ? 'selected' : '' %>><%= t %></option>
+        <% }) %>
+      </select>
+    </div>
     <div class="filter-group search-group">
       <input type="text" name="search" value="<%= search %>" placeholder="문제 제목 검색..." class="search-input">
       <button type="submit" class="btn btn-sm">검색</button>
@@ -47,6 +56,9 @@
           <td class="col-id"><%= p.id %></td>
           <td class="col-title">
             <a href="/problems/<%= p.id %>"><%= p.title %></a>
+            <% (p.tags || []).slice(0,2).forEach(t => { %>
+              <a href="/problems?tag=<%= encodeURIComponent(t) %>" class="tag-chip"><%= t %></a>
+            <% }) %>
           </td>
           <td class="col-diff">
             <span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span>

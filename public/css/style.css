@@ -408,6 +408,23 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 3px; font-family: m
 .error-code { font-size: 5rem; font-weight: 800; color: var(--border); }
 .error-msg { color: var(--text-muted); font-size: 1.1rem; margin: 12px 0 24px; }
 
+/* ===== TAGS ===== */
+.tag-chip {
+  display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.73rem;
+  background: #eef2ff; color: #3451b2; border: 1px solid #c7d2fe;
+  margin-left: 5px; transition: background 0.15s; white-space: nowrap;
+}
+.tag-chip:hover { background: #c7d2fe; text-decoration: none; }
+.tag-chip-lg { font-size: 0.82rem; padding: 3px 10px; margin: 0 4px 4px 0; }
+.problem-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 2px; }
+
+/* ===== STAR RATING ===== */
+.problem-rating { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.star-rating { display: flex; gap: 3px; cursor: pointer; }
+.star { font-size: 1.5rem; color: #d0d7de; transition: color 0.1s; user-select: none; }
+.star.active, .star.hover { color: #f5a623; }
+.rating-info { font-size: 0.88rem; color: var(--text-muted); }
+
 /* ===== SETTINGS ===== */
 .settings-wrap { max-width: 800px; }
 .settings-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; }
