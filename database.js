@@ -5,7 +5,7 @@ const path = require('path');
 const db = new JsonDB(path.join(__dirname, 'judge.db.json'));
 
 function initDB() {
-  if (db._d.problems.length === 0) seedProblems();
+  seedProblems();
   if (db._d.users.length === 0) seedUsers();
 }
 
@@ -243,8 +243,11 @@ function seedProblems() {
       ])
     }
   ];
-  problems.forEach(p => db.insertProblem(p));
-  console.log('✅ Problems seeded');
+  let added = 0;
+  problems.forEach(p => {
+    if (!db.getProblemById(p.id)) { db.insertProblem(p); added++; }
+  });
+  if (added > 0) console.log(`✅ ${added} problems added`);
 }
 
 function seedUsers() {
