@@ -2,3 +2,7 @@ node_modules/
 judge.db.json
 *.log
 .env
+
+# stray test artifacts
+p.html
+*.tmp.html
