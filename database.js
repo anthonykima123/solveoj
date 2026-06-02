@@ -36,6 +36,24 @@ function initDB() {
   seedProblems();
   migrateTags();
   if (db._d.users.length === 0) seedUsers();
+  migrateRoles();
+}
+
+// 기존 유저들에게 역할(role) 필드를 부여한다.
+// 'admin' 계정은 슈퍼 관리자로, 나머지는 일반 유저로 초기화.
+function migrateRoles() {
+  let changed = false;
+  db._d.users.forEach(u => {
+    if (!u.role) {
+      u.role = (u.username === 'admin') ? 'superadmin' : 'user';
+      changed = true;
+    }
+    if (u.role === 'admin' && !Array.isArray(u.permissions)) {
+      u.permissions = [];
+      changed = true;
+    }
+  });
+  if (changed) db._save();
 }
 
 function migrateTags() {
@@ -384,8 +402,8 @@ function seedProblems() {
 
 function seedUsers() {
   const hash = bcrypt.hashSync('password123', 10);
-  db.createUser({ username: 'admin', email: 'admin@judge.kr', password: hash, solved_count: 5 });
-  db.createUser({ username: 'testuser', email: 'test@judge.kr', password: hash, solved_count: 3 });
+  db.createUser({ username: 'admin', email: 'admin@judge.kr', password: hash, solved_count: 5, role: 'superadmin', permissions: [] });
+  db.createUser({ username: 'testuser', email: 'test@judge.kr', password: hash, solved_count: 3, role: 'user', permissions: [] });
   console.log('✅ Users seeded (password: password123)');
 }
 

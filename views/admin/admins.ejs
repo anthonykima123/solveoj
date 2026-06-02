@@ -1,0 +1,114 @@
+<% locals.title = 'Admin - 관리자 관리' %>
+<% locals.active = 'admins' %>
+<%- include('../partials/header') %>
+
+<div class="page-header admin-header">
+  <div>
+    <h1>🛠 Admin</h1>
+    <p class="page-desc">공동 관리자를 임명하고 권한을 부여합니다. (슈퍼 관리자 전용)</p>
+  </div>
+</div>
+
+<%- include('../partials/admin-tabs', { active: 'admins' }) %>
+
+<% if (query.roleok) { %>
+  <div class="alert alert-success"><strong><%= query.roleok %></strong> 님의 관리자 권한이 저장되었습니다.</div>
+<% } else if (query.revoked) { %>
+  <div class="alert alert-success"><strong><%= query.revoked %></strong> 님의 관리자 권한을 해제했습니다.</div>
+<% } else if (query.err === 'superadmin') { %>
+  <div class="alert alert-error">슈퍼 관리자 계정은 변경할 수 없습니다.</div>
+<% } else if (query.err === 'notfound') { %>
+  <div class="alert alert-error">대상 유저를 찾을 수 없습니다.</div>
+<% } %>
+
+<!-- 현재 관리자 목록 -->
+<h2 class="section-title">현재 관리자 <span class="count">(<%= admins.length %>명)</span></h2>
+<div class="table-wrap">
+  <table class="table admin-user-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>사용자</th>
+        <th>역할</th>
+        <th>권한</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% admins.forEach(u => { %>
+        <% const ti = getTierInfo(u.rating || 0) %>
+        <% const isSuper = u.role === 'superadmin' %>
+        <tr>
+          <td><%= u.id %></td>
+          <td>
+            <span class="user-tier-badge tier-<%= ti.cls %> tier-sm"><%= ti.tier %></span>
+            <strong><%= u.username %></strong>
+            <% if (u.id === me.id) { %><span class="me-tag">나</span><% } %>
+          </td>
+          <td>
+            <% if (isSuper) { %>
+              <span class="role-badge role-super">👑 슈퍼 관리자</span>
+            <% } else { %>
+              <span class="role-badge role-admin">🛡 공동 관리자</span>
+            <% } %>
+          </td>
+          <td>
+            <% if (isSuper) { %>
+              <span class="perm-chip">모든 권한</span>
+            <% } else { %>
+              <div class="perm-chips">
+                <% (u.permissions || []).forEach(pk => { %>
+                  <% const pm = PERMISSIONS.find(p => p.key === pk) %>
+                  <span class="perm-chip"><%= pm ? pm.label : pk %></span>
+                <% }) %>
+                <% if (!(u.permissions || []).length) { %><span class="perm-chip muted">권한 없음</span><% } %>
+              </div>
+            <% } %>
+          </td>
+          <td class="admin-actions admin-user-actions">
+            <% if (isSuper) { %>
+              <span class="muted-sm">변경 불가</span>
+            <% } else { %>
+              <%- include('../partials/role-form', { u, PERMISSIONS }) %>
+              <form action="/admin/role" method="POST" style="display:inline"
+                    onsubmit="return confirm('<%= u.username %> 님의 관리자 권한을 해제할까요?')">
+                <input type="hidden" name="user_id" value="<%= u.id %>">
+                <input type="hidden" name="role" value="user">
+                <button type="submit" class="btn btn-sm btn-danger">관리자 해제</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- 공동 관리자 임명 -->
+<h2 class="section-title">공동 관리자 임명</h2>
+<% if (candidates.length === 0) { %>
+  <p class="muted">임명할 수 있는 일반 유저가 없습니다.</p>
+<% } else { %>
+  <form action="/admin/role" method="POST" class="appoint-form">
+    <input type="hidden" name="role" value="admin">
+    <div class="appoint-row">
+      <label class="appoint-label">유저
+        <select name="user_id" required class="appoint-select">
+          <option value="" disabled selected>유저 선택…</option>
+          <% candidates.forEach(u => { %>
+            <option value="<%= u.id %>"><%= u.username %> (#<%= u.id %>)</option>
+          <% }) %>
+        </select>
+      </label>
+      <div class="appoint-perms">
+        <span class="appoint-label">부여 권한</span>
+        <% PERMISSIONS.forEach(p => { %>
+          <label title="<%= p.desc %>"><input type="checkbox" name="perms" value="<%= p.key %>"> <%= p.label %></label>
+        <% }) %>
+      </div>
+      <button type="submit" class="btn btn-primary">임명</button>
+    </div>
+  </form>
+<% } %>
+
+<%- include('../partials/footer') %>

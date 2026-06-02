@@ -1,13 +1,16 @@
 <% locals.title = '관리자 - 문제 관리' %>
+<% locals.active = 'problems' %>
 <%- include('../partials/header') %>
 
 <div class="page-header admin-header">
   <div>
-    <h1>🛠 관리자 패널</h1>
+    <h1>🛠 Admin</h1>
     <p class="page-desc">문제를 추가하거나 수정할 수 있습니다.</p>
   </div>
   <a href="/admin/problems/new" class="btn btn-primary">+ 새 문제 추가</a>
 </div>
+
+<%- include('../partials/admin-tabs', { active: 'problems' }) %>
 
 <% if (query.created) { %>
   <div class="alert alert-success">문제 #<%= query.created %>이 생성되었습니다.</div>

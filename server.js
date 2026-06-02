@@ -3,6 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const { db, initDB } = require('./database');
 const { getTierInfo } = require('./utils/rating');
+const { isAdmin, isSuperAdmin, hasPermission } = require('./utils/permissions');
 
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
@@ -31,6 +32,12 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.getTierInfo = getTierInfo;
+  // 역할/권한 정보를 모든 뷰에서 사용할 수 있게 노출 (DB에서 최신값 조회)
+  const cu = req.session.user ? db.getUserById(req.session.user.id) : null;
+  res.locals.currentUser = cu;
+  res.locals.isAdmin = isAdmin(cu);
+  res.locals.isSuperAdmin = isSuperAdmin(cu);
+  res.locals.hasPerm = (p) => hasPermission(cu, p);
   next();
 });
 

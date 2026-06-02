@@ -1,0 +1,16 @@
+<details class="role-details">
+  <summary class="btn btn-sm btn-outline">권한 수정</summary>
+  <form action="/admin/role" method="POST" class="role-form">
+    <input type="hidden" name="user_id" value="<%= u.id %>">
+    <input type="hidden" name="role" value="admin">
+    <div class="perm-checks">
+      <% PERMISSIONS.forEach(p => { %>
+        <label title="<%= p.desc %>">
+          <input type="checkbox" name="perms" value="<%= p.key %>" <%= (u.permissions || []).includes(p.key) ? 'checked' : '' %>>
+          <%= p.label %>
+        </label>
+      <% }) %>
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary">저장</button>
+  </form>
+</details>

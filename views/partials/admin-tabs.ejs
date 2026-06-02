@@ -1,0 +1,11 @@
+<div class="admin-tabs">
+  <% if (hasPerm('problems')) { %>
+    <a href="/admin/problems" class="admin-tab <%= active === 'problems' ? 'active' : '' %>">📝 문제 관리</a>
+  <% } %>
+  <% if (isSuperAdmin) { %>
+    <a href="/admin/admins" class="admin-tab <%= active === 'admins' ? 'active' : '' %>">🛡 관리자 관리</a>
+  <% } %>
+  <% if (hasPerm('users')) { %>
+    <a href="/admin/users" class="admin-tab <%= active === 'users' ? 'active' : '' %>">👥 유저 관리</a>
+  <% } %>
+</div>

@@ -1,6 +1,8 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const { db } = require('../database');
-const { requireAdmin } = require('../middleware/admin');
+const { requireAdmin, requireSuperAdmin, requirePermission } = require('../middleware/admin');
+const { PERMISSIONS, PERMISSION_KEYS } = require('../utils/permissions');
 const router = express.Router();
 
 router.use(requireAdmin);
@@ -14,19 +16,94 @@ const ALL_TIERS = [
   'Ruby 5','Ruby 4','Ruby 3','Ruby 2','Ruby 1'
 ];
 
-// Admin dashboard
+// 접근 가능한 첫 번째 탭으로 보낸다.
 router.get('/', (req, res) => {
-  const problems = db.getProblems();
-  res.render('admin/index', { problems, query: req.query });
+  const u = req.adminUser;
+  if (u.role === 'superadmin' || (u.permissions || []).includes('problems'))
+    return res.redirect('/admin/problems');
+  if (u.role === 'superadmin') return res.redirect('/admin/admins');
+  if ((u.permissions || []).includes('users')) return res.redirect('/admin/users');
+  return res.redirect('/admin/users');
 });
 
-// New problem form
-router.get('/problems/new', (req, res) => {
+// ─────────────────────────── 관리자 관리 (슈퍼 관리자 전용) ───────────────────────────
+router.get('/admins', requireSuperAdmin, (req, res) => {
+  const all = db.getAllUsers();
+  const admins = all.filter(u => u.role === 'superadmin' || u.role === 'admin');
+  const candidates = all.filter(u => u.role === 'user'); // 공동 관리자로 임명 가능한 일반 유저
+  res.render('admin/admins', {
+    admins, candidates, PERMISSIONS, query: req.query, me: req.adminUser
+  });
+});
+
+// 역할/권한 부여·수정·해제 — 슈퍼 관리자 전용
+router.post('/role', requireSuperAdmin, (req, res) => {
+  const id = parseInt(req.body.user_id);
+  const target = db.getUserById(id);
+  if (!target) return res.redirect('/admin/admins?err=notfound');
+  if (target.role === 'superadmin')
+    return res.redirect('/admin/admins?err=superadmin');
+
+  const role = req.body.role === 'admin' ? 'admin' : 'user';
+  let perms = req.body.perms || [];
+  if (!Array.isArray(perms)) perms = [perms];
+  perms = perms.filter(p => PERMISSION_KEYS.includes(p));
+
+  if (role === 'admin') {
+    db.updateUser(id, { role: 'admin', permissions: perms });
+    res.redirect('/admin/admins?roleok=' + encodeURIComponent(target.username));
+  } else {
+    db.updateUser(id, { role: 'user', permissions: [] });
+    res.redirect('/admin/admins?revoked=' + encodeURIComponent(target.username));
+  }
+});
+
+// ─────────────────────────── 유저 관리 ('users' 권한) ───────────────────────────
+router.get('/users', requirePermission('users'), (req, res) => {
+  const users = db.getAllUsers();
+  res.render('admin/users', { users, query: req.query, me: req.adminUser });
+});
+
+// 유저 삭제
+router.post('/users/:id/delete', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.status(404).render('404');
+  if (target.id === req.adminUser.id)
+    return res.redirect('/admin/users?err=self');
+  if (target.role === 'superadmin')
+    return res.redirect('/admin/users?err=superadmin');
+  // 공동 관리자는 다른 관리자를 삭제할 수 없다 (슈퍼 관리자만 가능)
+  if (target.role === 'admin' && req.adminUser.role !== 'superadmin')
+    return res.redirect('/admin/users?err=noadmin');
+
+  db.deleteUser(id);
+  res.redirect('/admin/users?deluser=' + encodeURIComponent(target.username));
+});
+
+// 비밀번호 초기화(reset1234)
+router.post('/users/:id/reset-password', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.status(404).render('404');
+  if (target.role === 'superadmin' && target.id !== req.adminUser.id)
+    return res.redirect('/admin/users?err=superadmin');
+
+  db.updateUser(id, { password: bcrypt.hashSync('reset1234', 10) });
+  res.redirect('/admin/users?pwreset=' + encodeURIComponent(target.username));
+});
+
+// ─────────────────────────── 문제 관리 ('problems' 권한) ───────────────────────────
+router.get('/problems', requirePermission('problems'), (req, res) => {
+  const problems = db.getProblems();
+  res.render('admin/problems', { problems, query: req.query });
+});
+
+router.get('/problems/new', requirePermission('problems'), (req, res) => {
   res.render('admin/problem-form', { problem: null, tiers: ALL_TIERS, error: null });
 });
 
-// Create problem
-router.post('/problems/new', (req, res) => {
+router.post('/problems/new', requirePermission('problems'), (req, res) => {
   const { id, title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
           sample_output, constraints, test_cases_raw } = req.body;
@@ -61,18 +138,16 @@ router.post('/problems/new', (req, res) => {
     test_cases, submission_count: 0, accepted_count: 0
   });
 
-  res.redirect(`/admin?created=${pid}`);
+  res.redirect(`/admin/problems?created=${pid}`);
 });
 
-// Edit problem form
-router.get('/problems/:id/edit', (req, res) => {
+router.get('/problems/:id/edit', requirePermission('problems'), (req, res) => {
   const problem = db.getProblemById(parseInt(req.params.id));
   if (!problem) return res.status(404).render('404');
   res.render('admin/problem-form', { problem, tiers: ALL_TIERS, error: null });
 });
 
-// Update problem
-router.post('/problems/:id/edit', (req, res) => {
+router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
   const pid = parseInt(req.params.id);
   const problem = db.getProblemById(pid);
   if (!problem) return res.status(404).render('404');
@@ -104,13 +179,12 @@ router.post('/problems/:id/edit', (req, res) => {
     sample_input, sample_output, constraints, test_cases
   });
 
-  res.redirect(`/admin?updated=${pid}`);
+  res.redirect(`/admin/problems?updated=${pid}`);
 });
 
-// Delete problem
-router.post('/problems/:id/delete', (req, res) => {
+router.post('/problems/:id/delete', requirePermission('problems'), (req, res) => {
   db.deleteProblem(parseInt(req.params.id));
-  res.redirect('/admin?deleted=1');
+  res.redirect('/admin/problems?deleted=1');
 });
 
 module.exports = router;

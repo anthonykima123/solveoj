@@ -480,3 +480,78 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 3px; font-family: m
   line-height: 1.6 !important;
 }
 .CodeMirror-readonly .CodeMirror { height: 320px !important; }
+
+/* ===== ADMIN PANEL ===== */
+.admin-tabs {
+  display: flex; gap: 4px; margin-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+}
+.admin-tab {
+  padding: 9px 18px; font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+  text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  border-radius: 6px 6px 0 0; transition: all 0.15s;
+}
+.admin-tab:hover { color: var(--text); background: var(--bg); }
+.admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.admin-summary { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
+.admin-summary strong { color: var(--text); }
+
+/* role badges */
+.role-badge {
+  display: inline-block; padding: 2px 9px; border-radius: 12px;
+  font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+}
+.role-super { background: #fff7e0; color: #b8860b; border: 1px solid #f0d580; }
+.role-admin { background: #e6f2ff; color: #0066cc; border: 1px solid #a8d0f5; }
+.role-user  { background: #f1f3f5; color: #868e96; border: 1px solid #dee2e6; }
+
+.perm-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.perm-chip {
+  font-size: 0.72rem; padding: 1px 7px; border-radius: 10px;
+  background: #eef6ff; color: #2b6cb0; border: 1px solid #cfe3f7;
+}
+.perm-chip.muted { background: #f1f3f5; color: #adb5bd; border-color: #e0e0e0; }
+
+.me-tag {
+  font-size: 0.68rem; font-weight: 700; color: #fff; background: var(--primary);
+  padding: 1px 6px; border-radius: 8px; margin-left: 4px; vertical-align: middle;
+}
+.user-email { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
+.user-stats { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+.user-stats span { margin-right: 8px; }
+.cell-date { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+.muted-sm, .muted { font-size: 0.8rem; color: var(--text-muted); }
+
+.admin-user-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start; }
+
+/* role assignment form (superadmin) */
+.role-details { display: inline-block; }
+.role-details summary { list-style: none; cursor: pointer; }
+.role-details summary::-webkit-details-marker { display: none; }
+.role-form {
+  position: relative; margin-top: 8px; padding: 12px; min-width: 220px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 10px;
+}
+.role-radio { display: flex; gap: 14px; font-size: 0.85rem; }
+.role-radio label, .perm-checks label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.perm-checks { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
+
+/* section titles in admin pages */
+.section-title { font-size: 1.1rem; font-weight: 700; margin: 26px 0 12px; color: var(--text); }
+.section-title .count { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+.section-title:first-of-type { margin-top: 8px; }
+
+/* appoint co-admin form */
+.appoint-form {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px;
+}
+.appoint-row { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.appoint-label { font-size: 0.85rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.appoint-select {
+  padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem;
+  background: #fff; min-width: 180px;
+}
+.appoint-perms { display: flex; align-items: center; gap: 14px; }
+.appoint-perms label { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; cursor: pointer; font-weight: 400; }

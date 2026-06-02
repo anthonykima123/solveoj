@@ -36,6 +36,19 @@ class JsonDB {
     const u = this._d.users.find(u => u.id === id);
     if (u) { u[field] = (u[field] || 0) + by; this._save(); }
   }
+  deleteUser(id) {
+    const before = this._d.users.length;
+    this._d.users = this._d.users.filter(u => u.id !== id);
+    if (this._d.users.length !== before) {
+      // 해당 유저의 제출/해결 기록도 함께 정리
+      this._d.submissions = this._d.submissions.filter(s => s.user_id !== id);
+      this._d.solved = this._d.solved.filter(s => s.user_id !== id);
+      this._save();
+      return true;
+    }
+    return false;
+  }
+  getAdmins() { return this._d.users.filter(u => u.role === 'superadmin' || u.role === 'admin'); }
 
   // Problems
   getProblemById(id) { return this._d.problems.find(p => p.id === id) || null; }
@@ -76,6 +89,12 @@ class JsonDB {
     this._d.submissions.push(sub);
     this._save();
     return sub;
+  }
+  deleteSubmission(id) {
+    const before = this._d.submissions.length;
+    this._d.submissions = this._d.submissions.filter(s => s.id !== id);
+    if (this._d.submissions.length !== before) { this._save(); return true; }
+    return false;
   }
 
   // Solved

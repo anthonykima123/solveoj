@@ -16,8 +16,8 @@
       <a href="/problems">문제</a>
       <a href="/status">채점 현황</a>
       <a href="/ranking">랭킹</a>
-      <% if (user && user.username === 'admin') { %>
-        <a href="/admin" class="nav-admin">⚙ 관리</a>
+      <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+        <a href="/admin" class="nav-admin">⚙ Admin</a>
       <% } %>
     </nav>
     <div class="nav-auth">
