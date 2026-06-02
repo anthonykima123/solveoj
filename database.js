@@ -1,6 +1,7 @@
 const JsonDB = require('./jsondb');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fs = require('fs');
 
 const db = new JsonDB(path.join(__dirname, 'judge.db.json'));
 
@@ -34,9 +35,50 @@ const TAGS = {
 
 function initDB() {
   seedProblems();
+  seedExternalProblems();
   migrateTags();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
+}
+
+// problems/ 폴더의 JSON 문제 파일들을 읽어 DB에 없으면 추가한다.
+// (정올 등 외부 문제를 파일로 관리 — 파일 하나 = 문제 하나)
+function seedExternalProblems() {
+  const dir = path.join(__dirname, 'problems');
+  if (!fs.existsSync(dir)) return;
+
+  const files = [];
+  (function walk(d) {
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      const fp = path.join(d, e.name);
+      if (e.isDirectory()) walk(fp);
+      else if (e.name.endsWith('.json')) files.push(fp);
+    }
+  })(dir);
+
+  let added = 0;
+  for (const fp of files) {
+    let p;
+    try { p = JSON.parse(fs.readFileSync(fp, 'utf8')); }
+    catch (e) { console.error('문제 파일 파싱 실패:', fp, e.message); continue; }
+    if (!p || !p.id || db.getProblemById(p.id)) continue;
+
+    const test_cases = Array.isArray(p.test_cases)
+      ? JSON.stringify(p.test_cases)
+      : (p.test_cases || '[]');
+
+    db.insertProblem({
+      id: p.id, title: p.title, difficulty: p.difficulty,
+      time_limit: p.time_limit || 1000, memory_limit: p.memory_limit || 256,
+      description: p.description || '', input_desc: p.input_desc || '',
+      output_desc: p.output_desc || '', sample_input: p.sample_input || '',
+      sample_output: p.sample_output || '', constraints: p.constraints || '',
+      tags: p.tags || [], source: p.source || null,
+      test_cases, submission_count: 0, accepted_count: 0
+    });
+    added++;
+  }
+  if (added > 0) console.log(`✅ ${added} external problem(s) loaded`);
 }
 
 // 기존 유저들에게 역할(role) 필드를 부여한다.

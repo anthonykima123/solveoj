@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>친구 - SolveOJ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="logo">SolveOJ</a>
+    <nav class="nav-main">
+      <a href="/problems">문제</a>
+      <a href="/status">채점 현황</a>
+      <a href="/ranking">랭킹</a>
+      
+    </nav>
+    <div class="nav-auth">
+      
+        <a href="/login" class="btn-login">로그인</a>
+        <a href="/register" class="btn-register">회원가입</a>
+      
+    </div>
+  </div>
+</header>
+<main class="main-container">
+
+
+<div class="problem-wrap">
+  <div class="problem-header">
+    <div class="problem-meta-top">
+      <span class="problem-number">12491</span>
+      <span class="badge badge-gold 3">Gold 3</span>
+      
+    </div>
+    <h1 class="problem-title">친구</h1>
+    <div class="problem-limits">
+      <span>시간 제한: <strong>2000ms</strong></span>
+      <span>메모리 제한: <strong>1024MB</strong></span>
+      <span>출처: <strong>2026 KOI 1차 중1/고1</strong></span>
+    </div>
+
+    
+    <div class="problem-tags">
+      
+        <a href="/problems?tag=%EC%A0%95%EB%A0%AC" class="tag-chip tag-chip-lg">정렬</a>
+      
+        <a href="/problems?tag=%EC%9D%B4%EB%B6%84%20%ED%83%90%EC%83%89" class="tag-chip tag-chip-lg">이분 탐색</a>
+      
+        <a href="/problems?tag=%EB%88%84%EC%A0%81%20%ED%95%A9" class="tag-chip tag-chip-lg">누적 합</a>
+      
+        <a href="/problems?tag=2026%20KOI" class="tag-chip tag-chip-lg">2026 KOI</a>
+      
+    </div>
+    
+
+    <div class="problem-rating">
+      <span class="diff-score-label">레이팅 점수</span>
+      <span class="diff-score-value">+300</span>
+      <span class="diff-score-desc">이 문제를 처음 풀면 레이팅이 300점 증가합니다.</span>
+    </div>
+  </div>
+
+  <div class="problem-section">
+    <h2>문제</h2>
+    <div class="problem-desc">KOI 마을에는 일직선 모양의 도로가 있고, 그 위에 N개의 집이 있다.
+1번부터 N번까지 번호가 붙은 N명의 학생이 각 집에 한 명씩 살며, i번 학생의 집 좌표는 Xi이다. 서로 다른 두 집이 같은 좌표를 갖는 경우는 없다.
+마을에는 1번부터 N번까지 번호가 붙은 N개의 학교가 있고, i번 학생은 Si번 학교에 다닌다.
+
+서로 다른 두 학생 i, j (i ≠ j)가 아래 조건 중 적어도 하나를 만족하면 두 사람은 친구다.
+1) 같은 학교에 다니고, 두 집 사이의 거리가 K1 이하이다.
+2) 다른 학교에 다니고, 두 집 사이의 거리가 K2 이하이다.
+
+두 집 사이의 거리는 좌표 차이의 절댓값, 즉 |Xi − Xj|로 정의한다.
+각 학생마다 친구가 몇 명인지 구하는 프로그램을 작성하라. (자기 자신은 친구로 세지 않는다.)</div>
+  </div>
+
+  
+  <div class="problem-section">
+    <h2>입력</h2>
+    <div class="problem-desc">첫 줄에 세 정수 N, K1, K2가 공백으로 구분되어 주어진다.
+다음 N개의 줄 중 i번째 줄에는 i번 학생의 두 정수 Xi, Si가 공백으로 구분되어 주어진다 (1 ≤ i ≤ N).</div>
+  </div>
+  
+
+  
+  <div class="problem-section">
+    <h2>출력</h2>
+    <div class="problem-desc">한 줄에 N개의 정수를 공백으로 구분하여 출력한다. i번째 정수는 i번 학생의 친구 수이다.</div>
+  </div>
+  
+
+  
+  <div class="problem-section">
+    <h2>제약 조건</h2>
+    <div class="problem-desc">2 ≤ N ≤ 500,000 · 1 ≤ K1, K2 ≤ 10^9 · 1 ≤ Xi ≤ 10^9 (서로 다름) · 1 ≤ Si ≤ N · 모든 입력은 정수</div>
+  </div>
+  
+
+  
+  <div class="sample-io-grid">
+    <div class="sample-box">
+      <h2>예제 입력 1</h2>
+      <pre class="sample-pre">7 3 5
+9 2
+1 1
+14 3
+6 2
+17 3
+4 1
+8 1</pre>
+    </div>
+    <div class="sample-box">
+      <h2>예제 출력 1</h2>
+      <pre class="sample-pre">4 2 2 4 1 3 2</pre>
+    </div>
+  </div>
+  
+
+  <div class="submit-action">
+    
+      <a href="/login?next=/problems/12491/submit" class="btn btn-primary btn-lg">로그인 후 제출</a>
+    
+    <a href="/problems" class="btn btn-outline">목록으로</a>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>SolveOJ &copy; 2024 &nbsp;|&nbsp; 온라인 코딩 저지</p>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="/js/editor.js"></script>
+</body>
+</html>
+

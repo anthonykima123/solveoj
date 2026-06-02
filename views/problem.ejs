@@ -12,6 +12,7 @@
     <div class="problem-limits">
       <span>시간 제한: <strong><%= problem.time_limit %>ms</strong></span>
       <span>메모리 제한: <strong><%= problem.memory_limit %>MB</strong></span>
+      <% if (problem.source) { %><span>출처: <strong><%= problem.source %></strong></span><% } %>
     </div>
 
     <% if ((problem.tags || []).length > 0) { %>
