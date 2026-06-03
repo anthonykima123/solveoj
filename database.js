@@ -2,6 +2,7 @@ const JsonDB = require('./jsondb');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
+const { getDifficultyScore } = require('./utils/rating');
 
 const db = new JsonDB(path.join(__dirname, 'judge.db.json'));
 
@@ -180,6 +181,33 @@ async function initDB() {
   assignProblemSteps();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
+  autoSolveAllForAdmin();
+}
+
+// admin 계정이 아직 풀지 않은 모든 문제를 AC 처리한다. (요청에 의한 일괄 제출)
+// 멱등: 이미 푼 문제는 건너뛰므로, 새 문제 추가 시 다음 부팅에 자동으로 포함된다.
+function autoSolveAllForAdmin() {
+  const admin = db.getUserByUsername('admin');
+  if (!admin) return;
+  let n = 0;
+  for (const p of db._d.problems) {
+    if (db.isSolved(admin.id, p.id)) continue;
+    db.createSubmission({
+      user_id: admin.id, problem_id: p.id, language: 'cpp',
+      code: '// auto-submitted (admin)', verdict: 'AC',
+      execution_time: 0, error_message: null
+    });
+    db.incProblem(p.id, 'submission_count');
+    db.incProblem(p.id, 'accepted_count');
+    db.incUser(admin.id, 'submission_count');
+    db.addSolved(admin.id, p.id);
+    n++;
+  }
+  // solved_count / rating 을 실제 푼 문제 기준으로 재계산 (시드의 가짜 기본값 보정)
+  const solvedIds = db.getSolvedIds(admin.id);
+  const rating = solvedIds.reduce((s, id) => s + getDifficultyScore((db.getProblemById(id) || {}).difficulty || ''), 0);
+  db.updateUser(admin.id, { solved_count: solvedIds.length, rating });
+  if (n) console.log(`✅ admin auto-solved ${n} problem(s); total ${solvedIds.length}, rating ${rating}`);
 }
 
 // problems/ 폴더의 JSON 문제 파일들을 읽어 DB에 없으면 추가한다.
