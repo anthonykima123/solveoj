@@ -1,0 +1,33 @@
+{
+  "id": 30005,
+  "title": "정수의 제곱",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 N을 입력받아 N의 제곱을 출력하시오.",
+  "input_desc": "정수 N이 주어진다.",
+  "output_desc": "N의 제곱을 출력한다.",
+  "sample_input": "6",
+  "sample_output": "36",
+  "constraints": "-100,000 ≤ N ≤ 100,000",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "6",
+      "output": "36"
+    },
+    {
+      "input": "-9",
+      "output": "81"
+    },
+    {
+      "input": "0",
+      "output": "0"
+    }
+  ]
+}

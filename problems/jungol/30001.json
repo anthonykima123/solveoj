@@ -1,0 +1,32 @@
+{
+  "id": 30001,
+  "title": "정수 출력하기",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 하나를 입력받아 그대로 출력하는 프로그램을 작성하시오.",
+  "input_desc": "정수 하나가 주어진다.",
+  "output_desc": "입력받은 정수를 그대로 출력한다.",
+  "sample_input": "5",
+  "sample_output": "5",
+  "constraints": "-1,000,000 ≤ N ≤ 1,000,000",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "5",
+      "output": "5"
+    },
+    {
+      "input": "-12",
+      "output": "-12"
+    },
+    {
+      "input": "0",
+      "output": "0"
+    }
+  ]
+}

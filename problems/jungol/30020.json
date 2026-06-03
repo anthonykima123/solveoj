@@ -1,0 +1,33 @@
+{
+  "id": 30020,
+  "title": "숫자 삼각형",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "자연수 N을 입력받아 i번째 줄에 1부터 i까지의 숫자를 이어 붙여 출력하시오.",
+  "input_desc": "자연수 N(1 ≤ N ≤ 9)이 주어진다.",
+  "output_desc": "N줄에 걸쳐 숫자 삼각형을 출력한다.",
+  "sample_input": "3",
+  "sample_output": "1\n12\n123",
+  "constraints": "1 ≤ N ≤ 9",
+  "tags": [
+    "구현",
+    "반복문"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "3",
+      "output": "1\n12\n123"
+    },
+    {
+      "input": "1",
+      "output": "1"
+    },
+    {
+      "input": "5",
+      "output": "1\n12\n123\n1234\n12345"
+    }
+  ]
+}

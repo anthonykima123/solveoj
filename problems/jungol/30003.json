@@ -1,0 +1,33 @@
+{
+  "id": 30003,
+  "title": "세 정수의 합",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "세 정수를 입력받아 합을 출력하는 프로그램을 작성하시오.",
+  "input_desc": "세 정수가 공백으로 구분되어 주어진다.",
+  "output_desc": "세 정수의 합을 출력한다.",
+  "sample_input": "1 2 3",
+  "sample_output": "6",
+  "constraints": "정수",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "1 2 3",
+      "output": "6"
+    },
+    {
+      "input": "10 20 30",
+      "output": "60"
+    },
+    {
+      "input": "-1 -2 3",
+      "output": "0"
+    }
+  ]
+}

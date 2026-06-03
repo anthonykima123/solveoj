@@ -1,0 +1,36 @@
+{
+  "id": 30009,
+  "title": "짝수와 홀수",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 N을 입력받아 짝수이면 짝수, 홀수이면 홀수를 출력하시오.",
+  "input_desc": "정수 N이 주어진다.",
+  "output_desc": "짝수 또는 홀수를 출력한다.",
+  "sample_input": "4",
+  "sample_output": "짝수",
+  "constraints": "정수",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "4",
+      "output": "짝수"
+    },
+    {
+      "input": "7",
+      "output": "홀수"
+    },
+    {
+      "input": "0",
+      "output": "짝수"
+    },
+    {
+      "input": "-3",
+      "output": "홀수"
+    }
+  ]
+}

@@ -85,7 +85,7 @@ function assignProblemSteps() {
   });
   let changed = 0;
   db._d.problems.forEach(p => {
-    if (p.step) return;
+    if (p.step || p.contest) return; // 기출(대회) 분류 문제는 단계에 자동 배치하지 않음
     const tier = (p.difficulty || '').split(' ')[0];
     if (tierToStepId[tier]) { p.step = tierToStepId[tier]; changed++; }
   });

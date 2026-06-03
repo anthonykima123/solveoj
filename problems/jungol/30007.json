@@ -1,0 +1,32 @@
+{
+  "id": 30007,
+  "title": "두 수 중 큰 수",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "두 정수를 입력받아 더 큰 수를 출력하시오. 두 수가 같으면 그 값을 출력한다.",
+  "input_desc": "두 정수가 주어진다.",
+  "output_desc": "더 큰 수를 출력한다.",
+  "sample_input": "4 9",
+  "sample_output": "9",
+  "constraints": "정수",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "4 9",
+      "output": "9"
+    },
+    {
+      "input": "9 4",
+      "output": "9"
+    },
+    {
+      "input": "5 5",
+      "output": "5"
+    }
+  ]
+}

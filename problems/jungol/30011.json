@@ -1,0 +1,32 @@
+{
+  "id": 30011,
+  "title": "세 수 중 최댓값",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "세 정수를 입력받아 가장 큰 값을 출력하시오.",
+  "input_desc": "세 정수가 주어진다.",
+  "output_desc": "가장 큰 값을 출력한다.",
+  "sample_input": "3 7 5",
+  "sample_output": "7",
+  "constraints": "정수",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "3 7 5",
+      "output": "7"
+    },
+    {
+      "input": "9 1 2",
+      "output": "9"
+    },
+    {
+      "input": "-1 -5 -3",
+      "output": "-1"
+    }
+  ]
+}

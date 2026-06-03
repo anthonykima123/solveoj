@@ -1,0 +1,33 @@
+{
+  "id": 30004,
+  "title": "몫과 나머지",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "두 자연수 A, B를 입력받아 A를 B로 나눈 몫과 나머지를 공백으로 구분해 출력하시오.",
+  "input_desc": "두 자연수 A, B가 주어진다.",
+  "output_desc": "A÷B의 몫과 나머지를 공백으로 구분해 출력한다.",
+  "sample_input": "17 5",
+  "sample_output": "3 2",
+  "constraints": "1 ≤ A, B ≤ 1,000,000",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "17 5",
+      "output": "3 2"
+    },
+    {
+      "input": "100 7",
+      "output": "14 2"
+    },
+    {
+      "input": "10 10",
+      "output": "1 0"
+    }
+  ]
+}

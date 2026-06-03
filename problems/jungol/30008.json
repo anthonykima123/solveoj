@@ -1,0 +1,32 @@
+{
+  "id": 30008,
+  "title": "부호 판별",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 N을 입력받아 양수이면 양수, 음수이면 음수, 0이면 0을 출력하시오.",
+  "input_desc": "정수 N이 주어진다.",
+  "output_desc": "양수 / 음수 / 0 중 하나를 출력한다.",
+  "sample_input": "-3",
+  "sample_output": "음수",
+  "constraints": "정수",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "-3",
+      "output": "음수"
+    },
+    {
+      "input": "5",
+      "output": "양수"
+    },
+    {
+      "input": "0",
+      "output": "0"
+    }
+  ]
+}

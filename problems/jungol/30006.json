@@ -1,0 +1,32 @@
+{
+  "id": 30006,
+  "title": "절댓값",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 N을 입력받아 그 절댓값을 출력하시오.",
+  "input_desc": "정수 N이 주어진다.",
+  "output_desc": "N의 절댓값을 출력한다.",
+  "sample_input": "-8",
+  "sample_output": "8",
+  "constraints": "-1,000,000 ≤ N ≤ 1,000,000",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "-8",
+      "output": "8"
+    },
+    {
+      "input": "15",
+      "output": "15"
+    },
+    {
+      "input": "0",
+      "output": "0"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": 30021,
+  "title": "문자열 길이",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "공백 없는 문자열을 입력받아 그 길이를 출력하시오.",
+  "input_desc": "알파벳으로 이루어진 문자열이 주어진다.",
+  "output_desc": "문자열의 길이를 출력한다.",
+  "sample_input": "hello",
+  "sample_output": "5",
+  "constraints": "1 ≤ 길이 ≤ 100",
+  "tags": [
+    "구현",
+    "문자열"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "hello",
+      "output": "5"
+    },
+    {
+      "input": "a",
+      "output": "1"
+    },
+    {
+      "input": "programming",
+      "output": "11"
+    }
+  ]
+}

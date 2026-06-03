@@ -1,0 +1,33 @@
+{
+  "id": 30018,
+  "title": "최댓값과 최솟값",
+  "difficulty": "Bronze 3",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "N개의 정수를 입력받아 최댓값과 최솟값을 공백으로 구분해 출력하시오.",
+  "input_desc": "첫째 줄에 N, 둘째 줄에 N개의 정수가 주어진다.",
+  "output_desc": "최댓값과 최솟값을 공백으로 구분해 출력한다.",
+  "sample_input": "5\n3 1 4 1 5",
+  "sample_output": "5 1",
+  "constraints": "1 ≤ N ≤ 1,000",
+  "tags": [
+    "구현",
+    "배열"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "5\n3 1 4 1 5",
+      "output": "5 1"
+    },
+    {
+      "input": "1\n42",
+      "output": "42 42"
+    },
+    {
+      "input": "3\n-1 -2 -3",
+      "output": "-1 -3"
+    }
+  ]
+}

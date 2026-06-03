@@ -1,0 +1,33 @@
+{
+  "id": 30024,
+  "title": "문자열 뒤집기",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "문자열을 입력받아 거꾸로 뒤집어 출력하시오.",
+  "input_desc": "공백 없는 문자열이 주어진다.",
+  "output_desc": "뒤집은 문자열을 출력한다.",
+  "sample_input": "abc",
+  "sample_output": "cba",
+  "constraints": "1 ≤ 길이 ≤ 100",
+  "tags": [
+    "구현",
+    "문자열"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "abc",
+      "output": "cba"
+    },
+    {
+      "input": "racecar",
+      "output": "racecar"
+    },
+    {
+      "input": "jungol",
+      "output": "lognuj"
+    }
+  ]
+}

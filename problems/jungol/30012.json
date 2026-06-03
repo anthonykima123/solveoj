@@ -1,0 +1,40 @@
+{
+  "id": 30012,
+  "title": "학점 매기기",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "점수 S(0~100)를 입력받아 90 이상 A, 80 이상 B, 70 이상 C, 60 이상 D, 그 미만은 F를 출력하시오.",
+  "input_desc": "점수 S가 주어진다.",
+  "output_desc": "학점(A/B/C/D/F)을 출력한다.",
+  "sample_input": "85",
+  "sample_output": "B",
+  "constraints": "0 ≤ S ≤ 100",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "85",
+      "output": "B"
+    },
+    {
+      "input": "90",
+      "output": "A"
+    },
+    {
+      "input": "59",
+      "output": "F"
+    },
+    {
+      "input": "100",
+      "output": "A"
+    },
+    {
+      "input": "73",
+      "output": "C"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": 30002,
+  "title": "두 정수 출력",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "두 정수를 입력받아 공백으로 구분해 한 줄에 출력하시오.",
+  "input_desc": "두 정수가 공백으로 구분되어 주어진다.",
+  "output_desc": "두 정수를 공백으로 구분해 출력한다.",
+  "sample_input": "3 7",
+  "sample_output": "3 7",
+  "constraints": "정수",
+  "tags": [
+    "구현"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "3 7",
+      "output": "3 7"
+    },
+    {
+      "input": "10 -5",
+      "output": "10 -5"
+    }
+  ]
+}

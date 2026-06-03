@@ -1,0 +1,33 @@
+{
+  "id": 30013,
+  "title": "구구단 N단",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "정수 N을 입력받아 N단의 구구단을 \"N x i = N*i\" 형식으로 1부터 9까지 출력하시오.",
+  "input_desc": "정수 N(1 ≤ N ≤ 9)이 주어진다.",
+  "output_desc": "N단의 구구단을 한 줄에 하나씩 출력한다.",
+  "sample_input": "2",
+  "sample_output": "2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n2 x 4 = 8\n2 x 5 = 10\n2 x 6 = 12\n2 x 7 = 14\n2 x 8 = 16\n2 x 9 = 18",
+  "constraints": "1 ≤ N ≤ 9",
+  "tags": [
+    "구현",
+    "반복문"
+  ],
+  "source": "정올",
+  "contest": "jungol",
+  "test_cases": [
+    {
+      "input": "2",
+      "output": "2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n2 x 4 = 8\n2 x 5 = 10\n2 x 6 = 12\n2 x 7 = 14\n2 x 8 = 16\n2 x 9 = 18"
+    },
+    {
+      "input": "5",
+      "output": "5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n5 x 4 = 20\n5 x 5 = 25\n5 x 6 = 30\n5 x 7 = 35\n5 x 8 = 40\n5 x 9 = 45"
+    },
+    {
+      "input": "9",
+      "output": "9 x 1 = 9\n9 x 2 = 18\n9 x 3 = 27\n9 x 4 = 36\n9 x 5 = 45\n9 x 6 = 54\n9 x 7 = 63\n9 x 8 = 72\n9 x 9 = 81"
+    }
+  ]
+}
