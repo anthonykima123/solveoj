@@ -1,0 +1,97 @@
+<% locals.title = profileUser.username %>
+<%- include('partials/header') %>
+
+<div class="profile-page">
+
+  <!-- 상단 카드 -->
+  <div class="profile-card">
+    <div class="tier-emblem tier-<%= tier.cls %>"><%= emblem %></div>
+    <div class="profile-main">
+      <div class="profile-handle">
+        <%= profileUser.username %>
+        <% if (profileUser.role === 'superadmin') { %><span class="role-pill super">관리자</span>
+        <% } else if (profileUser.role === 'admin') { %><span class="role-pill">운영진</span><% } %>
+      </div>
+      <div class="profile-tier-name tier-text-<%= tier.cls %>"><%= tier.tier %></div>
+      <div class="profile-numbers">
+        <span class="pn"><strong><%= rating.toLocaleString() %></strong> 레이팅</span>
+        <span class="pn">#<%= rank %> <span class="muted">/ <%= totalUsers %></span></span>
+      </div>
+      <div class="profile-progress">
+        <div class="progress-track">
+          <div class="progress-fill tier-fill-<%= tier.cls %>" style="width:<%= progress %>%"></div>
+        </div>
+        <div class="progress-label">
+          <% if (next) { %>다음 티어까지 <strong><%= (next - rating).toLocaleString() %></strong>점 (<%= progress %>%)
+          <% } else { %>최고 티어 달성 🎉<% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div class="profile-stats">
+    <div class="stat"><div class="stat-num"><%= (profileUser.solved_count || 0).toLocaleString() %></div><div class="stat-label">맞은 문제</div></div>
+    <div class="stat"><div class="stat-num"><%= totalSubs.toLocaleString() %></div><div class="stat-label">제출 수</div></div>
+    <div class="stat"><div class="stat-num"><%= acRate %><span class="pct">%</span></div><div class="stat-label">정답 비율</div></div>
+    <div class="stat"><div class="stat-num"><%= rating.toLocaleString() %></div><div class="stat-label">레이팅</div></div>
+  </div>
+
+  <!-- 티어별 분포 -->
+  <div class="profile-section">
+    <h2>티어별 푼 문제</h2>
+    <div class="tier-dist">
+      <% TIERS.forEach(t => { %>
+        <div class="dist-col">
+          <div class="dist-bar-wrap">
+            <div class="dist-bar tier-<%= t %>" style="height:<%= Math.round(dist[t] / maxDist * 100) %>%" title="<%= dist[t] %>"></div>
+          </div>
+          <div class="dist-count"><%= dist[t] %></div>
+          <div class="dist-name tier-text-<%= t %>"><%= t.charAt(0).toUpperCase() + t.slice(1) %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- 푼 문제 목록 -->
+  <div class="profile-section">
+    <h2>푼 문제 <span class="count-badge"><%= solvedProblems.length %></span></h2>
+    <% if (solvedProblems.length === 0) { %>
+      <p class="muted">아직 푼 문제가 없습니다.</p>
+    <% } else { %>
+      <div class="solved-grid">
+        <% solvedProblems.forEach(p => { %>
+          <a href="/problems/<%= p.id %>" class="solved-chip badge-<%= p.difficulty.toLowerCase().split(' ')[0] %>" title="<%= p.title %> (<%= p.difficulty %>)"><%= p.id %></a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- 최근 제출 -->
+  <div class="profile-section">
+    <h2>최근 제출</h2>
+    <% if (recent.length === 0) { %>
+      <p class="muted">제출 기록이 없습니다.</p>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>문제</th><th>언어</th><th>결과</th><th>시간</th><th>제출일</th></tr></thead>
+          <tbody>
+            <% recent.forEach(s => { %>
+              <tr>
+                <td><a href="/problems/<%= s.problem_id %>"><%= s.problem_id %>. <%= s.problem_title %></a></td>
+                <td><span class="lang-tag"><%= LANG_LABELS[s.language] || s.language %></span></td>
+                <td><a href="/submissions/<%= s.id %>" class="verdict verdict-<%= (s.verdict || '').toLowerCase() %>"><%= VERDICT_LABELS[s.verdict] || s.verdict %></a></td>
+                <td><%= s.execution_time || 0 %>ms</td>
+                <td><%= new Date(s.created_at).toLocaleString('ko-KR') %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -15,6 +15,7 @@ const communityRoutes = require('./routes/community');
 const contestRoutes = require('./routes/contests');
 const groupRoutes = require('./routes/groups');
 const toolsRoutes = require('./routes/tools');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,6 +61,7 @@ app.use('/', communityRoutes);
 app.use('/', contestRoutes);
 app.use('/', groupRoutes);
 app.use('/', toolsRoutes);
+app.use('/', profileRoutes);
 app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));

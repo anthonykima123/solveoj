@@ -32,6 +32,7 @@
       </div>
       <a href="/status">채점 현황</a>
       <a href="/ranking">랭킹</a>
+      <% if (user) { %><a href="/user/<%= user.username %>">프로필</a><% } %>
       <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
         <a href="/admin" class="nav-admin">⚙ Admin</a>
       <% } %>
@@ -40,7 +41,7 @@
       <% if (user) { %>
         <% const _ti = getTierInfo(user.rating||0); %>
         <span class="user-tier-badge tier-<%= _ti.cls %> tier-sm"><%= _ti.tier %></span>
-        <span class="username-badge"><%= user.username %></span>
+        <a href="/user/<%= user.username %>" class="username-badge"><%= user.username %></a>
         <a href="/submissions">내 제출</a>
         <a href="/settings">설정</a>
         <form action="/logout" method="POST" class="logout-form">
