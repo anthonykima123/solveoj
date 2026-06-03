@@ -50,6 +50,39 @@ const P2309 = {
   ])
 };
 
+// 단계별 문제 — 정올(jungol) 커리큘럼 구조의 5단계.
+const STEP_DEFS = [
+  { name: 'Start',     order: 1, description: 'LC_C언어 · Beginner — 입문/기초', tiers: ['Bronze'] },
+  { name: 'Build',     order: 2, description: 'Intermediate — 중급',            tiers: ['Silver'] },
+  { name: 'Solve',     order: 3, description: 'Advanced — 고급',                tiers: ['Gold'] },
+  { name: 'Master',    order: 4, description: 'Specialist — 전문',              tiers: ['Platinum'] },
+  { name: 'Challenge', order: 5, description: 'Expert · Master — 최상급',        tiers: ['Diamond', 'Ruby'] },
+];
+
+function seedSteps() {
+  if (db.getSteps().length > 0) return;
+  STEP_DEFS.forEach(d => db.createStep({ name: d.name, order: d.order, description: d.description }));
+  console.log('✅ 5 steps seeded (Start ~ Challenge)');
+}
+
+// 기존 문제를 난이도에 따라 단계에 배치한다. (problem.step 미지정인 것만 → 관리자 수정 보존)
+function assignProblemSteps() {
+  const steps = db.getSteps();
+  if (!steps.length) return;
+  const tierToStepId = {};
+  STEP_DEFS.forEach(d => {
+    const s = steps.find(x => x.name === d.name);
+    if (s) d.tiers.forEach(t => tierToStepId[t] = s.id);
+  });
+  let changed = 0;
+  db._d.problems.forEach(p => {
+    if (p.step) return;
+    const tier = (p.difficulty || '').split(' ')[0];
+    if (tierToStepId[tier]) { p.step = tierToStepId[tier]; changed++; }
+  });
+  if (changed) { db._save(); console.log(`✅ ${changed} problems assigned to steps by difficulty`); }
+}
+
 // 01타일(1904) — n=1000000 정답이 1345로 잘못 저장된 경우 7871로 교정.
 function fixProblem1904() {
   const p = db.getProblemById(1904);
@@ -134,6 +167,8 @@ async function initDB() {
   fixProblem2357();
   fixProblem7576();
   fixProblem11404();
+  seedSteps();
+  assignProblemSteps();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
 }

@@ -5,11 +5,11 @@ const router = express.Router();
 
 router.get('/problems', (req, res) => {
   const { diff, search, tag } = req.query;
-  // 기출문제 = 단계(step)에 속하지 않은 일반 문제
-  let problems = db.getProblems({ difficulty: diff, search }).filter(p => !p.step);
+  // 기출문제 = 전체 문제 아카이브 (단계별 문제와 별개 탭)
+  let problems = db.getProblems({ difficulty: diff, search });
   if (tag) problems = problems.filter(p => (p.tags || []).includes(tag));
   const solvedSet = new Set(req.session.user ? db.getSolvedIds(req.session.user.id) : []);
-  const allTags = [...new Set(db.getProblems().filter(p => !p.step).flatMap(p => p.tags || []))].sort();
+  const allTags = [...new Set(db.getProblems().flatMap(p => p.tags || []))].sort();
   res.render('problems', { problems, solvedSet, diff: diff || '', search: search || '', tag: tag || '', allTags });
 });
 
