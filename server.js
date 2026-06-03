@@ -64,8 +64,13 @@ app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));
 
-initDB();
-
-app.listen(PORT, () => {
-  console.log(`\n🚀 SolveOJ → http://localhost:${PORT}\n`);
-});
+initDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`\n🚀 SolveOJ → http://localhost:${PORT} (${db.usePg ? 'Postgres' : 'local file'})\n`);
+    });
+  })
+  .catch(err => {
+    console.error('❌ DB 초기화 실패:', err);
+    process.exit(1);
+  });

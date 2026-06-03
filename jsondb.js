@@ -1,10 +1,35 @@
 const fs = require('fs');
+const pgstore = require('./pgstore');
+
+const EMPTY_DB = () => ({ users: [], problems: [], submissions: [], solved: [], ratings: [], _seq: { users: 1, submissions: 1 } });
 
 class JsonDB {
   constructor(dbPath) {
     this.dbPath = dbPath;
-    this._load();
+    this.usePg = !!process.env.DATABASE_URL;
+    this._saveChain = Promise.resolve();
+    if (this.usePg) {
+      // Postgres 모드: 실제 로드는 비동기 initStore()에서 수행한다.
+      this._d = EMPTY_DB();
+    } else {
+      this._load();
+      this._ensure();
+    }
+  }
+
+  // Postgres 모드 부팅: 테이블 보장 + 저장된 데이터 로드. database.js의 initDB()에서 호출.
+  async initStore() {
+    if (!this.usePg) return;
+    await pgstore.init();
+    const data = await pgstore.load();
+    if (data) {
+      this._d = data;
+    } else {
+      this._d = EMPTY_DB();
+    }
     this._ensure();
+    // 새 컬렉션이 추가됐으면 즉시 반영
+    await pgstore.save(this._d);
   }
 
   _load() {
@@ -12,10 +37,19 @@ class JsonDB {
       try { this._d = JSON.parse(fs.readFileSync(this.dbPath, 'utf8')); return; }
       catch (_) {}
     }
-    this._d = { users: [], problems: [], submissions: [], solved: [], ratings: [], _seq: { users: 1, submissions: 1 } };
+    this._d = EMPTY_DB();
   }
 
-  _save() { fs.writeFileSync(this.dbPath, JSON.stringify(this._d)); }
+  _save() {
+    if (this.usePg) {
+      // 동기 호출자를 위해 즉시 반환하고, 쓰기는 순서대로 직렬화하여 비동기 처리
+      this._saveChain = this._saveChain
+        .then(() => pgstore.save(this._d))
+        .catch(e => console.error('PG save failed:', e.message));
+    } else {
+      fs.writeFileSync(this.dbPath, JSON.stringify(this._d));
+    }
+  }
 
   // 새 컬렉션들이 없으면 만들어 둔다 (기존 DB 파일 호환)
   _ensure() {

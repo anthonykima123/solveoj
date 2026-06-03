@@ -33,7 +33,8 @@ const TAGS = {
   2261:  ['분할 정복', '기하학', '정렬'],
 };
 
-function initDB() {
+async function initDB() {
+  await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
   seedExternalProblems();
   migrateTags();
