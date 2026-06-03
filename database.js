@@ -50,6 +50,38 @@ const P2309 = {
   ])
 };
 
+// 01타일(1904) — n=1000000 정답이 1345로 잘못 저장된 경우 7871로 교정.
+function fixProblem1904() {
+  const p = db.getProblemById(1904);
+  if (!p) return;
+  let tcs; try { tcs = JSON.parse(p.test_cases); } catch (_) { return; }
+  const bad = tcs.find(tc => tc.input.trim() === '1000000' && tc.output === '1345');
+  if (!bad) return;
+  bad.output = '7871';
+  db.updateProblem(1904, { test_cases: JSON.stringify(tcs) });
+  console.log('✅ Problem 1904 (01타일) test data fixed (1345 → 7871)');
+}
+
+// 최솟값과 최댓값(2357) — 구간 6~9 최댓값이 52로 잘못 저장된 경우 81로 교정.
+function fixProblem2357() {
+  const p = db.getProblemById(2357);
+  if (!p) return;
+  const BAD = '5 100\n38 100\n20 52\n5 81';
+  const GOOD = '5 100\n38 100\n20 81\n5 81';
+  const updates = {};
+  if (p.sample_output === BAD) updates.sample_output = GOOD;
+  let tcs; try { tcs = JSON.parse(p.test_cases); } catch (_) { tcs = null; }
+  if (tcs) {
+    let ch = false;
+    for (const tc of tcs) if (tc.output === BAD) { tc.output = GOOD; ch = true; }
+    if (ch) updates.test_cases = JSON.stringify(tcs);
+  }
+  if (Object.keys(updates).length) {
+    db.updateProblem(2357, updates);
+    console.log('✅ Problem 2357 (최솟값과 최댓값) test data fixed');
+  }
+}
+
 // 토마토(7576) — '-1' 벽이 있는 테스트의 정답이 8로 잘못 저장된 경우 7로 교정.
 function fixProblem7576() {
   const p = db.getProblemById(7576);
@@ -98,6 +130,8 @@ async function initDB() {
   seedExternalProblems();
   migrateTags();
   migrateProblem2309();
+  fixProblem1904();
+  fixProblem2357();
   fixProblem7576();
   fixProblem11404();
   if (db._d.users.length === 0) seedUsers();
@@ -298,7 +332,7 @@ function seedProblems() {
         { input: '2', output: '2' },
         { input: '4', output: '5' },
         { input: '10', output: '89' },
-        { input: '1000000', output: '1345' }
+        { input: '1000000', output: '7871' }
       ])
     },
     { id: 2579, title: '계단 오르기', difficulty: 'Silver 3', time_limit: 1000, memory_limit: 256,
@@ -439,11 +473,11 @@ function seedProblems() {
       description: 'N개의 정수로 이루어진 배열이 있다. M개의 쿼리 (a, b)에 대해 a번째 수부터 b번째 수까지의 최솟값과 최댓값을 구하시오. (세그먼트 트리)',
       input_desc: '첫째 줄에 N, M (1 ≤ N, M ≤ 100,000), 이후 N개의 정수, M개의 쿼리가 주어진다.',
       output_desc: '각 쿼리에 대해 최솟값과 최댓값을 공백으로 구분하여 출력한다.',
-      sample_input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', sample_output: '5 100\n38 100\n20 52\n5 81',
+      sample_input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', sample_output: '5 100\n38 100\n20 81\n5 81',
       constraints: '1 ≤ N, M ≤ 100,000',
       submission_count: 0, accepted_count: 0,
       test_cases: JSON.stringify([
-        { input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', output: '5 100\n38 100\n20 52\n5 81' },
+        { input: '10 4\n75 30 100 38 50 51 52 20 81 5\n1 10\n3 5\n6 9\n8 10', output: '5 100\n38 100\n20 81\n5 81' },
         { input: '3 2\n1 2 3\n1 3\n2 2', output: '1 3\n2 2' }
       ])
     },
