@@ -1,0 +1,29 @@
+<% locals.title = '대회' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>대회</h1>
+  <% if (isAdmin) { %>
+    <a href="/contests/new" class="btn">대회 개설</a>
+  <% } %>
+</div>
+
+<div class="card-grid">
+  <% if (contests.length === 0) { %>
+    <p class="empty-row">진행 중이거나 예정된 대회가 없습니다.</p>
+  <% } %>
+  <% contests.forEach(c => { %>
+    <a href="/contests/<%= c.id %>" class="card contest-card">
+      <span class="contest-status status-<%= c.status.key %>"><%= c.status.label %></span>
+      <h3><%= c.title %></h3>
+      <p class="muted"><%= (c.description || '').slice(0, 80) %></p>
+      <div class="contest-time">
+        <%= new Date(c.start_at).toLocaleString('ko-KR') %>
+        ~ <%= new Date(c.end_at).toLocaleString('ko-KR') %>
+      </div>
+      <div class="muted">문제 <%= (c.problem_ids || []).length %>개</div>
+    </a>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

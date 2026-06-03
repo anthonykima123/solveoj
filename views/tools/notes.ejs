@@ -1,0 +1,42 @@
+<% locals.title = '노트' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>📝 노트</h1>
+  <span id="note-status" class="muted">자동 저장됨</span>
+</div>
+
+<p class="muted">작성한 내용은 이 브라우저에만 저장됩니다 (localStorage).</p>
+
+<textarea id="note-area" class="note-area" placeholder="여기에 메모를 작성하세요..."></textarea>
+
+<div class="form-actions" style="margin-top:1rem">
+  <button id="note-clear" class="btn btn-danger btn-sm">전체 지우기</button>
+</div>
+
+<script>
+(function () {
+  var KEY = 'solveoj_note';
+  var area = document.getElementById('note-area');
+  var status = document.getElementById('note-status');
+  area.value = localStorage.getItem(KEY) || '';
+  var t;
+  area.addEventListener('input', function () {
+    status.textContent = '저장 중...';
+    clearTimeout(t);
+    t = setTimeout(function () {
+      localStorage.setItem(KEY, area.value);
+      status.textContent = '자동 저장됨 · ' + new Date().toLocaleTimeString('ko-KR');
+    }, 400);
+  });
+  document.getElementById('note-clear').addEventListener('click', function () {
+    if (confirm('메모를 모두 지울까요?')) {
+      area.value = '';
+      localStorage.removeItem(KEY);
+      status.textContent = '지워짐';
+    }
+  });
+})();
+</script>
+
+<%- include('../partials/footer') %>

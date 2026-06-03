@@ -1,0 +1,51 @@
+<% locals.title = contest.title %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>
+    <span class="contest-status status-<%= status.key %>"><%= status.label %></span>
+    <%= contest.title %>
+  </h1>
+  <% if (isAdmin) { %>
+    <form method="POST" action="/contests/<%= contest.id %>/delete" onsubmit="return confirm('대회를 삭제할까요?')">
+      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="contest-info">
+  <p><strong>기간:</strong>
+    <%= new Date(contest.start_at).toLocaleString('ko-KR') %>
+    ~ <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
+  </p>
+  <% if (contest.description) { %><p><%= contest.description %></p><% } %>
+</div>
+
+<h3>문제</h3>
+<% if (status.key === 'upcoming') { %>
+  <p class="muted">대회 시작 전에는 문제가 공개되지 않습니다.</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th class="col-id">#</th><th>제목</th><th>난이도</th></tr>
+      </thead>
+      <tbody>
+        <% if (problems.length === 0) { %>
+          <tr><td colspan="3" class="empty-row">등록된 문제가 없습니다.</td></tr>
+        <% } %>
+        <% problems.forEach((p, i) => { %>
+          <tr>
+            <td class="col-id"><%= String.fromCharCode(65 + i) %></td>
+            <td><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
+            <td><span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<p style="margin-top:1.5rem"><a href="/contests" class="btn btn-secondary btn-sm">목록</a></p>
+
+<%- include('../partials/footer') %>

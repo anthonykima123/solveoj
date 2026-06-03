@@ -1,0 +1,44 @@
+<% locals.title = group.name %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1><%= group.name %></h1>
+  <div class="header-actions">
+    <% if (user && !isMember) { %>
+      <form method="POST" action="/groups/<%= group.id %>/join">
+        <button type="submit" class="btn btn-sm">가입하기</button>
+      </form>
+    <% } else if (user && isMember && !isOwner) { %>
+      <form method="POST" action="/groups/<%= group.id %>/leave">
+        <button type="submit" class="btn btn-secondary btn-sm">탈퇴</button>
+      </form>
+    <% } %>
+    <% if (isOwner || (typeof isAdmin !== 'undefined' && isAdmin)) { %>
+      <form method="POST" action="/groups/<%= group.id %>/delete" onsubmit="return confirm('그룹을 삭제할까요?')">
+        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<% if (query.err === 'owner') { %>
+  <div class="alert alert-error">그룹장은 탈퇴할 수 없습니다. 그룹을 삭제하세요.</div>
+<% } %>
+
+<div class="group-info">
+  <p class="muted">그룹장 <%= group.owner_name %></p>
+  <% if (group.description) { %><p><%= group.description %></p><% } %>
+</div>
+
+<h3>멤버 (<%= members.length %>)</h3>
+<div class="member-list">
+  <% members.forEach(m => { %>
+    <span class="member-chip">
+      <%= m.username %><% if (m.id === group.owner_id) { %> 👑<% } %>
+    </span>
+  <% }) %>
+</div>
+
+<p style="margin-top:1.5rem"><a href="/groups" class="btn btn-secondary btn-sm">목록</a></p>
+
+<%- include('../partials/footer') %>

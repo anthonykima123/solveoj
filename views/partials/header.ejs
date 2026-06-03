@@ -13,7 +13,23 @@
   <div class="header-inner">
     <a href="/" class="logo">SolveOJ</a>
     <nav class="nav-main">
-      <a href="/problems">문제</a>
+      <div class="nav-item has-drop">
+        <a href="/problems">문제 ▾</a>
+        <div class="nav-drop">
+          <a href="/problems">기출문제</a>
+          <a href="/problems/steps">단계별 문제</a>
+        </div>
+      </div>
+      <a href="/contests">대회</a>
+      <a href="/groups">그룹</a>
+      <a href="/community">커뮤니티</a>
+      <div class="nav-item has-drop">
+        <a href="/tools">도구 ▾</a>
+        <div class="nav-drop">
+          <a href="/tools/notes">노트</a>
+          <a href="/tools/paint">그림판</a>
+        </div>
+      </div>
       <a href="/status">채점 현황</a>
       <a href="/ranking">랭킹</a>
       <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>

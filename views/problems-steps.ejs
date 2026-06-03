@@ -1,0 +1,56 @@
+<% locals.title = '단계별 문제' %>
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h1>단계별 문제</h1>
+  <div class="tab-links">
+    <a href="/problems">기출문제</a>
+    <a href="/problems/steps" class="active">단계별</a>
+  </div>
+</div>
+
+<% if (byStep.length === 0) { %>
+  <div class="empty-state">
+    <p>아직 등록된 단계가 없습니다.</p>
+    <p class="muted">단계 구성이 정해지면 추가됩니다.</p>
+  </div>
+<% } %>
+
+<% byStep.forEach(({ step, problems }) => { %>
+  <section class="step-section">
+    <h2 class="step-title">
+      <span class="step-num"><%= step.order || step.id %></span>
+      <%= step.name %>
+      <% if (step.description) { %><small class="muted"><%= step.description %></small><% } %>
+    </h2>
+    <div class="table-wrap">
+      <table class="table problem-table">
+        <thead>
+          <tr>
+            <th class="col-id">#</th>
+            <th class="col-title">제목</th>
+            <th class="col-diff">난이도</th>
+            <% if (user) { %><th class="col-solved">풀었나요?</th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (problems.length === 0) { %>
+            <tr><td colspan="4" class="empty-row">이 단계에 등록된 문제가 없습니다.</td></tr>
+          <% } %>
+          <% problems.forEach(p => { %>
+            <tr class="<%= solvedSet.has(p.id) ? 'solved-row' : '' %>">
+              <td class="col-id"><%= p.id %></td>
+              <td class="col-title"><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
+              <td class="col-diff"><span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span></td>
+              <% if (user) { %>
+                <td class="col-solved"><% if (solvedSet.has(p.id)) { %><span class="check-mark">✔</span><% } %></td>
+              <% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+<% }) %>
+
+<%- include('partials/footer') %>

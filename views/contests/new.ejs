@@ -1,0 +1,46 @@
+<% locals.title = '대회 개설' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>대회 개설</h1>
+</div>
+
+<% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+<form method="POST" action="/contests" class="form-card">
+  <div class="form-group">
+    <label>대회 제목</label>
+    <input type="text" name="title" required maxlength="120">
+  </div>
+  <div class="form-group">
+    <label>설명</label>
+    <textarea name="description" rows="4"></textarea>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>시작 시각</label>
+      <input type="datetime-local" name="start_at" required>
+    </div>
+    <div class="form-group">
+      <label>종료 시각</label>
+      <input type="datetime-local" name="end_at" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>문제 선택</label>
+    <div class="checkbox-list">
+      <% problems.forEach(p => { %>
+        <label class="checkbox-item">
+          <input type="checkbox" name="problem_ids" value="<%= p.id %>">
+          <%= p.id %>. <%= p.title %> <span class="muted">(<%= p.difficulty %>)</span>
+        </label>
+      <% }) %>
+    </div>
+  </div>
+  <div class="form-actions">
+    <a href="/contests" class="btn btn-secondary">취소</a>
+    <button type="submit" class="btn">개설</button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

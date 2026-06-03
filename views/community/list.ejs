@@ -1,0 +1,41 @@
+<% locals.title = '커뮤니티' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>커뮤니티</h1>
+  <% if (user) { %>
+    <a href="/community/new" class="btn">글쓰기</a>
+  <% } %>
+</div>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="col-id">#</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>댓글</th>
+        <th>조회</th>
+        <th>작성일</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (posts.length === 0) { %>
+        <tr><td colspan="6" class="empty-row">아직 글이 없습니다. 첫 글을 작성해보세요!</td></tr>
+      <% } %>
+      <% posts.forEach(p => { %>
+        <tr>
+          <td class="col-id"><%= p.id %></td>
+          <td><a href="/community/<%= p.id %>"><%= p.title %></a></td>
+          <td><%= p.author_name %></td>
+          <td><%= (p.comments || []).length %></td>
+          <td><%= p.views || 0 %></td>
+          <td><%= new Date(p.created_at).toLocaleDateString('ko-KR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

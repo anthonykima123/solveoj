@@ -1,0 +1,58 @@
+<% locals.title = post.title %>
+<%- include('../partials/header') %>
+
+<% const canEdit = currentUser && (currentUser.id === post.author_id || isAdmin); %>
+
+<div class="post-view">
+  <div class="post-head">
+    <h1><%= post.title %></h1>
+    <div class="post-meta">
+      <span><%= post.author_name %></span>
+      <span><%= new Date(post.created_at).toLocaleString('ko-KR') %></span>
+      <span>조회 <%= post.views || 0 %></span>
+    </div>
+  </div>
+
+  <div class="post-body"><%= post.content %></div>
+
+  <div class="post-actions">
+    <a href="/community" class="btn btn-secondary btn-sm">목록</a>
+    <% if (canEdit) { %>
+      <form method="POST" action="/community/<%= post.id %>/delete" onsubmit="return confirm('정말 삭제할까요?')">
+        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+      </form>
+    <% } %>
+  </div>
+
+  <div class="comments">
+    <h3>댓글 <%= (post.comments || []).length %></h3>
+    <% (post.comments || []).forEach(c => { %>
+      <div class="comment">
+        <div class="comment-meta">
+          <strong><%= c.author_name %></strong>
+          <span><%= new Date(c.created_at).toLocaleString('ko-KR') %></span>
+          <% if (currentUser && (currentUser.id === c.author_id || isAdmin)) { %>
+            <form method="POST" action="/community/<%= post.id %>/comment/<%= c.id %>/delete" class="inline-form">
+              <button type="submit" class="link-danger">삭제</button>
+            </form>
+          <% } %>
+        </div>
+        <div class="comment-body"><%= c.content %></div>
+      </div>
+    <% }) %>
+    <% if ((post.comments || []).length === 0) { %>
+      <p class="muted">아직 댓글이 없습니다.</p>
+    <% } %>
+
+    <% if (user) { %>
+      <form method="POST" action="/community/<%= post.id %>/comment" class="comment-form">
+        <textarea name="content" rows="3" required placeholder="댓글을 입력하세요"></textarea>
+        <button type="submit" class="btn btn-sm">댓글 등록</button>
+      </form>
+    <% } else { %>
+      <p class="muted"><a href="/login">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

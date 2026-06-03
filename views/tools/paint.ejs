@@ -1,0 +1,75 @@
+<% locals.title = '그림판' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>🎨 그림판</h1>
+</div>
+
+<div class="paint-toolbar">
+  <label>색상 <input type="color" id="paint-color" value="#222222"></label>
+  <label>굵기 <input type="range" id="paint-size" min="1" max="30" value="3"></label>
+  <button id="paint-eraser" class="btn btn-secondary btn-sm">지우개</button>
+  <button id="paint-clear" class="btn btn-danger btn-sm">전체 지우기</button>
+  <button id="paint-save" class="btn btn-sm">PNG 저장</button>
+</div>
+
+<canvas id="paint-canvas" class="paint-canvas" width="900" height="520"></canvas>
+
+<script>
+(function () {
+  var canvas = document.getElementById('paint-canvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.lineJoin = ctx.lineCap = 'round';
+
+  var drawing = false, erasing = false, last = null;
+  var colorEl = document.getElementById('paint-color');
+  var sizeEl = document.getElementById('paint-size');
+
+  function pos(e) {
+    var r = canvas.getBoundingClientRect();
+    var p = e.touches ? e.touches[0] : e;
+    return { x: (p.clientX - r.left) * (canvas.width / r.width),
+             y: (p.clientY - r.top) * (canvas.height / r.height) };
+  }
+  function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+  function move(e) {
+    if (!drawing) return;
+    var p = pos(e);
+    ctx.strokeStyle = erasing ? '#ffffff' : colorEl.value;
+    ctx.lineWidth = erasing ? sizeEl.value * 3 : sizeEl.value;
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    last = p;
+    e.preventDefault();
+  }
+  function end() { drawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start);
+  canvas.addEventListener('touchmove', move);
+  canvas.addEventListener('touchend', end);
+
+  document.getElementById('paint-eraser').addEventListener('click', function () {
+    erasing = !erasing;
+    this.classList.toggle('active', erasing);
+    this.textContent = erasing ? '그리기' : '지우개';
+  });
+  document.getElementById('paint-clear').addEventListener('click', function () {
+    if (confirm('전체 지울까요?')) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  });
+  document.getElementById('paint-save').addEventListener('click', function () {
+    var a = document.createElement('a');
+    a.download = 'solveoj-paint.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+})();
+</script>
+
+<%- include('../partials/footer') %>

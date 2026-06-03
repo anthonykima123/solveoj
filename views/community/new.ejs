@@ -1,0 +1,25 @@
+<% locals.title = '글쓰기' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>글쓰기</h1>
+</div>
+
+<% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+<form method="POST" action="/community" class="form-card">
+  <div class="form-group">
+    <label>제목</label>
+    <input type="text" name="title" required maxlength="120" placeholder="제목을 입력하세요">
+  </div>
+  <div class="form-group">
+    <label>내용</label>
+    <textarea name="content" rows="12" required placeholder="내용을 입력하세요"></textarea>
+  </div>
+  <div class="form-actions">
+    <a href="/community" class="btn btn-secondary">취소</a>
+    <button type="submit" class="btn">등록</button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

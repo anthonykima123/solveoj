@@ -101,23 +101,23 @@ router.get('/problems', requirePermission('problems'), (req, res) => {
 });
 
 router.get('/problems/new', requirePermission('problems'), (req, res) => {
-  res.render('admin/problem-form', { problem: null, tiers: ALL_TIERS, error: null });
+  res.render('admin/problem-form', { problem: null, tiers: ALL_TIERS, steps: db.getSteps(), error: null });
 });
 
 router.post('/problems/new', requirePermission('problems'), (req, res) => {
   const { id, title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw } = req.body;
+          sample_output, constraints, test_cases_raw, step } = req.body;
 
   const pid = parseInt(id);
   if (!pid || !title || !difficulty || !description) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, error: '필수 항목을 모두 입력하세요.'
+      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: '필수 항목을 모두 입력하세요.'
     });
   }
   if (db.getProblemById(pid)) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, error: `문제 번호 ${pid}가 이미 존재합니다.`
+      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: `문제 번호 ${pid}가 이미 존재합니다.`
     });
   }
 
@@ -126,7 +126,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     test_cases = JSON.stringify(JSON.parse(test_cases_raw || '[]'));
   } catch (e) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
+      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
     });
   }
 
@@ -136,6 +136,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     memory_limit: parseInt(memory_limit) || 256,
     description, input_desc, output_desc,
     sample_input, sample_output, constraints,
+    step: parseInt(step) || null,
     test_cases, submission_count: 0, accepted_count: 0
   });
 
@@ -145,7 +146,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
 router.get('/problems/:id/edit', requirePermission('problems'), (req, res) => {
   const problem = db.getProblemById(parseInt(req.params.id));
   if (!problem) return res.status(404).render('404');
-  res.render('admin/problem-form', { problem, tiers: ALL_TIERS, error: null });
+  res.render('admin/problem-form', { problem, tiers: ALL_TIERS, steps: db.getSteps(), error: null });
 });
 
 router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
@@ -155,11 +156,11 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
 
   const { title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw } = req.body;
+          sample_output, constraints, test_cases_raw, step } = req.body;
 
   if (!title || !difficulty || !description) {
     return res.render('admin/problem-form', {
-      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, error: '필수 항목을 모두 입력하세요.'
+      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, steps: db.getSteps(), error: '필수 항목을 모두 입력하세요.'
     });
   }
 
@@ -168,7 +169,7 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     test_cases = JSON.stringify(JSON.parse(test_cases_raw || '[]'));
   } catch (e) {
     return res.render('admin/problem-form', {
-      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
+      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, steps: db.getSteps(), error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
     });
   }
 
@@ -177,7 +178,9 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     time_limit: parseInt(time_limit) || 1000,
     memory_limit: parseInt(memory_limit) || 256,
     description, input_desc, output_desc,
-    sample_input, sample_output, constraints, test_cases
+    sample_input, sample_output, constraints,
+    step: parseInt(step) || null,
+    test_cases
   });
 
   res.redirect(`/admin/problems?updated=${pid}`);
