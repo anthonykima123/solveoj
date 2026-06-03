@@ -715,3 +715,33 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 3px; font-family: m
 .solved-grid { display: flex; flex-wrap: wrap; gap: 7px; }
 .solved-chip { font-weight: 700; font-size: 0.82rem; padding: 4px 9px; border-radius: 7px; }
 .solved-chip:hover { text-decoration: none; filter: brightness(0.96); }
+
+/* ===== PROFILE BANNER & AVATAR (added) ===== */
+.profile-card { padding: 0; overflow: hidden; }
+.profile-banner { height: 150px; background-size: cover; background-position: center; }
+.profile-banner-default { background: linear-gradient(135deg, #1a2332 0%, #0075c8 100%); }
+.profile-card-body { display: flex; gap: 24px; padding: 0 30px 26px; align-items: flex-start; }
+.profile-avatar-wrap { margin-top: -48px; flex-shrink: 0; }
+.profile-avatar {
+  width: 108px; height: 108px; border-radius: 22px;
+  border: 4px solid var(--surface); object-fit: cover; background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,.12); display: block;
+}
+.tier-emblem.profile-avatar-emblem { font-size: 2.1rem; }
+.profile-card-body .profile-main { padding-top: 16px; }
+
+/* 설정 페이지 이미지 편집 */
+.settings-card-full { margin-bottom: 20px; }
+.img-edit-grid { display: grid; grid-template-columns: 220px 1fr; gap: 22px; align-items: start; }
+@media (max-width: 640px) { .img-edit-grid { grid-template-columns: 1fr; } }
+.img-edit-label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+.avatar-preview-wrap { width: 120px; }
+.avatar-preview { width: 120px; height: 120px; border-radius: 20px; object-fit: cover; border: 1px solid var(--border); }
+.banner-preview-wrap { width: 100%; }
+.banner-preview { width: 100%; height: 130px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); display: block; }
+.avatar-placeholder, .banner-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); color: var(--text-muted); font-size: 0.85rem;
+}
+.img-btns { display: flex; gap: 8px; margin-top: 10px; }
+.img-btns label.btn { margin: 0; }

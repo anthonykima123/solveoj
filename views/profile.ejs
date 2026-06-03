@@ -5,7 +5,16 @@
 
   <!-- 상단 카드 -->
   <div class="profile-card">
-    <div class="tier-emblem tier-<%= tier.cls %>"><%= emblem %></div>
+    <div class="profile-banner<%= profileUser.banner_url ? '' : ' profile-banner-default' %>"
+         <% if (profileUser.banner_url) { %>style="background-image:url('<%= profileUser.banner_url %>')"<% } %>></div>
+    <div class="profile-card-body">
+    <div class="profile-avatar-wrap">
+      <% if (profileUser.avatar_url) { %>
+        <img src="<%= profileUser.avatar_url %>" class="profile-avatar" alt="<%= profileUser.username %>">
+      <% } else { %>
+        <div class="tier-emblem tier-<%= tier.cls %> profile-avatar profile-avatar-emblem"><%= emblem %></div>
+      <% } %>
+    </div>
     <div class="profile-main">
       <div class="profile-handle">
         <%= profileUser.username %>
@@ -26,6 +35,7 @@
           <% } else { %>최고 티어 달성 🎉<% } %>
         </div>
       </div>
+    </div>
     </div>
   </div>
 

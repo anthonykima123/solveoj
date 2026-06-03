@@ -7,6 +7,47 @@
   <% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
   <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
 
+  <div class="settings-card settings-card-full">
+    <h2>프로필 이미지 / 배너</h2>
+    <form action="/settings/images" method="POST" id="img-form">
+      <input type="hidden" name="avatar" id="avatar-field" value="<%= currentUser && currentUser.avatar_url ? currentUser.avatar_url : '' %>">
+      <input type="hidden" name="banner" id="banner-field" value="<%= currentUser && currentUser.banner_url ? currentUser.banner_url : '' %>">
+
+      <div class="img-edit-grid">
+        <div class="img-edit">
+          <label class="img-edit-label">프로필 이미지</label>
+          <div class="avatar-preview-wrap">
+            <img id="avatar-preview" class="avatar-preview"
+                 src="<%= currentUser && currentUser.avatar_url ? currentUser.avatar_url : '' %>"
+                 alt="" <%= currentUser && currentUser.avatar_url ? '' : 'style=display:none' %>>
+            <div id="avatar-placeholder" class="avatar-preview avatar-placeholder" <%= currentUser && currentUser.avatar_url ? 'style=display:none' : '' %>>없음</div>
+          </div>
+          <div class="img-btns">
+            <label class="btn btn-outline btn-sm">파일 선택<input type="file" accept="image/*" id="avatar-input" hidden></label>
+            <button type="button" class="btn btn-danger btn-sm" id="avatar-remove">제거</button>
+          </div>
+        </div>
+
+        <div class="img-edit img-edit-banner">
+          <label class="img-edit-label">배너 이미지</label>
+          <div class="banner-preview-wrap">
+            <img id="banner-preview" class="banner-preview"
+                 src="<%= currentUser && currentUser.banner_url ? currentUser.banner_url : '' %>"
+                 alt="" <%= currentUser && currentUser.banner_url ? '' : 'style=display:none' %>>
+            <div id="banner-placeholder" class="banner-preview banner-placeholder" <%= currentUser && currentUser.banner_url ? 'style=display:none' : '' %>>배너 없음</div>
+          </div>
+          <div class="img-btns">
+            <label class="btn btn-outline btn-sm">파일 선택<input type="file" accept="image/*" id="banner-input" hidden></label>
+            <button type="button" class="btn btn-danger btn-sm" id="banner-remove">제거</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="muted" style="margin:10px 0">이미지는 자동으로 적당한 크기로 줄여 저장됩니다. JPG·PNG 권장.</p>
+      <button type="submit" class="btn btn-primary">이미지 저장</button>
+    </form>
+  </div>
+
   <div class="settings-grid">
     <div class="settings-card">
       <h2>아이디 변경</h2>
@@ -41,5 +82,50 @@
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  function resize(file, maxW, maxH, quality, cb) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        const r = Math.min(maxW / w, maxH / h, 1);
+        w = Math.round(w * r); h = Math.round(h * r);
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(c.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  function wire(inputId, field, previewId, placeholderId, removeId, maxW, maxH, q) {
+    const input = document.getElementById(inputId);
+    const field_ = document.getElementById(field);
+    const preview = document.getElementById(previewId);
+    const placeholder = document.getElementById(placeholderId);
+    input.addEventListener('change', () => {
+      const f = input.files[0];
+      if (!f) return;
+      resize(f, maxW, maxH, q, dataUrl => {
+        field_.value = dataUrl;
+        preview.src = dataUrl; preview.style.display = '';
+        placeholder.style.display = 'none';
+      });
+    });
+    document.getElementById(removeId).addEventListener('click', () => {
+      field_.value = '';
+      preview.src = ''; preview.style.display = 'none';
+      placeholder.style.display = '';
+      input.value = '';
+    });
+  }
+  wire('avatar-input', 'avatar-field', 'avatar-preview', 'avatar-placeholder', 'avatar-remove', 256, 256, 0.85);
+  wire('banner-input', 'banner-field', 'banner-preview', 'banner-placeholder', 'banner-remove', 1200, 360, 0.82);
+})();
+</script>
 
 <%- include('partials/footer') %>
