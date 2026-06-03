@@ -1,0 +1,32 @@
+{
+  "id": 2588,
+  "title": "곱셈",
+  "difficulty": "Bronze 4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "(세 자리 수) × (세 자리 수) 계산 과정의 각 단계 값을 출력하는 프로그램을 작성하시오.",
+  "input_desc": "첫째 줄에 세 자리 자연수 A, 둘째 줄에 세 자리 자연수 B가 주어진다.",
+  "output_desc": "A×(B의 일의 자리), A×(B의 십의 자리), A×(B의 백의 자리), A×B를 차례로 출력한다.",
+  "sample_input": "472\n385",
+  "sample_output": "2360\n3776\n1416\n181720",
+  "constraints": "세 자리 자연수",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "472\n385",
+      "output": "2360\n3776\n1416\n181720"
+    },
+    {
+      "input": "100\n100",
+      "output": "0\n0\n100\n10000"
+    },
+    {
+      "input": "999\n999",
+      "output": "8991\n8991\n8991\n998001"
+    }
+  ]
+}

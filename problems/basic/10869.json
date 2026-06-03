@@ -1,0 +1,32 @@
+{
+  "id": 10869,
+  "title": "사칙연산",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "두 자연수 A와 B가 주어질 때, A+B, A-B, A*B, A/B(몫), A%B(나머지)를 출력하는 프로그램을 작성하시오.",
+  "input_desc": "두 자연수 A와 B가 주어진다. (1 ≤ A, B ≤ 10,000)",
+  "output_desc": "첫째 줄에 A+B, 둘째 줄에 A-B, 셋째 줄에 A*B, 넷째 줄에 A/B, 다섯째 줄에 A%B를 출력한다.",
+  "sample_input": "7 3",
+  "sample_output": "10\n4\n21\n2\n1",
+  "constraints": "1 ≤ A, B ≤ 10,000",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "7 3",
+      "output": "10\n4\n21\n2\n1"
+    },
+    {
+      "input": "10 5",
+      "output": "15\n5\n50\n2\n0"
+    },
+    {
+      "input": "1 1",
+      "output": "2\n0\n1\n1\n0"
+    }
+  ]
+}

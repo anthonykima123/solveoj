@@ -1,0 +1,31 @@
+{
+  "id": 2439,
+  "title": "별 찍기 - 2",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "첫째 줄에는 별 1개, 둘째 줄에는 별 2개, …, N번째 줄에는 별 N개를 찍되 오른쪽 정렬해 출력한다.",
+  "input_desc": "첫째 줄에 N(1 ≤ N ≤ 100)이 주어진다.",
+  "output_desc": "오른쪽 정렬된 별을 N줄에 걸쳐 출력한다.",
+  "sample_input": "5",
+  "sample_output": "    *\n   **\n  ***\n ****\n*****",
+  "constraints": "1 ≤ N ≤ 100",
+  "tags": [
+    "구현"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "5",
+      "output": "    *\n   **\n  ***\n ****\n*****"
+    },
+    {
+      "input": "3",
+      "output": "  *\n **\n***"
+    },
+    {
+      "input": "1",
+      "output": "*"
+    }
+  ]
+}

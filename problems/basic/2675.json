@@ -1,0 +1,32 @@
+{
+  "id": 2675,
+  "title": "문자열 반복",
+  "difficulty": "Bronze 2",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "문자열 S를 입력받은 후, 각 문자를 R번 반복해 새 문자열 P를 만든 후 출력하는 프로그램을 작성하시오.",
+  "input_desc": "첫째 줄에 테스트 케이스 수 T, 각 줄에 반복 횟수 R(1 ≤ R ≤ 8)과 문자열 S가 공백으로 구분되어 주어진다.",
+  "output_desc": "각 테스트 케이스마다 P를 한 줄에 출력한다.",
+  "sample_input": "2\n3 ABC\n5 /HTP",
+  "sample_output": "AAABBBCCC\n/////HHHHHTTTTTPPPPP",
+  "constraints": "1 ≤ T ≤ 1000, 1 ≤ |S| ≤ 20",
+  "tags": [
+    "구현",
+    "문자열"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "2\n3 ABC\n5 /HTP",
+      "output": "AAABBBCCC\n/////HHHHHTTTTTPPPPP"
+    },
+    {
+      "input": "1\n1 A",
+      "output": "A"
+    },
+    {
+      "input": "3\n2 AB\n4 X\n1 ZZ",
+      "output": "AABB\nXXXX\nZZ"
+    }
+  ]
+}

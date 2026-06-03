@@ -1,0 +1,32 @@
+{
+  "id": 10950,
+  "title": "A+B - 5",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "두 정수 A와 B를 입력받은 다음, A+B를 출력하는 프로그램을 작성하시오. (여러 테스트 케이스)",
+  "input_desc": "첫째 줄에 테스트 케이스의 개수 T, 다음 T줄에 각각 A와 B가 주어진다.",
+  "output_desc": "각 테스트 케이스마다 A+B를 한 줄에 출력한다.",
+  "sample_input": "5\n1 1\n2 3\n3 4\n9 8\n5 2",
+  "sample_output": "2\n5\n7\n17\n7",
+  "constraints": "1 ≤ T ≤ 1000, 0 < A,B < 10",
+  "tags": [
+    "구현",
+    "수학"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "5\n1 1\n2 3\n3 4\n9 8\n5 2",
+      "output": "2\n5\n7\n17\n7"
+    },
+    {
+      "input": "1\n0 0",
+      "output": "0"
+    },
+    {
+      "input": "3\n1 2\n3 4\n5 6",
+      "output": "3\n7\n11"
+    }
+  ]
+}

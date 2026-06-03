@@ -1,0 +1,35 @@
+{
+  "id": 2438,
+  "title": "별 찍기 - 1",
+  "difficulty": "Bronze 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "첫째 줄부터 N번째 줄까지 차례대로 별을 1개부터 N개까지 출력하는 문제이다.",
+  "input_desc": "첫째 줄에 N(1 ≤ N ≤ 100)이 주어진다.",
+  "output_desc": "첫째 줄부터 N번째 줄까지 차례대로 별을 출력한다.",
+  "sample_input": "5",
+  "sample_output": "*\n**\n***\n****\n*****",
+  "constraints": "1 ≤ N ≤ 100",
+  "tags": [
+    "구현"
+  ],
+  "source": "기초",
+  "test_cases": [
+    {
+      "input": "5",
+      "output": "*\n**\n***\n****\n*****"
+    },
+    {
+      "input": "3",
+      "output": "*\n**\n***"
+    },
+    {
+      "input": "1",
+      "output": "*"
+    },
+    {
+      "input": "7",
+      "output": "*\n**\n***\n****\n*****\n******\n*******"
+    }
+  ]
+}
