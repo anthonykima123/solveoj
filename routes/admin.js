@@ -30,7 +30,8 @@ router.get('/', (req, res) => {
 router.get('/admins', requireSuperAdmin, (req, res) => {
   const all = db.getAllUsers();
   const admins = all.filter(u => u.role === 'superadmin' || u.role === 'admin');
-  const candidates = all.filter(u => u.role === 'user'); // 공동 관리자로 임명 가능한 일반 유저
+  // 공동 관리자로 임명 가능한 일반 유저 (role이 없는 기존 계정도 포함)
+  const candidates = all.filter(u => u.role !== 'superadmin' && u.role !== 'admin');
   res.render('admin/admins', {
     admins, candidates, PERMISSIONS, query: req.query, me: req.adminUser
   });

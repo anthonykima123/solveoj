@@ -22,7 +22,7 @@ class JsonDB {
   getUserByUsernameOrEmail(u, e) { return this._d.users.find(x => x.username === u || x.email === e) || null; }
   getAllUsers() { return [...this._d.users].sort((a, b) => b.solved_count - a.solved_count); }
   createUser(data) {
-    const user = { id: this._d._seq.users++, solved_count: 0, submission_count: 0, created_at: new Date().toISOString(), ...data };
+    const user = { id: this._d._seq.users++, role: 'user', permissions: [], solved_count: 0, submission_count: 0, created_at: new Date().toISOString(), ...data };
     this._d.users.push(user);
     this._save();
     return user;
