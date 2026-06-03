@@ -3,15 +3,28 @@ const { db } = require('../database');
 const { getDifficultyScore } = require('../utils/rating');
 const router = express.Router();
 
-router.get('/problems', (req, res) => {
-  const { diff, search, tag } = req.query;
-  // 기출문제 = 전체 문제 아카이브 (단계별 문제와 별개 탭)
-  let problems = db.getProblems({ difficulty: diff, search });
-  if (tag) problems = problems.filter(p => (p.tags || []).includes(tag));
-  const solvedSet = new Set(req.session.user ? db.getSolvedIds(req.session.user.id) : []);
-  const allTags = [...new Set(db.getProblems().flatMap(p => p.tags || []))].sort();
-  res.render('problems', { problems, solvedSet, diff: diff || '', search: search || '', tag: tag || '', allTags });
-});
+// 기출문제 분류 (대회별)
+const CONTESTS = { jungol: '정올', icpc: 'ICPC', usaco: 'USACO' };
+
+function listByContest(key) {
+  return (req, res) => {
+    const { diff, search, tag } = req.query;
+    let problems = db.getProblems({ difficulty: diff, search }).filter(p => p.contest === key);
+    if (tag) problems = problems.filter(p => (p.tags || []).includes(tag));
+    const solvedSet = new Set(req.session.user ? db.getSolvedIds(req.session.user.id) : []);
+    const allTags = [...new Set(db.getProblems().filter(p => p.contest === key).flatMap(p => p.tags || []))].sort();
+    res.render('problems', {
+      problems, solvedSet, diff: diff || '', search: search || '', tag: tag || '',
+      allTags, contest: key, contestLabel: CONTESTS[key]
+    });
+  };
+}
+
+// /problems → 기본 분류(정올)로 보낸다.
+router.get('/problems', (req, res) => res.redirect('/problems/jungol'));
+router.get('/problems/jungol', listByContest('jungol'));
+router.get('/problems/icpc', listByContest('icpc'));
+router.get('/problems/usaco', listByContest('usaco'));
 
 // 단계별 문제: 단계(step) 목록과 각 단계에 속한 문제들
 router.get('/problems/steps', (req, res) => {

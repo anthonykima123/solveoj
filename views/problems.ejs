@@ -2,15 +2,17 @@
 <%- include('partials/header') %>
 
 <div class="page-header">
-  <h1>기출문제</h1>
+  <h1>기출문제 · <%= contestLabel %></h1>
   <div class="tab-links">
-    <a href="/problems" class="active">기출문제</a>
+    <a href="/problems/jungol" class="<%= contest === 'jungol' ? 'active' : '' %>">정올</a>
+    <a href="/problems/icpc" class="<%= contest === 'icpc' ? 'active' : '' %>">ICPC</a>
+    <a href="/problems/usaco" class="<%= contest === 'usaco' ? 'active' : '' %>">USACO</a>
     <a href="/problems/steps">단계별</a>
   </div>
 </div>
 
 <div class="filter-bar">
-  <form method="GET" action="/problems" class="filter-form">
+  <form method="GET" action="/problems/<%= contest %>" class="filter-form">
     <div class="filter-group">
       <label>난이도</label>
       <select name="diff" onchange="this.form.submit()">
@@ -61,7 +63,7 @@
           <td class="col-title">
             <a href="/problems/<%= p.id %>"><%= p.title %></a>
             <% (p.tags || []).slice(0,2).forEach(t => { %>
-              <a href="/problems?tag=<%= encodeURIComponent(t) %>" class="tag-chip"><%= t %></a>
+              <a href="/problems/<%= contest %>?tag=<%= encodeURIComponent(t) %>" class="tag-chip"><%= t %></a>
             <% }) %>
           </td>
           <td class="col-diff">

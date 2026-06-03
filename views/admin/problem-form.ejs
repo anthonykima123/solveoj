@@ -48,10 +48,20 @@
       <div class="form-group" style="width:200px">
         <label>단계 (단계별 문제)</label>
         <select name="step" class="form-input">
-          <option value="">기출문제 (단계 없음)</option>
+          <option value="">단계 없음</option>
           <% (typeof steps !== 'undefined' ? steps : []).forEach(s => { %>
             <option value="<%= s.id %>" <%= (problem && Number(problem.step) === s.id) ? 'selected' : '' %>><%= s.order || s.id %>. <%= s.name %></option>
           <% }) %>
+        </select>
+      </div>
+      <div class="form-group" style="width:160px">
+        <label>기출 분류</label>
+        <select name="contest" class="form-input">
+          <% const _ct = problem ? problem.contest : ''; %>
+          <option value="" <%= !_ct ? 'selected' : '' %>>없음</option>
+          <option value="jungol" <%= _ct === 'jungol' ? 'selected' : '' %>>정올</option>
+          <option value="icpc" <%= _ct === 'icpc' ? 'selected' : '' %>>ICPC</option>
+          <option value="usaco" <%= _ct === 'usaco' ? 'selected' : '' %>>USACO</option>
         </select>
       </div>
     </div>

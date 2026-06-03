@@ -107,7 +107,7 @@ router.get('/problems/new', requirePermission('problems'), (req, res) => {
 router.post('/problems/new', requirePermission('problems'), (req, res) => {
   const { id, title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step } = req.body;
+          sample_output, constraints, test_cases_raw, step, contest } = req.body;
 
   const pid = parseInt(id);
   if (!pid || !title || !difficulty || !description) {
@@ -137,6 +137,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     description, input_desc, output_desc,
     sample_input, sample_output, constraints,
     step: parseInt(step) || null,
+    contest: ['jungol', 'icpc', 'usaco'].includes(contest) ? contest : null,
     test_cases, submission_count: 0, accepted_count: 0
   });
 
@@ -156,7 +157,7 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
 
   const { title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step } = req.body;
+          sample_output, constraints, test_cases_raw, step, contest } = req.body;
 
   if (!title || !difficulty || !description) {
     return res.render('admin/problem-form', {
@@ -180,6 +181,7 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     description, input_desc, output_desc,
     sample_input, sample_output, constraints,
     step: parseInt(step) || null,
+    contest: ['jungol', 'icpc', 'usaco'].includes(contest) ? contest : null,
     test_cases
   });
 
