@@ -52,12 +52,20 @@ const P2309 = {
 
 // 단계별 문제 — 정올(jungol) 커리큘럼 구조의 5단계.
 const STEP_DEFS = [
-  { name: 'Start',     order: 1, description: 'LC_C언어 · Beginner — 입문/기초', tiers: ['Bronze'] },
-  { name: 'Build',     order: 2, description: 'Intermediate — 중급',            tiers: ['Silver'] },
-  { name: 'Solve',     order: 3, description: 'Advanced — 고급',                tiers: ['Gold'] },
-  { name: 'Master',    order: 4, description: 'Specialist — 전문',              tiers: ['Platinum'] },
-  { name: 'Challenge', order: 5, description: 'Expert · Master — 최상급',        tiers: ['Diamond', 'Ruby'] },
+  { name: 'Start',     order: 1, description: '입문 · 기초', tiers: ['Bronze'] },
+  { name: 'Build',     order: 2, description: '중급',        tiers: ['Silver'] },
+  { name: 'Solve',     order: 3, description: '고급',        tiers: ['Gold'] },
+  { name: 'Master',    order: 4, description: '전문',        tiers: ['Platinum'] },
+  { name: 'Challenge', order: 5, description: '최상급',      tiers: ['Diamond', 'Ruby'] },
 ];
+
+// 단계 설명을 STEP_DEFS와 동기화 (이미 생성된 단계의 옛 설명을 갱신)
+function syncStepDescriptions() {
+  db.getSteps().forEach(s => {
+    const def = STEP_DEFS.find(d => d.name === s.name);
+    if (def && s.description !== def.description) db.updateStep(s.id, { description: def.description });
+  });
+}
 
 function seedSteps() {
   if (db.getSteps().length > 0) return;
@@ -168,6 +176,7 @@ async function initDB() {
   fixProblem7576();
   fixProblem11404();
   seedSteps();
+  syncStepDescriptions();
   assignProblemSteps();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
