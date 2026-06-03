@@ -33,11 +33,39 @@ const TAGS = {
   2261:  ['분할 정복', '기하학', '정렬'],
 };
 
+// 2309 일곱 난쟁이 — 원본(아홉 난쟁이, 합 100) 정식 데이터.
+// 시드와 교정 마이그레이션에서 공통으로 사용한다.
+const P2309 = {
+  title: '일곱 난쟁이', difficulty: 'Bronze 3', time_limit: 2000, memory_limit: 256,
+  description: '아홉 명의 난쟁이가 모여 있다. 이들 중 일곱 난쟁이의 키의 합이 정확히 100이 된다.\n아홉 난쟁이의 키가 주어졌을 때, 키의 합이 100이 되는 일곱 난쟁이를 찾아 키를 오름차순으로 출력하는 프로그램을 작성하시오.\n\n(일곱 난쟁이를 찾을 수 없는 경우는 없으며, 답이 여러 개인 경우도 없다.)',
+  input_desc: '아홉 개의 줄에 걸쳐 난쟁이들의 키가 주어진다. 주어지는 키는 100을 넘지 않는 자연수이며, 아홉 난쟁이의 키는 모두 다르다.',
+  output_desc: '일곱 난쟁이의 키를 오름차순으로 한 줄에 하나씩 출력한다.',
+  sample_input: '20\n7\n23\n19\n10\n15\n25\n8\n13',
+  sample_output: '7\n8\n10\n13\n19\n20\n23',
+  constraints: '난쟁이는 9명, 모든 키 ≤ 100, 키는 서로 다름',
+  test_cases: JSON.stringify([
+    { input: '20\n7\n23\n19\n10\n15\n25\n8\n13', output: '7\n8\n10\n13\n19\n20\n23' },
+    { input: '1\n2\n3\n4\n5\n6\n79\n50\n60', output: '1\n2\n3\n4\n5\n6\n79' },
+    { input: '10\n11\n12\n13\n14\n15\n25\n1\n99', output: '10\n11\n12\n13\n14\n15\n25' }
+  ])
+};
+
+// 기존 DB에 깨진 2309(난쟁이 8명) 데이터가 있으면 원본으로 교정한다.
+function migrateProblem2309() {
+  const p = db.getProblemById(2309);
+  if (!p) return;
+  const lines = (p.sample_input || '').split('\n').filter(s => s.trim() !== '');
+  if (lines.length === 9) return; // 이미 교정됨 → 관리자 수정 보존
+  db.updateProblem(2309, P2309);
+  console.log('✅ Problem 2309 data fixed (original 9-dwarf version)');
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
   seedExternalProblems();
   migrateTags();
+  migrateProblem2309();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
 }
@@ -195,17 +223,7 @@ function seedProblems() {
         { input: '20', output: '6765' }
       ])
     },
-    { id: 2309, title: '일곱 난쟁이', difficulty: 'Bronze 3', time_limit: 2000, memory_limit: 256,
-      description: '8명 중 키의 합이 100이 되는 7명을 찾아 오름차순으로 출력하시오.',
-      input_desc: '여덟 난쟁이의 키가 각각 한 줄씩 주어진다. (모든 키 ≤ 100)',
-      output_desc: '일곱 난쟁이의 키를 오름차순으로 출력한다.',
-      sample_input: '20\n7\n23\n19\n10\n15\n25\n30', sample_output: '7\n10\n15\n19\n20\n23\n25',
-      constraints: '모든 키 ≤ 100',
-      submission_count: 0, accepted_count: 0,
-      test_cases: JSON.stringify([
-        { input: '20\n7\n23\n19\n10\n15\n25\n30', output: '7\n10\n15\n19\n20\n23\n25' }
-      ])
-    },
+    { id: 2309, ...P2309, submission_count: 0, accepted_count: 0 },
     // ───── Silver DP ─────
     { id: 1463, title: '1로 만들기', difficulty: 'Silver 3', time_limit: 2000, memory_limit: 256,
       description: '정수 X에 사용할 수 있는 연산은 다음 세 가지이다.\n\n1. X가 3으로 나누어 떨어지면, 3으로 나눈다.\n2. X가 2로 나누어 떨어지면, 2로 나눈다.\n3. 1을 뺀다.\n\n정수 N이 주어졌을 때, 위 연산을 사용해 1을 만들기 위한 연산 횟수의 최솟값을 출력하시오.',
