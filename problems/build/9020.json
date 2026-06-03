@@ -1,0 +1,33 @@
+{
+  "id": 9020,
+  "title": "골드바흐의 추측",
+  "difficulty": "Silver 2",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "2보다 큰 모든 짝수는 두 소수의 합으로 나타낼 수 있다. 주어진 짝수 n에 대해 두 소수의 차가 가장 작은 골드바흐 파티션을 구하시오.",
+  "input_desc": "첫째 줄에 테스트 케이스 수 T, 각 줄에 짝수 n(4 ≤ n ≤ 10,000)이 주어진다.",
+  "output_desc": "각 n마다 합이 n이고 차가 가장 작은 두 소수를 작은 것부터 출력한다.",
+  "sample_input": "3\n8\n10\n16",
+  "sample_output": "3 5\n5 5\n5 11",
+  "constraints": "4 ≤ n ≤ 10,000",
+  "tags": [
+    "수학",
+    "소수 판정",
+    "브루트포스 알고리즘"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "3\n8\n10\n16",
+      "output": "3 5\n5 5\n5 11"
+    },
+    {
+      "input": "1\n4",
+      "output": "2 2"
+    },
+    {
+      "input": "2\n100\n1000",
+      "output": "47 53\n491 509"
+    }
+  ]
+}

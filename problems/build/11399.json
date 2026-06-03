@@ -1,0 +1,28 @@
+{
+  "id": 11399,
+  "title": "ATM",
+  "difficulty": "Silver 3",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "각 사람이 돈을 인출하는 데 걸리는 시간이 주어질 때, 모든 사람이 돈을 인출하는 데 필요한 시간의 합의 최솟값을 구하시오.",
+  "input_desc": "첫째 줄에 사람 수 N, 둘째 줄에 각 사람의 인출 시간 P가 주어진다.",
+  "output_desc": "필요한 시간의 합의 최솟값을 출력한다.",
+  "sample_input": "5\n3 1 4 3 2",
+  "sample_output": "32",
+  "constraints": "1 ≤ N ≤ 1,000, 1 ≤ P ≤ 1,000",
+  "tags": [
+    "그리디",
+    "정렬"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "5\n3 1 4 3 2",
+      "output": "32"
+    },
+    {
+      "input": "1\n100",
+      "output": "100"
+    }
+  ]
+}

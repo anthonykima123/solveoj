@@ -1,0 +1,27 @@
+{
+  "id": 1149,
+  "title": "RGB거리",
+  "difficulty": "Silver 3",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "집 N개가 일렬로 있고 각 집을 R, G, B로 칠하는 비용이 주어진다. 인접한 집끼리 색이 다르도록 칠하는 최소 비용을 구하시오.",
+  "input_desc": "첫째 줄에 집의 수 N, 이후 N개의 줄에 각 집의 R, G, B 비용이 주어진다.",
+  "output_desc": "모든 집을 칠하는 비용의 최솟값을 출력한다.",
+  "sample_input": "3\n26 40 83\n49 60 57\n13 89 99",
+  "sample_output": "96",
+  "constraints": "2 ≤ N ≤ 1,000",
+  "tags": [
+    "다이나믹 프로그래밍"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "3\n26 40 83\n49 60 57\n13 89 99",
+      "output": "96"
+    },
+    {
+      "input": "2\n1 100 100\n100 1 100",
+      "output": "2"
+    }
+  ]
+}

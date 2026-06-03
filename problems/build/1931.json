@@ -1,0 +1,28 @@
+{
+  "id": 1931,
+  "title": "회의실 배정",
+  "difficulty": "Silver 1",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "한 개의 회의실에 대해 회의들의 시작/종료 시간이 주어질 때, 서로 겹치지 않게 사용할 수 있는 최대 회의 수를 구하시오.",
+  "input_desc": "첫째 줄에 회의 수 N, 둘째 줄부터 각 회의의 시작 시간과 끝나는 시간이 주어진다.",
+  "output_desc": "사용할 수 있는 회의의 최대 개수를 출력한다.",
+  "sample_input": "11\n1 4\n3 5\n0 6\n5 7\n3 8\n5 9\n6 10\n8 11\n8 12\n2 13\n12 14",
+  "sample_output": "4",
+  "constraints": "1 ≤ N ≤ 100,000",
+  "tags": [
+    "그리디",
+    "정렬"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "11\n1 4\n3 5\n0 6\n5 7\n3 8\n5 9\n6 10\n8 11\n8 12\n2 13\n12 14",
+      "output": "4"
+    },
+    {
+      "input": "3\n1 1\n2 2\n3 3",
+      "output": "3"
+    }
+  ]
+}

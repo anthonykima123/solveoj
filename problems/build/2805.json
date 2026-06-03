@@ -1,0 +1,27 @@
+{
+  "id": 2805,
+  "title": "나무 자르기",
+  "difficulty": "Silver 3",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "절단기의 높이 H를 설정해 그 위 나무를 잘라 가져간다. 적어도 M미터의 나무를 가져가기 위한 절단기 높이의 최댓값을 구하시오.",
+  "input_desc": "첫째 줄에 나무 수 N과 필요한 길이 M, 둘째 줄에 각 나무의 높이가 주어진다.",
+  "output_desc": "적어도 M미터를 가져갈 수 있는 절단기 높이의 최댓값을 출력한다.",
+  "sample_input": "4 7\n20 15 10 17",
+  "sample_output": "15",
+  "constraints": "1 ≤ N ≤ 1,000,000",
+  "tags": [
+    "이분 탐색"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "4 7\n20 15 10 17",
+      "output": "15"
+    },
+    {
+      "input": "5 20\n4 42 40 26 46",
+      "output": "36"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": 2231,
+  "title": "분해합",
+  "difficulty": "Silver 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "어떤 자연수 M과 M의 각 자리 숫자의 합을 더한 값을 M의 분해합이라 한다. N의 가장 작은 생성자를 구하시오. 없으면 0.",
+  "input_desc": "첫째 줄에 자연수 N(1 ≤ N ≤ 1,000,000)이 주어진다.",
+  "output_desc": "N의 가장 작은 생성자를, 없으면 0을 출력한다.",
+  "sample_input": "216",
+  "sample_output": "198",
+  "constraints": "1 ≤ N ≤ 1,000,000",
+  "tags": [
+    "브루트포스 알고리즘"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "216",
+      "output": "198"
+    },
+    {
+      "input": "100",
+      "output": "86"
+    },
+    {
+      "input": "1",
+      "output": "0"
+    }
+  ]
+}

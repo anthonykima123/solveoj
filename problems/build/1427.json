@@ -1,0 +1,32 @@
+{
+  "id": 1427,
+  "title": "소트인사이드",
+  "difficulty": "Silver 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "배열을 정렬하는 것은 쉽다. 수가 주어지면 그 수의 각 자리수를 내림차순으로 정렬하시오.",
+  "input_desc": "첫째 줄에 정렬하려는 수 N이 주어진다. (1 ≤ N ≤ 1,000,000,000)",
+  "output_desc": "각 자리수를 내림차순으로 정렬한 수를 출력한다.",
+  "sample_input": "2143",
+  "sample_output": "4321",
+  "constraints": "1 ≤ N ≤ 10^9",
+  "tags": [
+    "정렬",
+    "구현"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "2143",
+      "output": "4321"
+    },
+    {
+      "input": "999998",
+      "output": "999998"
+    },
+    {
+      "input": "118372",
+      "output": "873211"
+    }
+  ]
+}

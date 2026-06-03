@@ -1,0 +1,27 @@
+{
+  "id": 7568,
+  "title": "덩치",
+  "difficulty": "Silver 5",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "description": "몸무게와 키로 비교했을 때, 자신보다 덩치가 큰 사람 수 + 1이 자신의 등수이다. 각 사람의 등수를 구하시오.",
+  "input_desc": "첫째 줄에 사람 수 N, 이후 N개의 줄에 몸무게와 키가 주어진다.",
+  "output_desc": "각 사람의 덩치 등수를 공백으로 구분해 출력한다.",
+  "sample_input": "5\n55 185\n58 183\n88 192\n60 175\n46 146",
+  "sample_output": "2 2 1 2 5",
+  "constraints": "2 ≤ N ≤ 50",
+  "tags": [
+    "브루트포스 알고리즘"
+  ],
+  "source": "중급",
+  "test_cases": [
+    {
+      "input": "5\n55 185\n58 183\n88 192\n60 175\n46 146",
+      "output": "2 2 1 2 5"
+    },
+    {
+      "input": "3\n100 100\n90 90\n80 80",
+      "output": "1 2 3"
+    }
+  ]
+}
