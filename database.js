@@ -50,6 +50,38 @@ const P2309 = {
   ])
 };
 
+// 토마토(7576) — '-1' 벽이 있는 테스트의 정답이 8로 잘못 저장된 경우 7로 교정.
+function fixProblem7576() {
+  const p = db.getProblemById(7576);
+  if (!p) return;
+  let tcs; try { tcs = JSON.parse(p.test_cases); } catch (_) { return; }
+  const bad = tcs.find(tc => tc.input.includes('-1 0 0 0 0 0') && tc.output === '8');
+  if (!bad) return;
+  bad.output = '7';
+  db.updateProblem(7576, { test_cases: JSON.stringify(tcs) });
+  console.log('✅ Problem 7576 (토마토) test data fixed (8 → 7)');
+}
+
+// 플로이드(11404) — 입력과 맞지 않는 잘못된 정답 행렬을 교정.
+function fixProblem11404() {
+  const p = db.getProblemById(11404);
+  if (!p) return;
+  const BAD = '0 4 2 6\n1 0 3 7\n2 3 0 4\n4 7 5 0';
+  const GOOD = '0 4 2 6\n1 0 3 7\n2 6 0 4\n4 3 6 0';
+  const updates = {};
+  if (p.sample_output === BAD) updates.sample_output = GOOD;
+  let tcs; try { tcs = JSON.parse(p.test_cases); } catch (_) { tcs = null; }
+  if (tcs) {
+    let changed = false;
+    for (const tc of tcs) if (tc.output === BAD) { tc.output = GOOD; changed = true; }
+    if (changed) updates.test_cases = JSON.stringify(tcs);
+  }
+  if (Object.keys(updates).length) {
+    db.updateProblem(11404, updates);
+    console.log('✅ Problem 11404 (플로이드) test data fixed');
+  }
+}
+
 // 기존 DB에 깨진 2309(난쟁이 8명) 데이터가 있으면 원본으로 교정한다.
 function migrateProblem2309() {
   const p = db.getProblemById(2309);
@@ -66,6 +98,8 @@ async function initDB() {
   seedExternalProblems();
   migrateTags();
   migrateProblem2309();
+  fixProblem7576();
+  fixProblem11404();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
 }
@@ -357,7 +391,7 @@ function seedProblems() {
       submission_count: 0, accepted_count: 0,
       test_cases: JSON.stringify([
         { input: '6 4\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 1', output: '8' },
-        { input: '6 4\n-1 0 0 0 0 0\n-1 0 0 0 0 0\n-1 0 0 0 0 0\n-1 0 0 0 0 1', output: '8' },
+        { input: '6 4\n-1 0 0 0 0 0\n-1 0 0 0 0 0\n-1 0 0 0 0 0\n-1 0 0 0 0 1', output: '7' },
         { input: '2 2\n1 1\n1 1', output: '0' },
         { input: '2 2\n-1 1\n1 0', output: '1' }
       ])
@@ -379,11 +413,11 @@ function seedProblems() {
       description: 'n개의 도시와 m개의 버스 노선이 있다. 모든 도시 쌍 (A,B)에 대해 A에서 B로 가는 최소 비용을 구하시오. (플로이드-워셜 알고리즘)',
       input_desc: '첫째 줄에 도시 수 n (1 ≤ n ≤ 100), 둘째 줄에 버스 수 m, 이후 m개의 줄에 a b c가 주어진다.',
       output_desc: 'n개의 줄에 n개의 값을 출력한다. 도달 불가능하면 0을 출력한다.',
-      sample_input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', sample_output: '0 4 2 6\n1 0 3 7\n2 3 0 4\n4 7 5 0',
+      sample_input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', sample_output: '0 4 2 6\n1 0 3 7\n2 6 0 4\n4 3 6 0',
       constraints: '1 ≤ n ≤ 100, 1 ≤ m ≤ 100,000',
       submission_count: 0, accepted_count: 0,
       test_cases: JSON.stringify([
-        { input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', output: '0 4 2 6\n1 0 3 7\n2 3 0 4\n4 7 5 0' },
+        { input: '4\n8\n1 2 4\n1 3 2\n1 4 7\n2 1 1\n2 3 5\n3 1 2\n3 4 4\n4 2 3', output: '0 4 2 6\n1 0 3 7\n2 6 0 4\n4 3 6 0' },
         { input: '1\n0', output: '0' }
       ])
     },

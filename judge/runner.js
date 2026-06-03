@@ -178,7 +178,12 @@ function runTestCase(language, compileResult, input, tmpDir, id, timeLimit) {
 }
 
 function normalizeOutput(s) {
-  return s.replace(/\r\n/g, '\n').trim();
+  // 줄 끝 공백과 양끝 빈 줄을 무시한다 (실제 온라인 저지 관행과 동일).
+  return s.replace(/\r\n/g, '\n')
+          .split('\n')
+          .map(line => line.replace(/\s+$/, ''))
+          .join('\n')
+          .trim();
 }
 
 module.exports = { runCode, VERDICTS };
