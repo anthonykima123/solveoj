@@ -166,10 +166,26 @@ function migrateProblem2309() {
   console.log('✅ Problem 2309 data fixed (original 9-dwarf version)');
 }
 
+// 초기에 잘못 넣었던 정올 더미 문제(30001~30024) 정리.
+function removeOldJungol() {
+  const oldIds = [];
+  for (let id = 30001; id <= 30024; id++) oldIds.push(id);
+  let removed = 0;
+  oldIds.forEach(id => { if (db.getProblemById(id)) { db.deleteProblem(id); removed++; } });
+  const beforeS = db._d.solved.length, beforeSub = db._d.submissions.length;
+  db._d.solved = db._d.solved.filter(s => !oldIds.includes(s.problem_id));
+  db._d.submissions = db._d.submissions.filter(s => !oldIds.includes(s.problem_id));
+  if (removed || db._d.solved.length !== beforeS || db._d.submissions.length !== beforeSub) {
+    db._save();
+    console.log(`🧹 removed ${removed} old jungol dummy problem(s)`);
+  }
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
   seedExternalProblems();
+  removeOldJungol();
   migrateTags();
   migrateProblem2309();
   fixProblem1904();

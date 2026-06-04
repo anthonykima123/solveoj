@@ -52,7 +52,7 @@
           <td><%= u.id %></td>
           <td>
             <span class="user-tier-badge tier-<%= ti.cls %> tier-sm"><%= ti.tier %></span>
-            <strong><%= u.username %></strong>
+            <a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><strong><%= u.username %></strong></a>
             <% if (u.id === me.id) { %><span class="me-tag">나</span><% } %>
             <div class="user-email"><%= u.email || '' %></div>
           </td>
