@@ -2,9 +2,12 @@
 <%- include('../partials/header') %>
 
 <div class="page-header">
-  <h1>커뮤니티</h1>
+  <div>
+    <h1>커뮤니티</h1>
+    <p class="page-desc">풀이 질문, 공지, 학습 기록을 함께 공유하세요.</p>
+  </div>
   <% if (user) { %>
-    <a href="/community/new" class="btn">글쓰기</a>
+    <a href="/community/new" class="btn btn-primary">글쓰기</a>
   <% } %>
 </div>
 
@@ -22,7 +25,7 @@
     </thead>
     <tbody>
       <% if (posts.length === 0) { %>
-        <tr><td colspan="6" class="empty-row">아직 글이 없습니다. 첫 글을 작성해보세요!</td></tr>
+        <tr><td colspan="6" class="empty-row">아직 글이 없습니다. 첫 글을 작성해보세요.</td></tr>
       <% } %>
       <% posts.forEach(p => { %>
         <tr>

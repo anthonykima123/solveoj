@@ -11,10 +11,13 @@
 <body>
 <header class="site-header">
   <div class="header-inner">
-    <a href="/" class="logo">SolveOJ</a>
-    <nav class="nav-main">
+    <a href="/" class="logo">
+      <span class="logo-mark">S</span>
+      <span>SolveOJ</span>
+    </a>
+    <nav class="nav-main" aria-label="주요 메뉴">
       <div class="nav-item has-drop">
-        <a href="/problems">문제 ▾</a>
+        <a href="/problems">문제</a>
         <div class="nav-drop">
           <a href="/problems/jungol">정올</a>
           <a href="/problems/icpc">ICPC</a>
@@ -26,7 +29,7 @@
       <a href="/groups">그룹</a>
       <a href="/community">커뮤니티</a>
       <div class="nav-item has-drop">
-        <a href="/tools">도구 ▾</a>
+        <a href="/tools">도구</a>
         <div class="nav-drop">
           <a href="/tools/notes">노트</a>
           <a href="/tools/paint">그림판</a>
@@ -36,12 +39,12 @@
       <a href="/ranking">랭킹</a>
       <% if (user) { %><a href="/user/<%= user.username %>">프로필</a><% } %>
       <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-        <a href="/admin" class="nav-admin">⚙ Admin</a>
+        <a href="/admin" class="nav-admin">관리자</a>
       <% } %>
     </nav>
     <div class="nav-auth">
       <% if (user) { %>
-        <% const _ti = getTierInfo(user.rating||0); %>
+        <% const _ti = getTierInfo(user.rating || 0); %>
         <span class="user-tier-badge tier-<%= _ti.cls %> tier-sm"><%= _ti.tier %></span>
         <a href="/user/<%= user.username %>" class="username-badge"><%= user.username %></a>
         <a href="/submissions">내 제출</a>

@@ -1,16 +1,24 @@
 <% locals.title = '홈' %>
 <%- include('partials/header') %>
 
-<div class="hero-banner">
+<section class="hero-banner">
   <div class="hero-content">
+    <p class="hero-kicker">Online Judge for Practice</p>
     <h1>SolveOJ</h1>
-    <p>알고리즘 문제를 풀고 실력을 키우세요</p>
+    <p>알고리즘 문제를 풀고, 제출을 분석하고, 실력을 랭킹으로 확인하세요.</p>
     <div class="hero-actions">
       <a href="/problems" class="btn btn-primary">문제 풀기</a>
+      <a href="/ranking" class="btn btn-outline">랭킹 보기</a>
       <% if (!user) { %><a href="/register" class="btn btn-outline">회원가입</a><% } %>
     </div>
   </div>
-</div>
+  <div class="hero-panel" aria-hidden="true">
+    <div class="code-line"><span>1</span> #include &lt;iostream&gt;</div>
+    <div class="code-line"><span>2</span> using namespace std;</div>
+    <div class="code-line accent"><span>3</span> cout &lt;&lt; "Accepted";</div>
+    <div class="judge-pill">AC 32ms</div>
+  </div>
+</section>
 
 <div class="home-grid">
   <section class="home-card">
@@ -28,26 +36,26 @@
         <% }) %>
       </tbody>
     </table>
-    <a href="/problems" class="more-link">전체 문제 보기 →</a>
+    <a href="/problems" class="more-link">전체 문제 보기</a>
   </section>
 
   <section class="home-card">
     <h2 class="section-title">랭킹 TOP 5</h2>
     <table class="table">
-      <thead><tr><th>순위</th><th>사용자</th><th>푼 문제</th></tr></thead>
+      <thead><tr><th>순위</th><th>사용자</th><th>해결</th></tr></thead>
       <tbody>
         <% topUsers.forEach((u, i) => { %>
           <tr>
             <td>
-              <% if (i===0) { %>🥇<% } else if (i===1) { %>🥈<% } else if (i===2) { %>🥉<% } else { %><%= i+1 %><% } %>
+              <% if (i === 0) { %><span class="rank-medal">1</span><% } else if (i === 1) { %><span class="rank-medal">2</span><% } else if (i === 2) { %><span class="rank-medal">3</span><% } else { %><%= i + 1 %><% } %>
             </td>
-            <td><%= u.username %></td>
-            <td><strong><%= u.solved_count %></strong>문제</td>
+            <td><a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><%= u.username %></a></td>
+            <td><strong><%= u.solved_count %></strong> 문제</td>
           </tr>
         <% }) %>
       </tbody>
     </table>
-    <a href="/ranking" class="more-link">전체 랭킹 보기 →</a>
+    <a href="/ranking" class="more-link">전체 랭킹 보기</a>
   </section>
 </div>
 
