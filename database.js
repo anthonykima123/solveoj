@@ -242,17 +242,18 @@ function seedExternalProblems() {
   })(dir);
 
   let added = 0;
+  let updated = 0;
   for (const fp of files) {
     let p;
     try { p = JSON.parse(fs.readFileSync(fp, 'utf8')); }
     catch (e) { console.error('문제 파일 파싱 실패:', fp, e.message); continue; }
-    if (!p || !p.id || db.getProblemById(p.id)) continue;
+    if (!p || !p.id) continue;
 
     const test_cases = Array.isArray(p.test_cases)
       ? JSON.stringify(p.test_cases)
       : (p.test_cases || '[]');
 
-    db.insertProblem({
+    const externalProblem = {
       id: p.id, title: p.title, difficulty: p.difficulty,
       time_limit: p.time_limit || 1000, memory_limit: p.memory_limit || 256,
       description: p.description || '', input_desc: p.input_desc || '',
@@ -260,11 +261,25 @@ function seedExternalProblems() {
       sample_output: p.sample_output || '', constraints: p.constraints || '',
       tags: p.tags || [], source: p.source || null, contest: p.contest || null,
       pdf_url: p.pdf_url || null,
-      test_cases, submission_count: 0, accepted_count: 0
-    });
+      test_cases
+    };
+
+    const existing = db.getProblemById(p.id);
+    if (existing) {
+      const updates = {};
+      for (const [key, value] of Object.entries(externalProblem)) {
+        if (key === 'id') continue;
+        if (JSON.stringify(existing[key]) !== JSON.stringify(value)) updates[key] = value;
+      }
+      if (Object.keys(updates).length > 0 && db.updateProblem(p.id, updates)) updated++;
+      continue;
+    }
+
+    db.insertProblem({ ...externalProblem, submission_count: 0, accepted_count: 0 });
     added++;
   }
   if (added > 0) console.log(`✅ ${added} external problem(s) loaded`);
+  if (updated > 0) console.log(`✅ ${updated} external problem(s) updated`);
 }
 
 // 기존 유저들에게 역할(role) 필드를 부여한다.
