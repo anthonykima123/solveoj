@@ -259,6 +259,7 @@ function seedExternalProblems() {
       output_desc: p.output_desc || '', sample_input: p.sample_input || '',
       sample_output: p.sample_output || '', constraints: p.constraints || '',
       tags: p.tags || [], source: p.source || null, contest: p.contest || null,
+      pdf_url: p.pdf_url || null,
       test_cases, submission_count: 0, accepted_count: 0
     });
     added++;

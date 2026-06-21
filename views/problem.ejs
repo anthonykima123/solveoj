@@ -15,6 +15,12 @@
       <% if (problem.source) { %><span>출처: <strong><%= problem.source %></strong></span><% } %>
     </div>
 
+    <% if (problem.pdf_url) { %>
+      <div class="problem-actions">
+        <a class="btn btn-outline" href="<%= problem.pdf_url %>" target="_blank" rel="noopener">PDF 원문 열기</a>
+      </div>
+    <% } %>
+
     <% if ((problem.tags || []).length > 0) { %>
     <div class="problem-tags">
       <% (problem.tags || []).forEach(t => { %>

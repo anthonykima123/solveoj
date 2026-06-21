@@ -4,7 +4,7 @@ const { getDifficultyScore } = require('../utils/rating');
 const router = express.Router();
 
 // 기출문제 분류 (대회별)
-const CONTESTS = { jungol: '정올', icpc: 'ICPC', usaco: 'USACO' };
+const CONTESTS = { jungol: '정올', koi: 'KOI', icpc: 'ICPC', usaco: 'USACO' };
 
 function listByContest(key) {
   return (req, res) => {
@@ -23,6 +23,7 @@ function listByContest(key) {
 // /problems → 기본 분류(정올)로 보낸다.
 router.get('/problems', (req, res) => res.redirect('/problems/jungol'));
 router.get('/problems/jungol', listByContest('jungol'));
+router.get('/problems/koi', listByContest('koi'));
 router.get('/problems/icpc', listByContest('icpc'));
 router.get('/problems/usaco', listByContest('usaco'));
 
