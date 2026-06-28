@@ -27,6 +27,7 @@
         <th>#</th>
         <th>제목</th>
         <th>난이도</th>
+        <th>공개</th>
         <th>제한</th>
         <th>제출/정답</th>
         <th>관리</th>
@@ -39,6 +40,7 @@
           <td><%= p.id %></td>
           <td><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
           <td><span class="badge badge-<%= tier %>"><%= p.difficulty %></span></td>
+          <td><% if (p.is_private) { %><span class="badge" style="background:#6c757d;color:#fff">비공개</span><% } else { %><span class="badge" style="background:#1a7f37;color:#fff">공개</span><% } %></td>
           <td><%= p.time_limit %>ms / <%= p.memory_limit %>MB</td>
           <td><%= p.submission_count %> / <%= p.accepted_count %></td>
           <td class="admin-actions">

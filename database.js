@@ -181,12 +181,21 @@ function removeOldJungol() {
   }
 }
 
+function migratePrivateField() {
+  let changed = false;
+  db._d.problems.forEach(p => {
+    if (p.is_private === undefined) { p.is_private = false; changed = true; }
+  });
+  if (changed) db._save();
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
   seedExternalProblems();
   removeOldJungol();
   migrateTags();
+  migratePrivateField();
   migrateProblem2309();
   fixProblem1904();
   fixProblem2357();

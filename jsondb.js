@@ -116,8 +116,9 @@ class JsonDB {
     if (this._d.problems.length !== before) { this._save(); return true; }
     return false;
   }
-  getProblems({ difficulty, search } = {}) {
+  getProblems({ difficulty, search, includePrivate = false } = {}) {
     let r = [...this._d.problems];
+    if (!includePrivate) r = r.filter(p => !p.is_private);
     if (difficulty) r = r.filter(p => p.difficulty.startsWith(difficulty));
     if (search) r = r.filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
     return r.sort((a, b) => a.id - b.id);
