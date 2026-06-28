@@ -197,6 +197,15 @@ function migrateSpecialJudge() {
   if (changed) db._save();
 }
 
+function migrateBanFields() {
+  let changed = false;
+  db._d.users.forEach(u => {
+    if (u.ranking_banned === undefined) { u.ranking_banned = false; changed = true; }
+    if (u.community_banned === undefined) { u.community_banned = false; changed = true; }
+  });
+  if (changed) db._save();
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
@@ -215,6 +224,7 @@ async function initDB() {
   assignProblemSteps();
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
+  migrateBanFields();
   autoSolveAllForAdmin();
 }
 

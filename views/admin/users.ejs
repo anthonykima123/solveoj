@@ -21,6 +21,14 @@
   <div class="alert alert-error">자기 자신은 삭제할 수 없습니다.</div>
 <% } else if (query.err === 'noadmin') { %>
   <div class="alert alert-error">다른 관리자는 슈퍼 관리자만 삭제할 수 있습니다.</div>
+<% } else if (query.rankban) { %>
+  <div class="alert alert-success"><strong><%= query.rankban %></strong> 님을 랭킹에서 제외했습니다.</div>
+<% } else if (query.rankunban) { %>
+  <div class="alert alert-success"><strong><%= query.rankunban %></strong> 님의 랭킹 제외를 해제했습니다.</div>
+<% } else if (query.comban) { %>
+  <div class="alert alert-success"><strong><%= query.comban %></strong> 님에게 커뮤니티 밴을 적용했습니다.</div>
+<% } else if (query.comunban) { %>
+  <div class="alert alert-success"><strong><%= query.comunban %></strong> 님의 커뮤니티 밴을 해제했습니다.</div>
 <% } %>
 
 <div class="admin-summary">
@@ -51,7 +59,10 @@
         <tr>
           <td><%= u.id %></td>
           <td>
-            <span class="user-tier-badge tier-<%= ti.cls %> tier-sm"><%= ti.tier %></span>
+            <span class="tier-badge tier-badge-<%= ti.cls %> tier-sm" title="<%= ti.tier %>">
+              <span class="tier-icon"><%= getTierShort(ti.tier) %></span>
+              <span class="tier-name"><%= ti.tier %></span>
+            </span>
             <a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><strong><%= u.username %></strong></a>
             <% if (u.id === me.id) { %><span class="me-tag">나</span><% } %>
             <div class="user-email"><%= u.email || '' %></div>
@@ -64,6 +75,8 @@
             <% } else { %>
               <span class="role-badge role-user">일반</span>
             <% } %>
+            <% if (u.ranking_banned) { %><span class="badge" style="background:#dc3545;color:#fff;font-size:11px">랭킹제외</span><% } %>
+            <% if (u.community_banned) { %><span class="badge" style="background:#fd7e14;color:#fff;font-size:11px">커뮤밴</span><% } %>
           </td>
           <td class="user-stats">
             <span title="푼 문제">✅ <%= u.solved_count || 0 %></span>
@@ -74,17 +87,31 @@
           <td class="admin-actions admin-user-actions">
             <% if (isSuper) { %>
               <span class="muted-sm">변경 불가</span>
-            <% } else if (u.id !== me.id && !(isCoAdmin && !isSuperAdmin)) { %>
-              <form action="/admin/users/<%= u.id %>/reset-password" method="POST" style="display:inline"
-                    onsubmit="return confirm('<%= u.username %> 님의 비밀번호를 reset1234로 초기화할까요?')">
-                <button class="btn btn-sm btn-outline">비번 초기화</button>
-              </form>
-              <form action="/admin/users/<%= u.id %>/delete" method="POST" style="display:inline"
-                    onsubmit="return confirm('<%= u.username %> 유저를 삭제하시겠습니까? 제출 기록도 함께 삭제됩니다.')">
-                <button class="btn btn-sm btn-danger">삭제</button>
-              </form>
             <% } else { %>
-              <span class="muted-sm">—</span>
+              <form action="/admin/users/<%= u.id %>/toggle-ranking-ban" method="POST" style="display:inline">
+                <button class="btn btn-sm <%= u.ranking_banned ? 'btn-outline' : 'btn-outline' %>"
+                        style="<%= u.ranking_banned ? 'border-color:#dc3545;color:#dc3545' : '' %>"
+                        title="<%= u.ranking_banned ? '랭킹 제외 해제' : '랭킹에서 제외' %>">
+                  <%= u.ranking_banned ? '랭킹복귀' : '랭킹제외' %>
+                </button>
+              </form>
+              <form action="/admin/users/<%= u.id %>/toggle-community-ban" method="POST" style="display:inline">
+                <button class="btn btn-sm btn-outline"
+                        style="<%= u.community_banned ? 'border-color:#fd7e14;color:#fd7e14' : '' %>"
+                        title="<%= u.community_banned ? '커뮤니티 밴 해제' : '커뮤니티 밴' %>">
+                  <%= u.community_banned ? '밴해제' : '커뮤밴' %>
+                </button>
+              </form>
+              <% if (u.id !== me.id && !(isCoAdmin && !isSuperAdmin)) { %>
+                <form action="/admin/users/<%= u.id %>/reset-password" method="POST" style="display:inline"
+                      onsubmit="return confirm('<%= u.username %> 님의 비밀번호를 reset1234로 초기화할까요?')">
+                  <button class="btn btn-sm btn-outline">비번초기화</button>
+                </form>
+                <form action="/admin/users/<%= u.id %>/delete" method="POST" style="display:inline"
+                      onsubmit="return confirm('<%= u.username %> 유저를 삭제하시겠습니까? 제출 기록도 함께 삭제됩니다.')">
+                  <button class="btn btn-sm btn-danger">삭제</button>
+                </form>
+              <% } %>
             <% } %>
           </td>
         </tr>

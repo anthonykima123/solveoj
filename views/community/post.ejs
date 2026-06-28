@@ -44,11 +44,18 @@
       <p class="muted">아직 댓글이 없습니다.</p>
     <% } %>
 
+    <% if (query && query.err === 'banned') { %>
+      <div class="alert alert-error" style="margin-bottom:8px">커뮤니티 이용이 제한된 계정입니다.</div>
+    <% } %>
     <% if (user) { %>
-      <form method="POST" action="/community/<%= post.id %>/comment" class="comment-form">
-        <textarea name="content" rows="3" required placeholder="댓글을 입력하세요"></textarea>
-        <button type="submit" class="btn btn-sm">댓글 등록</button>
-      </form>
+      <% if (currentUser && currentUser.community_banned) { %>
+        <p class="muted" style="color:#dc3545">커뮤니티 이용이 제한되어 댓글을 작성할 수 없습니다.</p>
+      <% } else { %>
+        <form method="POST" action="/community/<%= post.id %>/comment" class="comment-form">
+          <textarea name="content" rows="3" required placeholder="댓글을 입력하세요"></textarea>
+          <button type="submit" class="btn btn-sm">댓글 등록</button>
+        </form>
+      <% } %>
     <% } else { %>
       <p class="muted"><a href="/login">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
     <% } %>

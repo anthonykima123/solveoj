@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const { db, initDB } = require('./database');
-const { getTierInfo } = require('./utils/rating');
+const { getTierInfo, getTierShort } = require('./utils/rating');
 const { isAdmin, isSuperAdmin, hasPermission } = require('./utils/permissions');
 
 const authRoutes = require('./routes/auth');
@@ -37,6 +37,7 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.getTierInfo = getTierInfo;
+  res.locals.getTierShort = getTierShort;
   // 역할/권한 정보를 모든 뷰에서 사용할 수 있게 노출 (DB에서 최신값 조회)
   const cu = req.session.user ? db.getUserById(req.session.user.id) : null;
   res.locals.currentUser = cu;
@@ -48,7 +49,9 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
   const problems = db.getProblems().slice(0, 8);
-  const topUsers = db.getAllUsers().slice(0, 5);
+  const topUsers = db.getAllUsers()
+    .filter(u => u.role !== 'superadmin' && !u.ranking_banned)
+    .slice(0, 5);
   res.render('index', { problems, topUsers });
 });
 

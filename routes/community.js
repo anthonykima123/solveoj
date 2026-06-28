@@ -17,6 +17,10 @@ router.get('/community/new', requireLogin, (req, res) => {
 
 // 글 작성
 router.post('/community', requireLogin, (req, res) => {
+  const me = db.getUserById(req.session.user.id);
+  if (me && me.community_banned)
+    return res.render('community/new', { error: '커뮤니티 이용이 제한된 계정입니다.' });
+
   const title = (req.body.title || '').trim();
   const content = (req.body.content || '').trim();
   if (!title || !content)
@@ -35,13 +39,16 @@ router.get('/community/:id', (req, res) => {
   const post = db.getPostById(parseInt(req.params.id));
   if (!post) return res.status(404).render('404');
   db.incPostViews(post.id);
-  res.render('community/post', { post, query: req.query });
+  res.render('community/post', { post, query: req.query });  // query.err === 'banned' 처리
 });
 
 // 댓글 작성
 router.post('/community/:id/comment', requireLogin, (req, res) => {
   const post = db.getPostById(parseInt(req.params.id));
   if (!post) return res.status(404).render('404');
+  const me = db.getUserById(req.session.user.id);
+  if (me && me.community_banned)
+    return res.redirect('/community/' + post.id + '?err=banned');
   const content = (req.body.content || '').trim();
   if (content) {
     db.addComment(post.id, {

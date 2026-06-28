@@ -86,6 +86,28 @@ router.post('/users/:id/delete', requirePermission('users'), (req, res) => {
   res.redirect('/admin/users?deluser=' + encodeURIComponent(target.username));
 });
 
+// 랭킹 제외 토글
+router.post('/users/:id/toggle-ranking-ban', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.redirect('/admin/users?err=notfound');
+  if (target.role === 'superadmin') return res.redirect('/admin/users?err=superadmin');
+  const next = !target.ranking_banned;
+  db.updateUser(id, { ranking_banned: next });
+  res.redirect('/admin/users?' + (next ? 'rankban=' : 'rankunban=') + encodeURIComponent(target.username));
+});
+
+// 커뮤니티 밴 토글
+router.post('/users/:id/toggle-community-ban', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.redirect('/admin/users?err=notfound');
+  if (target.role === 'superadmin') return res.redirect('/admin/users?err=superadmin');
+  const next = !target.community_banned;
+  db.updateUser(id, { community_banned: next });
+  res.redirect('/admin/users?' + (next ? 'comban=' : 'comunban=') + encodeURIComponent(target.username));
+});
+
 // 비밀번호 초기화(reset1234)
 router.post('/users/:id/reset-password', requirePermission('users'), (req, res) => {
   const id = parseInt(req.params.id);
