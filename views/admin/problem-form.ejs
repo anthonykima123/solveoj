@@ -116,7 +116,37 @@
       <div class="tc-toolbar">
         <button type="button" class="btn btn-sm btn-outline" onclick="addTestCase()">+ 케이스 추가</button>
         <button type="button" class="btn btn-sm btn-outline" onclick="formatTC()">정렬/포맷</button>
+        <label class="btn btn-sm btn-outline" style="cursor:pointer;margin:0">
+          파일 업로드 (JSON/ZIP)
+          <input type="file" id="tc-file" accept=".json,.zip" style="display:none" onchange="uploadTCFile(this)">
+        </label>
         <span id="tc-status" class="tc-status"></span>
+      </div>
+      <p class="hint" style="margin-top:6px">ZIP 형식: <code>1.in / 1.out</code> 또는 <code>input1.txt / output1.txt</code> 쌍으로 구성</p>
+    </div>
+
+    <div class="form-group">
+      <label style="font-weight:600">
+        <input type="checkbox" name="special_judge" id="sj-toggle"
+               <%= (problem && problem.special_judge) ? 'checked' : '' %>
+               onchange="document.getElementById('checker-section').style.display=this.checked?'block':'none'">
+        스페셜 저지 (Special Judge)
+        <span class="hint">체커 코드가 정답 여부를 판단합니다 (부동소수점 오차, 다중 정답 등)</span>
+      </label>
+    </div>
+    <div id="checker-section" style="display:<%= (problem && problem.special_judge) ? 'block' : 'none' %>">
+      <div class="form-group">
+        <label>
+          체커 코드 (JavaScript)
+          <span class="hint"><code>function check(input, expected, actual)</code> — true 반환 시 AC</span>
+        </label>
+        <textarea name="checker_code" id="checker-editor" class="form-textarea mono" rows="12"><%= (problem && problem.checker_code) ? problem.checker_code : `function check(input, expected, actual) {
+  // input    : 문제 입력 (원본 문자열)
+  // expected : 정답 출력 (원본 문자열)
+  // actual   : 제출자 출력 (원본 문자열)
+  // true 반환 → AC,  false 반환 → WA
+  return actual.trim() === expected.trim();
+}` %></textarea>
       </div>
     </div>
 
@@ -164,6 +194,32 @@ document.getElementById('tc-editor').addEventListener('input', function() {
     document.getElementById('tc-status').style.color = '#d1242f';
   }
 });
+
+async function uploadTCFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('tc-status');
+  status.textContent = '업로드 중...';
+  status.style.color = '#666';
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await fetch('/admin/problems/parse-testcases', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.error) {
+      status.textContent = '✗ ' + data.error;
+      status.style.color = '#d1242f';
+    } else {
+      document.getElementById('tc-editor').value = JSON.stringify(data.testCases, null, 2);
+      status.textContent = `✔ ${data.testCases.length}개 케이스 로드됨`;
+      status.style.color = '#1a7f37';
+    }
+  } catch (e) {
+    status.textContent = '✗ 업로드 실패';
+    status.style.color = '#d1242f';
+  }
+  input.value = '';
+}
 </script>
 
 <%- include('../partials/footer') %>

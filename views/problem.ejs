@@ -6,6 +6,7 @@
     <div class="problem-meta-top">
       <span class="problem-number"><%= problem.id %></span>
       <span class="badge badge-<%= problem.difficulty.toLowerCase() %>"><%= problem.difficulty %></span>
+      <% if (problem.special_judge) { %><span class="badge" style="background:#7c3aed;color:#fff">스페셜 저지</span><% } %>
       <% if (isSolved) { %><span class="solved-tag">✔ 풀었음</span><% } %>
     </div>
     <h1 class="problem-title"><%= problem.title %></h1>

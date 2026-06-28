@@ -29,7 +29,10 @@ router.post('/problems/:id/submit', requireLogin, async (req, res) => {
   const testCases = JSON.parse(problem.test_cases);
   let judgeResult;
   try {
-    judgeResult = await runCode(language, code, testCases, problem.time_limit);
+    judgeResult = await runCode(language, code, testCases, problem.time_limit, {
+      specialJudge: !!problem.special_judge,
+      checkerCode: problem.checker_code || ''
+    });
   } catch (e) {
     judgeResult = { verdict: 'RE', verdictText: '런타임 에러', executionTime: 0, errorMessage: e.message };
   }

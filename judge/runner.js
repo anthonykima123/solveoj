@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
+const vm = require('vm');
 
 const VERDICTS = {
   AC: '맞았습니다!!',
@@ -13,7 +14,18 @@ const VERDICTS = {
   CE: '컴파일 에러'
 };
 
-async function runCode(language, code, testCases, timeLimit = 2000) {
+function runChecker(checkerCode, input, expected, actual) {
+  try {
+    const ctx = vm.createContext({ input, expected, actual });
+    vm.runInContext(checkerCode, ctx, { timeout: 2000 });
+    if (typeof ctx.check !== 'function') return false;
+    return !!ctx.check(input, expected, actual);
+  } catch (_) {
+    return false;
+  }
+}
+
+async function runCode(language, code, testCases, timeLimit = 2000, options = {}) {
   const id = crypto.randomBytes(8).toString('hex');
   const tmpDir = path.join(os.tmpdir(), `judge_${id}`);
   fs.mkdirSync(tmpDir, { recursive: true });
@@ -49,9 +61,16 @@ async function runCode(language, code, testCases, timeLimit = 2000) {
         };
       }
 
-      const expected = normalizeOutput(tc.output);
-      const actual = normalizeOutput(result.output || '');
-      if (expected !== actual) {
+      const rawExpected = tc.output;
+      const rawActual = result.output || '';
+      const expected = normalizeOutput(rawExpected);
+      const actual = normalizeOutput(rawActual);
+
+      const pass = (options.specialJudge && options.checkerCode)
+        ? runChecker(options.checkerCode, tc.input, rawExpected, rawActual)
+        : expected === actual;
+
+      if (!pass) {
         return {
           verdict: 'WA',
           verdictText: VERDICTS.WA,
@@ -186,4 +205,4 @@ function normalizeOutput(s) {
           .trim();
 }
 
-module.exports = { runCode, VERDICTS };
+module.exports = { runCode, runChecker, VERDICTS };

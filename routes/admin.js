@@ -1,9 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const AdmZip = require('adm-zip');
 const { db } = require('../database');
 const { requireAdmin, requireSuperAdmin, requirePermission } = require('../middleware/admin');
 const { PERMISSIONS, PERMISSION_KEYS } = require('../utils/permissions');
 const router = express.Router();
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 router.use(requireAdmin);
 
@@ -95,6 +99,47 @@ router.post('/users/:id/reset-password', requirePermission('users'), (req, res) 
 });
 
 // ─────────────────────────── 문제 관리 ('problems' 권한) ───────────────────────────
+
+// 테스트 케이스 파일 파싱 (JSON / ZIP)
+router.post('/problems/parse-testcases', requirePermission('problems'), upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: '파일이 없습니다.' });
+  const name = req.file.originalname.toLowerCase();
+
+  if (name.endsWith('.json')) {
+    try {
+      const parsed = JSON.parse(req.file.buffer.toString('utf8'));
+      if (!Array.isArray(parsed)) return res.status(400).json({ error: 'JSON 배열이 아닙니다.' });
+      return res.json({ testCases: parsed });
+    } catch (e) {
+      return res.status(400).json({ error: 'JSON 파싱 실패: ' + e.message });
+    }
+  }
+
+  if (name.endsWith('.zip')) {
+    try {
+      const zip = new AdmZip(req.file.buffer);
+      const inputs = {}, outputs = {};
+      for (const entry of zip.getEntries()) {
+        const base = entry.entryName.replace(/.*\//, '');
+        const inM = base.match(/^(\d+)\.in$/i) || base.match(/^input(\d+)\.txt$/i);
+        const outM = base.match(/^(\d+)\.out$/i) || base.match(/^output(\d+)\.txt$/i);
+        if (inM) inputs[+inM[1]] = entry.getData().toString('utf8').replace(/\r\n/g, '\n').trim();
+        if (outM) outputs[+outM[1]] = entry.getData().toString('utf8').replace(/\r\n/g, '\n').trim();
+      }
+      const nums = [...new Set([...Object.keys(inputs), ...Object.keys(outputs)].map(Number))].sort((a, b) => a - b);
+      const testCases = nums
+        .filter(n => inputs[n] !== undefined && outputs[n] !== undefined)
+        .map(n => ({ input: inputs[n], output: outputs[n] }));
+      if (!testCases.length) return res.status(400).json({ error: 'ZIP에서 케이스를 찾을 수 없습니다. (1.in/1.out 또는 input1.txt/output1.txt 형식)' });
+      return res.json({ testCases });
+    } catch (e) {
+      return res.status(400).json({ error: 'ZIP 파싱 실패: ' + e.message });
+    }
+  }
+
+  return res.status(400).json({ error: '.json 또는 .zip 파일만 지원합니다.' });
+});
+
 router.get('/problems', requirePermission('problems'), (req, res) => {
   const problems = db.getProblems({ includePrivate: true });
   res.render('admin/problems', { problems, query: req.query });
@@ -107,7 +152,8 @@ router.get('/problems/new', requirePermission('problems'), (req, res) => {
 router.post('/problems/new', requirePermission('problems'), (req, res) => {
   const { id, title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step, contest, visibility } = req.body;
+          sample_output, constraints, test_cases_raw, step, contest, visibility,
+          special_judge, checker_code } = req.body;
 
   const pid = parseInt(id);
   if (!pid || !title || !difficulty || !description) {
@@ -130,6 +176,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     });
   }
 
+  const isSpecialJudge = special_judge === 'on';
   db.insertProblem({
     id: pid, title, difficulty,
     time_limit: parseInt(time_limit) || 1000,
@@ -139,6 +186,8 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     step: parseInt(step) || null,
     contest: ['jungol', 'koi', 'icpc', 'usaco'].includes(contest) ? contest : null,
     is_private: visibility === 'private',
+    special_judge: isSpecialJudge,
+    checker_code: isSpecialJudge ? (checker_code || '') : '',
     test_cases, submission_count: 0, accepted_count: 0
   });
 
@@ -158,7 +207,8 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
 
   const { title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step, contest, visibility } = req.body;
+          sample_output, constraints, test_cases_raw, step, contest, visibility,
+          special_judge, checker_code } = req.body;
 
   if (!title || !difficulty || !description) {
     return res.render('admin/problem-form', {
@@ -175,6 +225,7 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     });
   }
 
+  const isSpecialJudge = special_judge === 'on';
   db.updateProblem(pid, {
     title, difficulty,
     time_limit: parseInt(time_limit) || 1000,
@@ -184,6 +235,8 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     step: parseInt(step) || null,
     contest: ['jungol', 'koi', 'icpc', 'usaco'].includes(contest) ? contest : null,
     is_private: visibility === 'private',
+    special_judge: isSpecialJudge,
+    checker_code: isSpecialJudge ? (checker_code || '') : '',
     test_cases
   });
 

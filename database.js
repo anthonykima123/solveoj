@@ -189,6 +189,14 @@ function migratePrivateField() {
   if (changed) db._save();
 }
 
+function migrateSpecialJudge() {
+  let changed = false;
+  db._d.problems.forEach(p => {
+    if (p.special_judge === undefined) { p.special_judge = false; changed = true; }
+  });
+  if (changed) db._save();
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
@@ -196,6 +204,7 @@ async function initDB() {
   removeOldJungol();
   migrateTags();
   migratePrivateField();
+  migrateSpecialJudge();
   migrateProblem2309();
   fixProblem1904();
   fixProblem2357();
