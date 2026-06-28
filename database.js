@@ -288,7 +288,7 @@ function seedExternalProblems() {
       output_desc: p.output_desc || '', sample_input: p.sample_input || '',
       sample_output: p.sample_output || '', constraints: p.constraints || '',
       tags: p.tags || [], source: p.source || null, contest: p.contest || null,
-      pdf_url: p.pdf_url || null,
+      pdf_url: p.pdf_url || null, is_private: !!p.is_private,
       test_cases
     };
 
