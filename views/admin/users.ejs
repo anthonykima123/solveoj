@@ -102,7 +102,7 @@
                   <%= u.community_banned ? '밴해제' : '커뮤밴' %>
                 </button>
               </form>
-              <% if (u.id !== me.id && !(isCoAdmin && !isSuperAdmin)) { %>
+              <% if (u.id !== me.id && !(isCoAdmin && me.role !== 'superadmin')) { %>
                 <form action="/admin/users/<%= u.id %>/reset-password" method="POST" style="display:inline"
                       onsubmit="return confirm('<%= u.username %> 님의 비밀번호를 reset1234로 초기화할까요?')">
                   <button class="btn btn-sm btn-outline">비번초기화</button>
