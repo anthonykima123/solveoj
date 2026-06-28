@@ -61,4 +61,18 @@ function getDifficultyScore(difficulty) {
   return DIFFICULTY_SCORES[difficulty] || 0;
 }
 
-module.exports = { getTierInfo, getNextThreshold, getDifficultyScore, DIFFICULTY_SCORES, TIER_THRESHOLDS };
+function getTierShort(tierName) {
+  if (!tierName || tierName === 'Unrated') return 'U';
+  const [tier, level] = tierName.split(' ');
+  const prefix = {
+    Bronze: 'B',
+    Silver: 'S',
+    Gold: 'G',
+    Platinum: 'P',
+    Diamond: 'D',
+    Ruby: 'R'
+  }[tier] || tier.charAt(0);
+  return `${prefix}${level || ''}`;
+}
+
+module.exports = { getTierInfo, getNextThreshold, getDifficultyScore, getTierShort, DIFFICULTY_SCORES, TIER_THRESHOLDS };

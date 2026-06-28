@@ -1,6 +1,6 @@
 const express = require('express');
 const { db } = require('../database');
-const { getTierInfo, getNextThreshold } = require('../utils/rating');
+const { getTierInfo, getNextThreshold, getTierShort } = require('../utils/rating');
 const router = express.Router();
 
 const LANG_LABELS = { cpp: 'C++17', python: 'Python 3', java: 'Java 11' };
@@ -46,8 +46,7 @@ router.get('/user/:username', (req, res) => {
   }));
 
   // 티어 약칭 (Gold 3 → G3, Unrated → U)
-  const emblem = tier.tier === 'Unrated'
-    ? 'U' : tier.tier[0] + (tier.tier.split(' ')[1] || '');
+  const emblem = getTierShort(tier.tier);
 
   res.render('profile', {
     profileUser, rating, tier, next, floor, progress, rank,

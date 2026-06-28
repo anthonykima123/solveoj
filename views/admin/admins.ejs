@@ -41,7 +41,10 @@
         <tr>
           <td><%= u.id %></td>
           <td>
-            <span class="user-tier-badge tier-<%= ti.cls %> tier-sm"><%= ti.tier %></span>
+            <span class="tier-badge tier-badge-<%= ti.cls %> tier-sm" title="<%= ti.tier %>">
+              <span class="tier-icon"><%= getTierShort(ti.tier) %></span>
+              <span class="tier-name"><%= ti.tier %></span>
+            </span>
             <a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><strong><%= u.username %></strong></a>
             <% if (u.id === me.id) { %><span class="me-tag">나</span><% } %>
           </td>

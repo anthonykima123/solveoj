@@ -32,7 +32,12 @@
               <% if (user && user.username === u.username) { %><span class="me-tag">나</span><% } %>
             </a>
           </td>
-          <td><span class="user-tier-badge tier-<%= tierInfo.cls %>"><%= tierInfo.tier %></span></td>
+          <td>
+            <span class="tier-badge tier-badge-<%= tierInfo.cls %>" title="<%= tierInfo.tier %>">
+              <span class="tier-icon"><%= getTierShort(tierInfo.tier) %></span>
+              <span class="tier-name"><%= tierInfo.tier %></span>
+            </span>
+          </td>
           <td><strong class="rating-score"><%= (u.rating || 0).toLocaleString() %></strong></td>
           <td><%= u.solved_count %> 문제</td>
           <td><%= new Date(u.created_at).toLocaleDateString('ko-KR') %></td>
