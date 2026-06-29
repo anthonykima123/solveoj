@@ -27,8 +27,20 @@ function listByContest(key) {
   };
 }
 
-// /problems → 기본 분류(정올)로 보낸다.
-router.get('/problems', (req, res) => res.redirect('/problems/jungol'));
+// /problems → 전체 문제로 보낸다.
+router.get('/problems', (req, res) => res.redirect('/problems/all'));
+router.get('/problems/all', (req, res) => {
+  const { diff, search, tag } = req.query;
+  const admin = getAdminStatus(req);
+  let problems = db.getProblems({ difficulty: diff, search, includePrivate: admin });
+  if (tag) problems = problems.filter(p => (p.tags || []).includes(tag));
+  const solvedSet = new Set(req.session.user ? db.getSolvedIds(req.session.user.id) : []);
+  const allTags = [...new Set(db.getProblems({ includePrivate: admin }).flatMap(p => p.tags || []))].sort();
+  res.render('problems', {
+    problems, solvedSet, diff: diff || '', search: search || '', tag: tag || '',
+    allTags, contest: 'all', contestLabel: '전체'
+  });
+});
 router.get('/problems/jungol', listByContest('jungol'));
 router.get('/problems/koi', listByContest('koi'));
 router.get('/problems/icpc', listByContest('icpc'));
