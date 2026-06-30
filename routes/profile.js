@@ -1,6 +1,7 @@
 const express = require('express');
 const { db } = require('../database');
 const { getTierInfo, getNextThreshold, getTierShort, getDifficultyScore } = require('../utils/rating');
+const { getBannerById } = require('../utils/shop');
 const router = express.Router();
 
 const LANG_LABELS = { cpp: 'C++17', python: 'Python 3', java: 'Java 11' };
@@ -111,12 +112,15 @@ router.get('/user/:username', (req, res) => {
     heatmapGrid.push(cells);
   }
 
+  const bannerItem = profileUser.equipped_banner ? getBannerById(profileUser.equipped_banner) : null;
+  const bannerCss = bannerItem ? bannerItem.css : null;
+
   res.render('profile', {
     profileUser, rating, tier, next, nextTier, floor, progress, rank,
     totalUsers: all.length, solvedProblems, solvedBadges, dist, TIERS, maxDist,
     acRate, totalSubs: allSubs.length, recent, emblem,
     LANG_LABELS, VERDICT_LABELS,
-    top100Score, streak, maxStreak, heatmapGrid, heatmapMonths
+    top100Score, streak, maxStreak, heatmapGrid, heatmapMonths, bannerCss
   });
 });
 

@@ -5,6 +5,7 @@ const AdmZip = require('adm-zip');
 const { db } = require('../database');
 const { requireAdmin, requireSuperAdmin, requirePermission } = require('../middleware/admin');
 const { PERMISSIONS, PERMISSION_KEYS } = require('../utils/permissions');
+const { BANNERS, getBannerById } = require('../utils/shop');
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -66,7 +67,7 @@ router.post('/role', requireSuperAdmin, (req, res) => {
 // ─────────────────────────── 유저 관리 ('users' 권한) ───────────────────────────
 router.get('/users', requirePermission('users'), (req, res) => {
   const users = db.getAllUsers();
-  res.render('admin/users', { users, query: req.query, me: req.adminUser });
+  res.render('admin/users', { users, query: req.query, me: req.adminUser, BANNERS });
 });
 
 // 유저 삭제
@@ -118,6 +119,28 @@ router.post('/users/:id/reset-password', requirePermission('users'), (req, res) 
 
   db.updateUser(id, { password: bcrypt.hashSync('reset1234', 10) });
   res.redirect('/admin/users?pwreset=' + encodeURIComponent(target.username));
+});
+
+// 배너 지급 (관리자)
+router.post('/users/:id/grant-banner', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.redirect('/admin/users?err=notfound');
+  const bannerId = req.body.banner_id;
+  if (!getBannerById(bannerId)) return res.redirect('/admin/users?err=notfound');
+  db.grantBannerItem(id, bannerId);
+  res.redirect('/admin/users?bannergrant=' + encodeURIComponent(target.username));
+});
+
+// 코인 지급 (관리자)
+router.post('/users/:id/grant-coins', requirePermission('users'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const target = db.getUserById(id);
+  if (!target) return res.redirect('/admin/users?err=notfound');
+  const amount = parseInt(req.body.amount) || 0;
+  if (amount <= 0) return res.redirect('/admin/users?err=notfound');
+  db.addCoins(id, amount);
+  res.redirect('/admin/users?coingrant=' + encodeURIComponent(target.username));
 });
 
 // ─────────────────────────── 문제 관리 ('problems' 권한) ───────────────────────────

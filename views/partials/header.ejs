@@ -50,6 +50,7 @@
           <span class="tier-name"><%= _ti.tier %></span>
         </span>
         <a href="/user/<%= user.username %>" class="username-badge"><%= user.username %></a>
+        <a href="/shop" class="coin-nav-badge" title="코인 샵">🪙 <%= currentUser ? (currentUser.coins || 0).toLocaleString() : 0 %></a>
         <a href="/submissions">내 제출</a>
         <a href="/settings">설정</a>
         <form action="/logout" method="POST" class="logout-form">

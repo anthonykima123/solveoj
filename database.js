@@ -206,6 +206,24 @@ function migrateBanFields() {
   if (changed) db._save();
 }
 
+function migrateShopFields() {
+  let changed = false;
+  db._d.users.forEach(u => {
+    if (u.coins === undefined) { u.coins = 0; changed = true; }
+    if (!Array.isArray(u.banner_inventory)) { u.banner_inventory = []; changed = true; }
+    if (u.equipped_banner === undefined) { u.equipped_banner = null; changed = true; }
+  });
+  if (changed) db._save();
+}
+
+function migrateContestPrizes() {
+  let changed = false;
+  (db._d.contests || []).forEach(c => {
+    if (c.prizes_awarded === undefined) { c.prizes_awarded = false; changed = true; }
+  });
+  if (changed) db._save();
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
@@ -225,6 +243,8 @@ async function initDB() {
   if (db._d.users.length === 0) seedUsers();
   migrateRoles();
   migrateBanFields();
+  migrateShopFields();
+  migrateContestPrizes();
   autoSolveAllForAdmin();
 }
 

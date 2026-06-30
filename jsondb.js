@@ -98,6 +98,38 @@ class JsonDB {
   }
   getAdmins() { return this._d.users.filter(u => u.role === 'superadmin' || u.role === 'admin'); }
 
+  // Coins
+  addCoins(userId, amount) {
+    const u = this._d.users.find(u => u.id === userId);
+    if (!u) return false;
+    u.coins = (u.coins || 0) + amount; this._save(); return true;
+  }
+  deductCoins(userId, amount) {
+    const u = this._d.users.find(u => u.id === userId);
+    if (!u || (u.coins || 0) < amount) return false;
+    u.coins -= amount; this._save(); return true;
+  }
+
+  // Banner inventory
+  hasBannerItem(userId, itemId) {
+    const u = this.getUserById(userId);
+    return !!(u && (u.banner_inventory || []).includes(itemId));
+  }
+  grantBannerItem(userId, itemId) {
+    const u = this._d.users.find(u => u.id === userId);
+    if (!u) return false;
+    if (!(u.banner_inventory || []).includes(itemId)) {
+      u.banner_inventory = [...(u.banner_inventory || []), itemId];
+      this._save();
+    }
+    return true;
+  }
+  equipBanner(userId, itemId) {
+    const u = this._d.users.find(u => u.id === userId);
+    if (!u) return false;
+    u.equipped_banner = itemId || null; this._save(); return true;
+  }
+
   // Problems
   getProblemById(id) { return this._d.problems.find(p => p.id === id) || null; }
   incProblem(id, field, by = 1) {

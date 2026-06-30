@@ -29,6 +29,10 @@
   <div class="alert alert-success"><strong><%= query.comban %></strong> 님에게 커뮤니티 밴을 적용했습니다.</div>
 <% } else if (query.comunban) { %>
   <div class="alert alert-success"><strong><%= query.comunban %></strong> 님의 커뮤니티 밴을 해제했습니다.</div>
+<% } else if (query.bannergrant) { %>
+  <div class="alert alert-success"><strong><%= query.bannergrant %></strong> 님에게 배너를 지급했습니다.</div>
+<% } else if (query.coingrant) { %>
+  <div class="alert alert-success"><strong><%= query.coingrant %></strong> 님에게 코인을 지급했습니다.</div>
 <% } %>
 
 <div class="admin-summary">
@@ -56,7 +60,7 @@
         <% const ti = getTierInfo(u.rating || 0) %>
         <% const isSuper = u.role === 'superadmin' %>
         <% const isCoAdmin = u.role === 'admin' %>
-        <tr>
+        <tr class="user-main-row">
           <td><%= u.id %></td>
           <td>
             <span class="tier-badge tier-badge-<%= ti.cls %> tier-sm" title="<%= ti.tier %>">
@@ -112,12 +116,39 @@
                   <button class="btn btn-sm btn-danger">삭제</button>
                 </form>
               <% } %>
+              <button class="btn btn-sm btn-outline" onclick="toggleGrant(<%= u.id %>)" style="color:#7c3aed;border-color:#7c3aed">지급</button>
             <% } %>
+          </td>
+        </tr>
+        <tr class="grant-row" id="grant-<%= u.id %>" style="display:none">
+          <td colspan="6" style="background:#f8f7ff;padding:10px 16px">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+              <form action="/admin/users/<%= u.id %>/grant-banner" method="POST" style="display:flex;gap:6px;align-items:center">
+                <label style="font-size:.8rem;font-weight:700;color:#7c3aed">배너 지급</label>
+                <select name="banner_id" class="form-input" style="padding:4px 8px;font-size:.82rem;width:auto">
+                  <% BANNERS.forEach(b => { %><option value="<%= b.id %>"><%= b.name %> (<%= ({common:'일반',rare:'희귀',epic:'에픽',legendary:'전설'})[b.rarity] %>)</option><% }) %>
+                </select>
+                <button class="btn btn-sm" style="background:#7c3aed;color:#fff">지급</button>
+              </form>
+              <form action="/admin/users/<%= u.id %>/grant-coins" method="POST" style="display:flex;gap:6px;align-items:center">
+                <label style="font-size:.8rem;font-weight:700;color:#f59e0b">🪙 코인 지급</label>
+                <input type="number" name="amount" min="1" value="100" class="form-input" style="width:90px;padding:4px 8px;font-size:.82rem">
+                <button class="btn btn-sm" style="background:#f59e0b;color:#fff">지급</button>
+              </form>
+              <span style="font-size:.8rem;color:#64748b">보유 코인: <strong><%= u.coins || 0 %></strong></span>
+            </div>
           </td>
         </tr>
       <% }) %>
     </tbody>
   </table>
 </div>
+
+<script>
+function toggleGrant(id) {
+  const row = document.getElementById('grant-' + id);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+</script>
 
 <%- include('../partials/footer') %>

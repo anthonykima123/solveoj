@@ -5,8 +5,8 @@
 
   <!-- 배너 + 아바타 -->
   <div class="pf-hero">
-    <div class="pf-banner<%= profileUser.banner_url ? '' : ' pf-banner-default' %>"
-      <% if (profileUser.banner_url) { %>style="background-image:url('<%= profileUser.banner_url %>');background-size:cover;background-position:center"<% } %>></div>
+    <div class="pf-banner<%= bannerCss ? '' : ' pf-banner-default' %>"
+      <% if (bannerCss) { %>style="background: <%= bannerCss %>"<% } %>></div>
     <div class="pf-hero-body">
       <div class="pf-avatar-box">
         <% if (profileUser.avatar_url) { %>

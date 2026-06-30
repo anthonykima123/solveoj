@@ -16,6 +16,7 @@ const contestRoutes = require('./routes/contests');
 const groupRoutes = require('./routes/groups');
 const toolsRoutes = require('./routes/tools');
 const profileRoutes = require('./routes/profile');
+const shopRoutes = require('./routes/shop');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -65,6 +66,7 @@ app.use('/', contestRoutes);
 app.use('/', groupRoutes);
 app.use('/', toolsRoutes);
 app.use('/', profileRoutes);
+app.use('/', shopRoutes);
 app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));

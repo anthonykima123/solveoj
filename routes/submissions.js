@@ -3,6 +3,7 @@ const { db } = require('../database');
 const { runCode } = require('../judge/runner');
 const { requireLogin } = require('../middleware/auth');
 const { getDifficultyScore } = require('../utils/rating');
+const { COIN_PER_DIFFICULTY } = require('../utils/shop');
 const router = express.Router();
 
 const LANG_LABELS = { cpp: 'C++17', python: 'Python 3', java: 'Java 11' };
@@ -53,6 +54,10 @@ router.post('/problems/:id/submit', requireLogin, async (req, res) => {
       const gain = getDifficultyScore(problem.difficulty);
       db.incUser(userId, 'rating', gain);
       if (req.session.user) req.session.user.rating = (req.session.user.rating || 0) + gain;
+      // 코인 지급
+      const tier = (problem.difficulty || '').split(' ')[0];
+      const coins = COIN_PER_DIFFICULTY[tier] || 0;
+      if (coins > 0) db.addCoins(userId, coins);
     }
   }
 

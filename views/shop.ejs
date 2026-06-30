@@ -1,0 +1,93 @@
+<% locals.title = '코인 샵' %>
+<%- include('partials/header') %>
+
+<div class="shop-wrap">
+  <div class="shop-hero">
+    <div>
+      <h1 class="shop-title">🪙 코인 샵</h1>
+      <p class="shop-desc">문제를 풀어 모은 코인으로 배너를 구매하고 프로필을 꾸며보세요.</p>
+    </div>
+    <% if (user) { %>
+      <div class="shop-balance">
+        <span class="coin-icon-lg">🪙</span>
+        <span class="shop-balance-num"><%= coins.toLocaleString() %></span>
+        <span class="shop-balance-label">코인</span>
+      </div>
+    <% } %>
+  </div>
+
+  <% if (query.bought) { %>
+    <div class="alert alert-success"><strong><%= query.bought %></strong> 배너를 구매했습니다!</div>
+  <% } else if (query.equipped === '1') { %>
+    <div class="alert alert-success">배너를 착용했습니다.</div>
+  <% } else if (query.unequipped === '1') { %>
+    <div class="alert alert-success">배너를 해제했습니다.</div>
+  <% } else if (query.err === 'nocoins') { %>
+    <div class="alert alert-error">코인이 부족합니다.</div>
+  <% } else if (query.err === 'owned') { %>
+    <div class="alert alert-error">이미 보유한 배너입니다.</div>
+  <% } else if (query.err === 'notowned') { %>
+    <div class="alert alert-error">보유하지 않은 배너입니다.</div>
+  <% } %>
+
+  <!-- 코인 획득 방법 안내 -->
+  <div class="shop-howto">
+    <h3>코인 획득 방법</h3>
+    <div class="howto-list">
+      <div class="howto-item"><span class="howto-badge">Bronze</span> 문제 첫 AC → <strong>5 코인</strong></div>
+      <div class="howto-item"><span class="howto-badge howto-silver">Silver</span> 문제 첫 AC → <strong>15 코인</strong></div>
+      <div class="howto-item"><span class="howto-badge howto-gold">Gold</span> 문제 첫 AC → <strong>30 코인</strong></div>
+      <div class="howto-item"><span class="howto-badge howto-plat">Platinum</span> 문제 첫 AC → <strong>60 코인</strong></div>
+      <div class="howto-item"><span class="howto-badge howto-dia">Diamond</span> 문제 첫 AC → <strong>100 코인</strong></div>
+      <div class="howto-item"><span class="howto-badge howto-ruby">Ruby</span> 문제 첫 AC → <strong>150 코인</strong></div>
+      <div class="howto-item">🏆 대회 1등 → <strong>500 코인</strong></div>
+      <div class="howto-item">🥈 대회 2등 → <strong>300 코인</strong></div>
+      <div class="howto-item">🥉 대회 3등 → <strong>150 코인</strong></div>
+    </div>
+  </div>
+
+  <!-- 배너 목록 -->
+  <h2 class="shop-section-title">배너</h2>
+  <div class="shop-grid">
+    <% BANNERS.forEach(item => {
+      const owned = inventory.includes(item.id);
+      const isEquipped = equipped === item.id;
+    %>
+      <div class="shop-card <%= owned ? 'shop-card-owned' : '' %>">
+        <div class="shop-preview" style="background: <%= item.css %>">
+          <% if (isEquipped) { %><span class="shop-equipped-badge">착용 중</span><% } %>
+        </div>
+        <div class="shop-card-body">
+          <div class="shop-item-top">
+            <span class="shop-item-name"><%= item.name %></span>
+            <span class="shop-rarity shop-rarity-<%= item.rarity %>"><%= ({common:'일반',rare:'희귀',epic:'에픽',legendary:'전설'})[item.rarity] %></span>
+          </div>
+          <div class="shop-item-bottom">
+            <% if (!owned) { %>
+              <span class="shop-price">🪙 <%= item.price.toLocaleString() %></span>
+              <% if (user) { %>
+                <form action="/shop/buy/<%= item.id %>" method="POST" style="display:inline">
+                  <button class="btn btn-sm btn-primary shop-btn" <%= coins < item.price ? 'disabled title="코인 부족"' : '' %>>구매</button>
+                </form>
+              <% } else { %>
+                <a href="/login" class="btn btn-sm btn-outline">로그인</a>
+              <% } %>
+            <% } else if (isEquipped) { %>
+              <span class="shop-price shop-owned-label">보유 중</span>
+              <form action="/shop/equip/none" method="POST" style="display:inline">
+                <button class="btn btn-sm btn-outline shop-btn">해제</button>
+              </form>
+            <% } else { %>
+              <span class="shop-price shop-owned-label">보유 중</span>
+              <form action="/shop/equip/<%= item.id %>" method="POST" style="display:inline">
+                <button class="btn btn-sm btn-primary shop-btn">착용</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

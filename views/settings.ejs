@@ -8,44 +8,33 @@
   <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
 
   <div class="settings-card settings-card-full">
-    <h2>프로필 이미지 / 배너</h2>
+    <h2>프로필 이미지</h2>
     <form action="/settings/images" method="POST" id="img-form">
       <input type="hidden" name="avatar" id="avatar-field" value="<%= currentUser && currentUser.avatar_url ? currentUser.avatar_url : '' %>">
-      <input type="hidden" name="banner" id="banner-field" value="<%= currentUser && currentUser.banner_url ? currentUser.banner_url : '' %>">
-
-      <div class="img-edit-grid">
-        <div class="img-edit">
-          <label class="img-edit-label">프로필 이미지</label>
-          <div class="avatar-preview-wrap">
-            <img id="avatar-preview" class="avatar-preview"
-                 src="<%= currentUser && currentUser.avatar_url ? currentUser.avatar_url : '' %>"
-                 alt="" <%= currentUser && currentUser.avatar_url ? '' : 'style=display:none' %>>
-            <div id="avatar-placeholder" class="avatar-preview avatar-placeholder" <%= currentUser && currentUser.avatar_url ? 'style=display:none' : '' %>>없음</div>
-          </div>
-          <div class="img-btns">
-            <label class="btn btn-outline btn-sm">파일 선택<input type="file" accept="image/*" id="avatar-input" hidden></label>
-            <button type="button" class="btn btn-danger btn-sm" id="avatar-remove">제거</button>
-          </div>
+      <div class="img-edit">
+        <label class="img-edit-label">프로필 사진</label>
+        <div class="avatar-preview-wrap">
+          <img id="avatar-preview" class="avatar-preview"
+               src="<%= currentUser && currentUser.avatar_url ? currentUser.avatar_url : '' %>"
+               alt="" <%= currentUser && currentUser.avatar_url ? '' : 'style=display:none' %>>
+          <div id="avatar-placeholder" class="avatar-preview avatar-placeholder" <%= currentUser && currentUser.avatar_url ? 'style=display:none' : '' %>>없음</div>
         </div>
-
-        <div class="img-edit img-edit-banner">
-          <label class="img-edit-label">배너 이미지</label>
-          <div class="banner-preview-wrap">
-            <img id="banner-preview" class="banner-preview"
-                 src="<%= currentUser && currentUser.banner_url ? currentUser.banner_url : '' %>"
-                 alt="" <%= currentUser && currentUser.banner_url ? '' : 'style=display:none' %>>
-            <div id="banner-placeholder" class="banner-preview banner-placeholder" <%= currentUser && currentUser.banner_url ? 'style=display:none' : '' %>>배너 없음</div>
-          </div>
-          <div class="img-btns">
-            <label class="btn btn-outline btn-sm">파일 선택<input type="file" accept="image/*" id="banner-input" hidden></label>
-            <button type="button" class="btn btn-danger btn-sm" id="banner-remove">제거</button>
-          </div>
+        <div class="img-btns">
+          <label class="btn btn-outline btn-sm">파일 선택<input type="file" accept="image/*" id="avatar-input" hidden></label>
+          <button type="button" class="btn btn-danger btn-sm" id="avatar-remove">제거</button>
         </div>
       </div>
-
-      <p class="muted" style="margin:10px 0">이미지는 자동으로 적당한 크기로 줄여 저장됩니다. JPG·PNG 권장.</p>
-      <button type="submit" class="btn btn-primary">이미지 저장</button>
+      <p class="muted" style="margin:10px 0">JPG·PNG 권장. 자동으로 256×256으로 압축됩니다.</p>
+      <button type="submit" class="btn btn-primary">저장</button>
     </form>
+  </div>
+
+  <div class="settings-card settings-card-full" style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div>
+      <h2 style="margin:0 0 4px">프로필 배너</h2>
+      <p class="muted" style="margin:0">배너는 코인 샵에서 구매하고 착용할 수 있습니다.</p>
+    </div>
+    <a href="/shop" class="btn btn-primary">🪙 코인 샵 바로가기</a>
   </div>
 
   <div class="settings-grid">
@@ -54,8 +43,7 @@
       <form action="/settings/username" method="POST" class="auth-form">
         <div class="form-group">
           <label>새 아이디</label>
-          <input type="text" name="username" class="form-input"
-                 value="<%= user.username %>" required>
+          <input type="text" name="username" class="form-input" value="<%= user.username %>" required>
         </div>
         <button type="submit" class="btn btn-primary">변경</button>
       </form>
@@ -70,8 +58,7 @@
         </div>
         <div class="form-group">
           <label>새 비밀번호</label>
-          <input type="password" name="new_password" class="form-input"
-                 placeholder="6자 이상" required>
+          <input type="password" name="new_password" class="form-input" placeholder="6자 이상" required>
         </div>
         <div class="form-group">
           <label>새 비밀번호 확인</label>
@@ -102,29 +89,25 @@
     };
     reader.readAsDataURL(file);
   }
-  function wire(inputId, field, previewId, placeholderId, removeId, maxW, maxH, q) {
-    const input = document.getElementById(inputId);
-    const field_ = document.getElementById(field);
-    const preview = document.getElementById(previewId);
-    const placeholder = document.getElementById(placeholderId);
-    input.addEventListener('change', () => {
-      const f = input.files[0];
-      if (!f) return;
-      resize(f, maxW, maxH, q, dataUrl => {
-        field_.value = dataUrl;
-        preview.src = dataUrl; preview.style.display = '';
-        placeholder.style.display = 'none';
-      });
+  const input = document.getElementById('avatar-input');
+  const field = document.getElementById('avatar-field');
+  const preview = document.getElementById('avatar-preview');
+  const placeholder = document.getElementById('avatar-placeholder');
+  input.addEventListener('change', () => {
+    const f = input.files[0];
+    if (!f) return;
+    resize(f, 256, 256, 0.85, dataUrl => {
+      field.value = dataUrl;
+      preview.src = dataUrl; preview.style.display = '';
+      placeholder.style.display = 'none';
     });
-    document.getElementById(removeId).addEventListener('click', () => {
-      field_.value = '';
-      preview.src = ''; preview.style.display = 'none';
-      placeholder.style.display = '';
-      input.value = '';
-    });
-  }
-  wire('avatar-input', 'avatar-field', 'avatar-preview', 'avatar-placeholder', 'avatar-remove', 256, 256, 0.85);
-  wire('banner-input', 'banner-field', 'banner-preview', 'banner-placeholder', 'banner-remove', 1200, 360, 0.82);
+  });
+  document.getElementById('avatar-remove').addEventListener('click', () => {
+    field.value = '';
+    preview.src = ''; preview.style.display = 'none';
+    placeholder.style.display = '';
+    input.value = '';
+  });
 })();
 </script>
 
