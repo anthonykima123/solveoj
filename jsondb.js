@@ -165,6 +165,7 @@ class JsonDB {
   getAllSubmissions(limit = 100) {
     return [...this._d.submissions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, limit);
   }
+  countSubmissions() { return this._d.submissions.length; }
   createSubmission(data) {
     const sub = { id: this._d._seq.submissions++, created_at: new Date().toISOString(), ...data };
     this._d.submissions.push(sub);

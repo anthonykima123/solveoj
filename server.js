@@ -4,6 +4,7 @@ const path = require('path');
 const { db, initDB } = require('./database');
 const { getTierInfo, getTierShort } = require('./utils/rating');
 const { isAdmin, isSuperAdmin, hasPermission } = require('./utils/permissions');
+const { getDailyData } = require('./utils/daily');
 
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
@@ -49,11 +50,20 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  const problems = db.getProblems().slice(0, 8);
+  const allProblems = db.getProblems();
+  const problems = allProblems.slice(0, 8);
   const topUsers = db.getAllUsers()
     .filter(u => u.role !== 'superadmin' && !u.ranking_banned)
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 5);
-  res.render('index', { problems, topUsers });
+  const { daily, doubleCoins } = getDailyData(allProblems);
+  const stats = {
+    problems: allProblems.length,
+    users: db.getAllUsers().length,
+    submissions: db.countSubmissions(),
+    languages: ['C++17', 'Python 3', 'Java 11']
+  };
+  res.render('index', { problems, topUsers, daily, doubleCoins, stats });
 });
 
 app.use('/', authRoutes);

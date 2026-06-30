@@ -1,6 +1,7 @@
 <% locals.title = '홈' %>
 <%- include('partials/header') %>
 
+<!-- 히어로 배너 -->
 <section class="hero-banner">
   <div class="hero-content">
     <p class="hero-kicker">Online Judge for Practice</p>
@@ -20,6 +21,94 @@
   </div>
 </section>
 
+<!-- 통계 바 -->
+<div class="home-stats">
+  <div class="home-stat-card">
+    <div class="home-stat-icon">📚</div>
+    <div class="home-stat-num"><%= stats.problems.toLocaleString() %></div>
+    <div class="home-stat-label">전체 문제</div>
+  </div>
+  <div class="home-stat-card">
+    <div class="home-stat-icon">👥</div>
+    <div class="home-stat-num"><%= stats.users.toLocaleString() %></div>
+    <div class="home-stat-label">가입 유저</div>
+  </div>
+  <div class="home-stat-card">
+    <div class="home-stat-icon">📨</div>
+    <div class="home-stat-num"><%= stats.submissions.toLocaleString() %></div>
+    <div class="home-stat-label">총 제출 수</div>
+  </div>
+  <div class="home-stat-card">
+    <div class="home-stat-icon">💻</div>
+    <div class="home-stat-langs">
+      <% stats.languages.forEach(l => { %><span class="lang-chip"><%= l %></span><% }) %>
+    </div>
+    <div class="home-stat-label">지원 언어</div>
+  </div>
+</div>
+
+<!-- 오늘의 문제 / 코인 2배 -->
+<div class="home-daily-grid">
+
+  <!-- 오늘의 문제 -->
+  <div class="daily-card">
+    <div class="daily-card-header daily-header-main">
+      <span class="daily-icon">⭐</span>
+      <span class="daily-label">오늘의 문제</span>
+      <span class="daily-date"><%= new Date(Date.now() + 9*3600000).toISOString().slice(0,10) %></span>
+    </div>
+    <% if (daily.length > 0) { const dp = daily[0]; %>
+      <a href="/problems/<%= dp.id %>" class="daily-problem-link">
+        <div class="daily-problem-card">
+          <div class="daily-problem-top">
+            <span class="daily-problem-id">#<%= dp.id %></span>
+            <span class="badge badge-<%= dp.difficulty.toLowerCase() %>"><%= dp.difficulty %></span>
+          </div>
+          <div class="daily-problem-title"><%= dp.title %></div>
+          <div class="daily-problem-meta">
+            <span>⏱ <%= dp.time_limit %>ms</span>
+            <span>정답률 <%= dp.submission_count > 0 ? Math.round(dp.accepted_count / dp.submission_count * 100) + '%' : '-' %></span>
+          </div>
+        </div>
+      </a>
+    <% } else { %>
+      <p class="muted" style="padding:16px">문제가 없습니다.</p>
+    <% } %>
+  </div>
+
+  <!-- 오늘의 코인 2배 문제 -->
+  <div class="daily-card">
+    <div class="daily-card-header daily-header-coin">
+      <span class="daily-icon">🪙</span>
+      <span class="daily-label">오늘의 코인 2배</span>
+      <span class="daily-badge-x2">×2</span>
+    </div>
+    <div class="double-coin-list">
+      <% if (doubleCoins.length === 0) { %>
+        <p class="muted" style="padding:16px">문제가 없습니다.</p>
+      <% } %>
+      <% doubleCoins.forEach(dp => { %>
+        <a href="/problems/<%= dp.id %>" class="daily-problem-link">
+          <div class="daily-problem-card double-coin-problem-card">
+            <div class="daily-problem-top">
+              <span class="daily-problem-id">#<%= dp.id %></span>
+              <span class="badge badge-<%= dp.difficulty.toLowerCase() %>"><%= dp.difficulty %></span>
+              <span class="coin-x2-tag">🪙×2</span>
+            </div>
+            <div class="daily-problem-title"><%= dp.title %></div>
+            <div class="daily-problem-meta">
+              <span>⏱ <%= dp.time_limit %>ms</span>
+              <span>정답률 <%= dp.submission_count > 0 ? Math.round(dp.accepted_count / dp.submission_count * 100) + '%' : '-' %></span>
+            </div>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+</div>
+
+<!-- 기존: 최근 문제 + 랭킹 -->
 <div class="home-grid">
   <section class="home-card">
     <h2 class="section-title">최근 문제</h2>
@@ -42,15 +131,25 @@
   <section class="home-card">
     <h2 class="section-title">랭킹 TOP 5</h2>
     <table class="table">
-      <thead><tr><th>순위</th><th>사용자</th><th>해결</th></tr></thead>
+      <thead><tr><th>순위</th><th>사용자</th><th>레이팅</th><th>해결</th></tr></thead>
       <tbody>
         <% topUsers.forEach((u, i) => { %>
+          <% const _ti = getTierInfo(u.rating || 0); %>
           <tr>
             <td>
-              <% if (i === 0) { %><span class="rank-medal">1</span><% } else if (i === 1) { %><span class="rank-medal">2</span><% } else if (i === 2) { %><span class="rank-medal">3</span><% } else { %><%= i + 1 %><% } %>
+              <% if (i === 0) { %><span class="rank-medal gold-medal">1</span>
+              <% } else if (i === 1) { %><span class="rank-medal silver-medal">2</span>
+              <% } else if (i === 2) { %><span class="rank-medal bronze-medal">3</span>
+              <% } else { %><span class="rank-num"><%= i + 1 %></span><% } %>
             </td>
-            <td><a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><%= u.username %></a></td>
-            <td><strong><%= u.solved_count %></strong> 문제</td>
+            <td>
+              <span class="tier-badge tier-badge-<%= _ti.cls %> tier-sm" title="<%= _ti.tier %>">
+                <span class="tier-icon"><%= getTierShort(_ti.tier) %></span>
+              </span>
+              <a href="/user/<%= encodeURIComponent(u.username) %>" class="profile-link"><%= u.username %></a>
+            </td>
+            <td><strong><%= (u.rating || 0).toLocaleString() %></strong></td>
+            <td><%= u.solved_count %></td>
           </tr>
         <% }) %>
       </tbody>

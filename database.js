@@ -206,6 +206,22 @@ function migrateBanFields() {
   if (changed) db._save();
 }
 
+function bootstrapCoins() {
+  if (db._d._seq.coins_bootstrapped) return;
+  const { COIN_PER_DIFFICULTY } = require('./utils/shop');
+  let count = 0;
+  db._d.users.forEach(u => {
+    const earned = db.getSolvedIds(u.id).reduce((s, pid) => {
+      const p = db.getProblemById(pid);
+      return s + (p ? (COIN_PER_DIFFICULTY[(p.difficulty || '').split(' ')[0]] || 0) : 0);
+    }, 0);
+    if (earned > 0) { u.coins = (u.coins || 0) + earned; count++; }
+  });
+  db._d._seq.coins_bootstrapped = true;
+  db._save();
+  if (count) console.log(`✅ coins bootstrapped for ${count} user(s)`);
+}
+
 function migrateShopFields() {
   let changed = false;
   db._d.users.forEach(u => {
@@ -245,6 +261,7 @@ async function initDB() {
   migrateBanFields();
   migrateShopFields();
   migrateContestPrizes();
+  bootstrapCoins();
   autoSolveAllForAdmin();
 }
 
