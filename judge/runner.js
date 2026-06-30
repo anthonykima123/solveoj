@@ -205,4 +205,26 @@ function normalizeOutput(s) {
           .trim();
 }
 
-module.exports = { runCode, runChecker, VERDICTS };
+// 테스트 케이스 없이 자유 입력으로 실행 (온라인 컴파일러용)
+async function runFreeCode(language, code, stdin = '', timeLimit = 5000) {
+  const id = crypto.randomBytes(8).toString('hex');
+  const tmpDir = path.join(os.tmpdir(), `judge_${id}`);
+  fs.mkdirSync(tmpDir, { recursive: true });
+  try {
+    const compileResult = await compile(language, code, tmpDir, id);
+    if (compileResult.error) {
+      return { verdict: 'CE', output: '', error: compileResult.error, time: 0 };
+    }
+    const result = await runTestCase(language, compileResult, stdin, tmpDir, id, timeLimit);
+    return {
+      verdict: result.verdict,
+      output: result.output || '',
+      error: result.error || '',
+      time: result.time
+    };
+  } finally {
+    try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (_) {}
+  }
+}
+
+module.exports = { runCode, runFreeCode, runChecker, VERDICTS };

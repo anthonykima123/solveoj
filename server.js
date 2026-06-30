@@ -5,6 +5,7 @@ const { db, initDB } = require('./database');
 const { getTierInfo, getTierShort } = require('./utils/rating');
 const { isAdmin, isSuperAdmin, hasPermission } = require('./utils/permissions');
 const { getDailyData } = require('./utils/daily');
+const { getDifficultyScore } = require('./utils/rating');
 
 const authRoutes = require('./routes/auth');
 const problemRoutes = require('./routes/problems');
@@ -49,6 +50,49 @@ app.use((req, res, next) => {
   next();
 });
 
+function getAIRecommendations(userId, allProblems) {
+  const solvedIds = userId ? new Set(db.getSolvedIds(userId)) : new Set();
+  const unsolved = allProblems.filter(p => !solvedIds.has(p.id));
+
+  if (solvedIds.size === 0) {
+    // 풀이 기록 없음: 정답률 높은 쉬운 문제 추천
+    return unsolved
+      .filter(p => p.submission_count > 0)
+      .sort((a, b) => {
+        const ra = a.accepted_count / a.submission_count;
+        const rb = b.accepted_count / b.submission_count;
+        return rb - ra;
+      })
+      .slice(0, 3);
+  }
+
+  // 태그 빈도 분석
+  const tagFreq = {};
+  for (const id of solvedIds) {
+    const p = db.getProblemById(id);
+    if (p) (p.tags || []).forEach(t => { tagFreq[t] = (tagFreq[t] || 0) + 1; });
+  }
+
+  // 현재 평균 난이도 → 약간 높은 목표
+  const scores = [...solvedIds].map(id => {
+    const p = db.getProblemById(id);
+    return p ? getDifficultyScore(p.difficulty) : 0;
+  }).filter(s => s > 0);
+  const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+  const target = avg * 1.25;
+
+  return unsolved.map(p => {
+    const tagMatch = (p.tags || []).reduce((s, t) => s + (tagFreq[t] || 0), 0);
+    const diff = getDifficultyScore(p.difficulty);
+    const diffPenalty = Math.abs(diff - target) / Math.max(target, 1) * 30;
+    const score = tagMatch * 25 - diffPenalty + (p.accepted_count > 0 ? 3 : 0);
+    return { p, score };
+  })
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map(x => x.p);
+}
+
 app.get('/', (req, res) => {
   const allProblems = db.getProblems();
   const problems = allProblems.slice(0, 8);
@@ -63,7 +107,12 @@ app.get('/', (req, res) => {
     submissions: db.countSubmissions(),
     languages: ['C++17', 'Python 3', 'Java 11']
   };
-  res.render('index', { problems, topUsers, daily, doubleCoins, stats });
+  const userId = req.session.user ? req.session.user.id : null;
+  const aiRecs = getAIRecommendations(userId, allProblems);
+  const aiLabel = userId && db.getSolvedIds(userId).length > 0
+    ? '풀이 패턴 분석 기반 추천'
+    : '인기 문제 추천';
+  res.render('index', { problems, topUsers, daily, doubleCoins, stats, aiRecs, aiLabel });
 });
 
 app.use('/', authRoutes);

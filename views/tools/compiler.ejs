@@ -1,0 +1,143 @@
+<% locals.title = '온라인 컴파일러' %>
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>온라인 컴파일러</h1>
+    <p class="page-desc">코드를 작성하고 바로 실행해보세요.</p>
+  </div>
+</div>
+
+<div class="compiler-wrap">
+  <!-- 상단 툴바 -->
+  <div class="compiler-toolbar">
+    <select id="lang-select" class="compiler-lang-select">
+      <option value="cpp">C++17</option>
+      <option value="python">Python 3</option>
+      <option value="java">Java 11</option>
+    </select>
+    <button id="run-btn" class="btn btn-primary compiler-run-btn">
+      <span id="run-label">▶ 실행</span>
+    </button>
+    <button id="clear-btn" class="btn btn-outline btn-sm">초기화</button>
+    <span class="compiler-time" id="exec-time"></span>
+  </div>
+
+  <!-- 에디터 + 사이드 -->
+  <div class="compiler-body">
+    <div class="compiler-editor-pane">
+      <textarea id="compiler-code"></textarea>
+    </div>
+    <div class="compiler-side-pane">
+      <div class="compiler-side-section">
+        <label class="compiler-side-label">표준 입력 (stdin)</label>
+        <textarea id="stdin-area" class="compiler-textarea" placeholder="입력값을 여기에 작성하세요..."></textarea>
+      </div>
+      <div class="compiler-side-section" style="flex:1">
+        <label class="compiler-side-label">
+          실행 결과
+          <span id="verdict-badge" class="compiler-verdict" style="display:none"></span>
+        </label>
+        <pre id="output-area" class="compiler-output"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEMPLATES = {
+  cpp: `#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios_base::sync_with_stdio(false);\n    cin.tie(NULL);\n\n    \n\n    return 0;\n}`,
+  python: `import sys\ninput = sys.stdin.readline\n\n`,
+  java: `import java.util.*;\nimport java.io.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));\n        \n    }\n}`
+};
+
+const MODES = { cpp: 'text/x-c++src', python: 'python', java: 'text/x-java' };
+
+let editor;
+document.addEventListener('DOMContentLoaded', () => {
+  const textarea = document.getElementById('compiler-code');
+  editor = CodeMirror.fromTextArea(textarea, {
+    mode: 'text/x-c++src',
+    theme: 'dracula',
+    lineNumbers: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    lineWrapping: false,
+    extraKeys: {
+      'Tab': cm => cm.somethingSelected() ? cm.indentSelection('add') : cm.replaceSelection('    ', 'end'),
+      'Ctrl-Enter': () => document.getElementById('run-btn').click()
+    }
+  });
+  editor.setValue(TEMPLATES.cpp);
+  editor.setSize('100%', '100%');
+
+  document.getElementById('lang-select').addEventListener('change', function () {
+    editor.setOption('mode', MODES[this.value] || 'text/x-c++src');
+    editor.setValue(TEMPLATES[this.value] || '');
+  });
+
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    const lang = document.getElementById('lang-select').value;
+    editor.setValue(TEMPLATES[lang] || '');
+    document.getElementById('stdin-area').value = '';
+    document.getElementById('output-area').textContent = '';
+    document.getElementById('output-area').className = 'compiler-output';
+    document.getElementById('verdict-badge').style.display = 'none';
+    document.getElementById('exec-time').textContent = '';
+  });
+
+  document.getElementById('run-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('run-btn');
+    const label = document.getElementById('run-label');
+    const out = document.getElementById('output-area');
+    const badge = document.getElementById('verdict-badge');
+    const timeEl = document.getElementById('exec-time');
+
+    btn.disabled = true;
+    label.textContent = '⏳ 실행 중...';
+    out.textContent = '';
+    out.className = 'compiler-output';
+    badge.style.display = 'none';
+    timeEl.textContent = '';
+
+    try {
+      const res = await fetch('/tools/compiler/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: document.getElementById('lang-select').value,
+          code: editor.getValue(),
+          stdin: document.getElementById('stdin-area').value
+        })
+      });
+      const data = await res.json();
+
+      const verdictMap = { AC: '실행 완료', CE: '컴파일 에러', RE: '런타임 에러', TLE: '시간 초과' };
+      badge.textContent = verdictMap[data.verdict] || data.verdict;
+      badge.className = 'compiler-verdict verdict-' + data.verdict.toLowerCase();
+      badge.style.display = '';
+
+      if (data.time) timeEl.textContent = data.time + 'ms';
+
+      if (data.verdict === 'CE' || data.verdict === 'RE') {
+        out.textContent = data.error || '(오류 없음)';
+        out.className = 'compiler-output compiler-output-error';
+      } else {
+        out.textContent = data.output || '(출력 없음)';
+        out.className = 'compiler-output';
+      }
+    } catch (e) {
+      out.textContent = '서버 오류: ' + e.message;
+      out.className = 'compiler-output compiler-output-error';
+    } finally {
+      btn.disabled = false;
+      label.textContent = '▶ 실행';
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>

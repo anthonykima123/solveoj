@@ -108,6 +108,40 @@
 
 </div>
 
+<!-- AI 추천 문제 -->
+<div class="home-ai-section">
+  <div class="home-ai-header">
+    <span class="home-ai-icon">🤖</span>
+    <div>
+      <h2 class="home-ai-title">AI 추천 문제</h2>
+      <p class="home-ai-sub"><%= aiLabel %></p>
+    </div>
+  </div>
+  <div class="home-ai-grid">
+    <% if (aiRecs.length === 0) { %>
+      <p class="muted">추천할 문제가 없습니다.</p>
+    <% } %>
+    <% aiRecs.forEach((p, i) => { %>
+      <a href="/problems/<%= p.id %>" class="ai-rec-card">
+        <div class="ai-rec-rank">#<%= i + 1 %></div>
+        <div class="ai-rec-body">
+          <div class="ai-rec-title"><%= p.title %></div>
+          <div class="ai-rec-meta">
+            <span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span>
+            <% (p.tags || []).slice(0, 2).forEach(t => { %>
+              <span class="ai-tag"><%= t %></span>
+            <% }) %>
+          </div>
+        </div>
+        <div class="ai-rec-rate">
+          <%= p.submission_count > 0 ? Math.round(p.accepted_count / p.submission_count * 100) + '%' : '-' %>
+          <span class="ai-rec-rate-label">정답률</span>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
 <!-- 기존: 최근 문제 + 랭킹 -->
 <div class="home-grid">
   <section class="home-card">
