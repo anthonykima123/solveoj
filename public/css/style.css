@@ -486,6 +486,97 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
 .error-code { color: #cbd5e1; font-size: 5rem; font-weight: 900; }
 .error-msg { margin: 12px 0 24px; color: var(--text-muted); font-size: 1.1rem; }
 
+/* ── 새 프로필 ── */
+.pf-wrap { max-width: 900px; margin: 0 auto; }
+.pf-hidden { display: none !important; }
+
+/* 히어로 (배너 + 아바타) */
+.pf-hero { position: relative; border-radius: 16px 16px 0 0; overflow: visible; }
+.pf-banner { height: 160px; border-radius: 16px 16px 0 0; }
+.pf-banner-default { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
+.pf-hero-body { position: absolute; bottom: -36px; left: 0; right: 0; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 24px; }
+.pf-avatar-box { position: relative; }
+.pf-avatar { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.22); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 900; }
+.pf-rank-chip { position: absolute; bottom: 2px; right: -8px; background: #f59e0b; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 2px solid #fff; white-space: nowrap; }
+.pf-hero-right { padding-bottom: 8px; }
+.pf-hero-stat { color: rgba(255,255,255,.85); font-size: .85rem; font-weight: 600; }
+.pf-hero-stat strong { font-size: 1rem; }
+
+/* 프로필 정보 */
+.pf-info { background: #fff; border: 1px solid var(--border); border-top: none; padding: 52px 24px 20px; }
+.pf-handle { font-size: 1.5rem; font-weight: 900; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.pf-tier-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.pf-tier-label { font-size: 1rem; font-weight: 600; }
+.pf-tier-label strong { font-size: 1.2rem; font-weight: 900; }
+.pf-tier-next { font-size: .8rem; color: #64748b; }
+.pf-progress-track { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+.pf-progress-fill { height: 100%; border-radius: 999px; transition: width .4s; }
+.pf-solved-sub { font-size: .88rem; color: #64748b; font-weight: 600; }
+
+/* 탭 */
+.pf-tabs { display: flex; border-bottom: 2px solid var(--border); background: #fff; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 20px; margin-bottom: 20px; }
+.pf-tab { padding: 12px 14px; font-size: .88rem; font-weight: 700; color: #64748b; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s; }
+.pf-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.pf-tab:hover { color: var(--primary); }
+
+/* 카드 */
+.pf-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+.pf-card h3 { font-size: 1rem; font-weight: 800; margin: 0 0 14px; }
+.pf-card-eyebrow { font-size: .72rem; font-weight: 800; color: #94a3b8; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 10px; }
+
+/* AC Rating */
+.pf-rating-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pf-card-tier { font-size: 1rem; font-weight: 600; }
+.pf-card-tier strong { font-size: 1.6rem; font-weight: 900; }
+.pf-rank-pill { display: flex; flex-direction: column; align-items: center; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; min-width: 90px; }
+.pf-rank-num { font-size: 1rem; font-weight: 900; }
+.pf-rank-sub { font-size: .7rem; color: #94a3b8; margin-top: 2px; }
+.pf-top100-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9; }
+.pf-top100-label { font-size: .8rem; color: #64748b; }
+.pf-top100-score { font-size: .95rem; font-weight: 900; color: #0f172a; }
+
+/* 푼 문제 뱃지 그리드 */
+.pf-badge-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
+.pf-tier-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 11px; font-weight: 900; color: #fff; text-decoration: none; flex-shrink: 0;
+  transition: transform .12s, box-shadow .12s;
+}
+.pf-tier-dot:hover { transform: scale(1.15); box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+.tlb-bronze  { background: linear-gradient(135deg, #d97706, #7c2d12); }
+.tlb-silver  { background: linear-gradient(135deg, #94a3b8, #475569); }
+.tlb-gold    { background: linear-gradient(135deg, #f0a000, #b45309); }
+.tlb-platinum{ background: linear-gradient(135deg, #27c4a8, #047857); }
+.tlb-diamond { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+.tlb-ruby    { background: linear-gradient(135deg, #f87185, #be123c); }
+
+/* 스트릭 */
+.pf-streak-now { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+.pf-streak-now strong { font-size: 1.6rem; font-weight: 900; }
+
+/* 히트맵 */
+.heatmap-container { display: flex; gap: 6px; margin: 4px 0 6px; }
+.hm-ylabels { display: flex; flex-direction: column; gap: 2px; padding-top: 1px; flex-shrink: 0; }
+.hm-ylabels span { font-size: 9px; color: #9ca3af; width: 10px; text-align: center; height: 11px; line-height: 11px; }
+.hm-main { overflow-x: auto; flex: 1; }
+.hm-grid { display: flex; gap: 2px; }
+.hm-col { display: flex; flex-direction: column; gap: 2px; }
+.hm-cell { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+.hm-empty { background: transparent; }
+.hm-lv0 { background: #e2e8f0; }
+.hm-lv1 { background: #9be9a8; }
+.hm-lv2 { background: #40c463; }
+.hm-lv3 { background: #30a14e; }
+.hm-lv4 { background: #216e39; }
+.hm-months { position: relative; height: 18px; margin-top: 4px; }
+.hm-months span { position: absolute; font-size: 10px; color: #9ca3af; white-space: nowrap; }
+.heatmap-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.pf-maxstreak { font-size: .8rem; color: #475569; }
+.pf-maxstreak strong { font-weight: 900; }
+.hm-legend { display: flex; align-items: center; gap: 3px; }
+.hm-legend-label { font-size: 10px; color: #9ca3af; }
+
 @media (max-width: 920px) {
   .header-inner { align-items: flex-start; }
   .nav-main { order: 3; width: 100%; overflow-x: auto; padding-bottom: 2px; }
@@ -507,4 +598,5 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
   .search-input { width: 100%; }
   .auth-card { padding: 26px 22px; }
   .profile-card-body { flex-direction: column; gap: 10px; padding: 0 20px 22px; }
+  .pf-badge-grid { max-height: 160px; }
 }
