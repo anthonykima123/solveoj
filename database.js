@@ -240,6 +240,14 @@ function migrateContestPrizes() {
   if (changed) db._save();
 }
 
+function migrateContestRegistrations() {
+  let changed = false;
+  (db._d.contests || []).forEach(c => {
+    if (!Array.isArray(c.registrations)) { c.registrations = []; changed = true; }
+  });
+  if (changed) db._save();
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
@@ -261,6 +269,7 @@ async function initDB() {
   migrateBanFields();
   migrateShopFields();
   migrateContestPrizes();
+  migrateContestRegistrations();
   bootstrapCoins();
   autoSolveAllForAdmin();
 }

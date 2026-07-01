@@ -243,6 +243,26 @@ class JsonDB {
     if (this._d.contests.length !== before) { this._save(); return true; }
     return false;
   }
+  registerContest(contestId, userId) {
+    const c = this.getContestById(contestId);
+    if (!c) return false;
+    if (!(c.registrations || []).includes(userId)) {
+      c.registrations = [...(c.registrations || []), userId];
+      this._save();
+    }
+    return true;
+  }
+  unregisterContest(contestId, userId) {
+    const c = this.getContestById(contestId);
+    if (!c) return false;
+    c.registrations = (c.registrations || []).filter(id => id !== userId);
+    this._save();
+    return true;
+  }
+  isRegisteredContest(contestId, userId) {
+    const c = this.getContestById(contestId);
+    return !!(c && (c.registrations || []).includes(userId));
+  }
 
   // ─────────────────────────── 그룹 ───────────────────────────
   getGroups() { return [...(this._d.groups || [])].sort((a, b) => b.id - a.id); }

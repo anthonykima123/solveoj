@@ -1,0 +1,129 @@
+<% locals.title = contest.title + ' — 스코어보드' %>
+<%- include('../partials/header') %>
+
+<div class="sb-wrap">
+
+  <!-- 헤더 -->
+  <div class="sb-topbar">
+    <div class="sb-topbar-left">
+      <a href="/contests/<%= contest.id %>" class="sb-back">← 대회</a>
+      <div>
+        <h1 class="sb-title"><%= contest.title %></h1>
+        <div class="sb-subtitle">
+          <span class="contest-status status-<%= status.key %>"><%= status.label %></span>
+          &nbsp;<%= new Date(contest.start_at).toLocaleString('ko-KR') %> ~
+          <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
+        </div>
+      </div>
+    </div>
+    <% if (status.key === 'running') { %>
+      <div class="sb-live"><span class="sb-live-dot"></span>LIVE</div>
+    <% } %>
+  </div>
+
+  <!-- 스코어보드 테이블 -->
+  <div class="sb-table-wrap">
+    <table class="sb-table">
+      <thead>
+        <tr>
+          <th class="sb-col-rank">#</th>
+          <th class="sb-col-user">참가자</th>
+          <th class="sb-col-total">점수</th>
+          <% problems.forEach((p, i) => { %>
+            <th class="sb-col-prob">
+              <div class="sb-prob-hd">
+                <span class="sb-prob-letter"><%= String.fromCharCode(65 + i) %></span>
+                <span class="sb-prob-name"><%= p.title %></span>
+              </div>
+            </th>
+          <% }) %>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (rows.length === 0) { %>
+          <tr><td colspan="<%= 3 + problems.length %>" class="sb-empty">아직 참가자가 없습니다.</td></tr>
+        <% } %>
+        <% rows.forEach((row, ri) => { %>
+          <tr class="sb-row<%= row.totalScore > 0 ? '' : ' sb-row-zero' %>">
+            <!-- 순위 -->
+            <td class="sb-col-rank">
+              <span class="sb-rank-num<%= ri < 3 ? ' sb-rank-top' + (ri+1) : '' %>"><%= ri + 1 %></span>
+            </td>
+            <!-- 사용자 -->
+            <td class="sb-col-user">
+              <a href="/user/<%= row.user.username %>" class="sb-username"><%= row.user.username %></a>
+              <div class="sb-penalty">패널티 <%= row.totalPenalty %>분</div>
+            </td>
+            <!-- 총점 (해결 수) -->
+            <td class="sb-col-total">
+              <span class="sb-total-score"><%= row.totalScore %></span>
+            </td>
+            <!-- 문제별 셀 -->
+            <% pidList.forEach(pid => { %>
+              <%
+                const cell = row.cells[pid] || { waCount: 0, acTime: null, subs: [] };
+                const solved = cell.acTime !== null;
+                const tried  = cell.waCount > 0 || solved;
+                const elMin  = solved ? Math.floor(cell.acTime / 60000) : null;
+                const elSec  = solved ? Math.floor((cell.acTime % 60000) / 1000) : null;
+                const barPct = solved && duration > 0 ? Math.min(100, Math.round(cell.acTime / duration * 100)) : 0;
+                let cellCls  = 'sb-cell';
+                if (solved) cellCls += ' sb-cell-ac';
+                else if (tried) cellCls += ' sb-cell-wa';
+              %>
+              <td class="<%= cellCls %>">
+                <% if (solved) { %>
+                  <div class="sb-bar-track">
+                    <div class="sb-bar-fill sb-bar-green" style="width:<%= barPct %>%"></div>
+                    <% cell.subs.filter(s => s.verdict !== 'AC').forEach(s => { %>
+                      <%
+                        const waPct = duration > 0 ? Math.min(99, Math.round(s.elapsed / duration * 100)) : 0;
+                      %>
+                      <div class="sb-bar-wa-tick" style="left:<%= waPct %>%"></div>
+                    <% }) %>
+                  </div>
+                  <div class="sb-cell-info">
+                    <span class="sb-cell-time"><%= String(elMin).padStart(2,'0') %>:<%= String(elSec).padStart(2,'0') %></span>
+                    <span class="sb-cell-score">100점</span>
+                    <% if (cell.waCount > 0) { %>
+                      <span class="sb-cell-wa-cnt">-<%= cell.waCount %></span>
+                    <% } %>
+                  </div>
+                <% } else if (tried) { %>
+                  <div class="sb-bar-track sb-bar-track-wa">
+                    <% cell.subs.forEach((s, si) => { %>
+                      <%
+                        const waPct = duration > 0 ? Math.min(99, Math.round(s.elapsed / duration * 100)) : Math.min(99, (si+1) * 15);
+                      %>
+                      <div class="sb-bar-wa-tick" style="left:<%= waPct %>%"></div>
+                    <% }) %>
+                  </div>
+                  <div class="sb-cell-info">
+                    <span class="sb-cell-wa-only"><%= cell.waCount %>회 시도</span>
+                  </div>
+                <% } %>
+              </td>
+            <% }) %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sb-refresh-note">
+    <% if (status.key === 'running') { %>
+      스코어보드는 30초마다 자동 갱신됩니다.
+    <% } else { %>
+      최종 스코어보드
+    <% } %>
+  </p>
+
+</div>
+
+<% if (status.key === 'running') { %>
+<script>
+  setTimeout(() => location.reload(), 30000);
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

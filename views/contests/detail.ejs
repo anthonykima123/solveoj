@@ -2,26 +2,85 @@
 <%- include('../partials/header') %>
 
 <div class="page-header">
-  <h1>
-    <span class="contest-status status-<%= status.key %>"><%= status.label %></span>
-    <%= contest.title %>
-  </h1>
-  <% if (isAdmin) { %>
-    <form method="POST" action="/contests/<%= contest.id %>/delete" onsubmit="return confirm('대회를 삭제할까요?')">
-      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-    </form>
+  <div>
+    <h1>
+      <span class="contest-status status-<%= status.key %>"><%= status.label %></span>
+      <%= contest.title %>
+    </h1>
+    <p class="page-desc" style="margin:4px 0 0">
+      <%= new Date(contest.start_at).toLocaleString('ko-KR') %>
+      ~ <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
+      &nbsp;·&nbsp; 참가자 <strong><%= regCount %></strong>명
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <% if (status.key !== 'upcoming') { %>
+      <a href="/contests/<%= contest.id %>/scoreboard" class="btn btn-primary">📊 스코어보드</a>
+    <% } %>
+    <% if (isAdmin) { %>
+      <% if (status.key === 'ended' && !contest.prizes_awarded) { %>
+        <form method="POST" action="/contests/<%= contest.id %>/award" onsubmit="return confirm('순위 정산 후 코인을 지급합니다. 계속할까요?')">
+          <button type="submit" class="btn btn-secondary">🏆 정산</button>
+        </form>
+      <% } %>
+      <form method="POST" action="/contests/<%= contest.id %>/delete" onsubmit="return confirm('대회를 삭제할까요?')">
+        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<% if (awarded) { %>
+  <div class="alert alert-success">순위 정산 완료! 1~3위에게 코인이 지급되었습니다.</div>
+<% } %>
+<% if (awardErr === 'already_awarded') { %>
+  <div class="alert alert-error">이미 정산이 완료된 대회입니다.</div>
+<% } %>
+<% if (contest.prizes_awarded) { %>
+  <div class="alert" style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 16px;border-radius:8px;margin-bottom:16px">
+    🏆 이 대회는 정산이 완료되었습니다.
+  </div>
+<% } %>
+
+<% if (contest.description) { %>
+  <div class="contest-info" style="margin-bottom:20px"><p><%= contest.description %></p></div>
+<% } %>
+
+<!-- 참가 신청 카드 -->
+<div class="ct-reg-card">
+  <% if (!locals.currentUser) { %>
+    <div class="ct-reg-body">
+      <span class="ct-reg-info">참가 신청하려면 로그인이 필요합니다.</span>
+      <a href="/login?next=/contests/<%= contest.id %>" class="btn btn-primary btn-sm">로그인</a>
+    </div>
+  <% } else if (status.key === 'ended') { %>
+    <div class="ct-reg-body">
+      <span class="ct-reg-info">종료된 대회입니다.</span>
+      <% if (registered) { %><span class="ct-reg-badge ct-reg-yes">참가 완료</span><% } %>
+    </div>
+  <% } else if (registered) { %>
+    <div class="ct-reg-body">
+      <span class="ct-reg-badge ct-reg-yes">✓ 참가 신청 완료</span>
+      <% if (status.key === 'upcoming') { %>
+        <form method="POST" action="/contests/<%= contest.id %>/unregister">
+          <button type="submit" class="btn btn-secondary btn-sm">신청 취소</button>
+        </form>
+      <% } %>
+    </div>
+  <% } else { %>
+    <div class="ct-reg-body">
+      <span class="ct-reg-info">
+        <% if (status.key === 'upcoming') { %>대회 시작 전에 참가 신청하세요.<% } else { %>진행 중인 대회에 참가할 수 있습니다.<% } %>
+      </span>
+      <form method="POST" action="/contests/<%= contest.id %>/register">
+        <button type="submit" class="btn btn-primary btn-sm">참가 신청</button>
+      </form>
+    </div>
   <% } %>
 </div>
 
-<div class="contest-info">
-  <p><strong>기간:</strong>
-    <%= new Date(contest.start_at).toLocaleString('ko-KR') %>
-    ~ <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
-  </p>
-  <% if (contest.description) { %><p><%= contest.description %></p><% } %>
-</div>
-
-<h3>문제</h3>
+<!-- 문제 목록 -->
+<h3 style="margin:24px 0 12px">문제</h3>
 <% if (status.key === 'upcoming') { %>
   <p class="muted">대회 시작 전에는 문제가 공개되지 않습니다.</p>
 <% } else { %>
@@ -36,7 +95,7 @@
         <% } %>
         <% problems.forEach((p, i) => { %>
           <tr>
-            <td class="col-id"><%= String.fromCharCode(65 + i) %></td>
+            <td class="col-id"><strong><%= String.fromCharCode(65 + i) %></strong></td>
             <td><a href="/problems/<%= p.id %>"><%= p.title %></a></td>
             <td><span class="badge badge-<%= p.difficulty.toLowerCase() %>"><%= p.difficulty %></span></td>
           </tr>
