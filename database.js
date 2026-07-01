@@ -248,6 +248,21 @@ function migrateContestRegistrations() {
   if (changed) db._save();
 }
 
+// datetime-local 형식(타임존 없음)으로 저장된 대회 시각을 KST 기준 UTC ISO로 보정
+function migrateContestTimezones() {
+  let changed = false;
+  (db._d.contests || []).forEach(c => {
+    for (const field of ['start_at', 'end_at']) {
+      const v = c[field];
+      if (v && !v.endsWith('Z') && !v.includes('+')) {
+        c[field] = new Date(v + '+09:00').toISOString();
+        changed = true;
+      }
+    }
+  });
+  if (changed) { db._save(); console.log('✅ contest timezones migrated to UTC ISO'); }
+}
+
 async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
@@ -270,6 +285,7 @@ async function initDB() {
   migrateShopFields();
   migrateContestPrizes();
   migrateContestRegistrations();
+  migrateContestTimezones();
   bootstrapCoins();
   autoSolveAllForAdmin();
 }

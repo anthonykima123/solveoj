@@ -21,8 +21,7 @@
       <h3><%= c.title %></h3>
       <p class="muted"><%= (c.description || '').slice(0, 80) %></p>
       <div class="contest-time">
-        <%= new Date(c.start_at).toLocaleString('ko-KR') %>
-        ~ <%= new Date(c.end_at).toLocaleString('ko-KR') %>
+        <%= fmtKST(c.start_at) %> ~ <%= fmtKST(c.end_at) %>
       </div>
       <div class="muted">문제 <%= (c.problem_ids || []).length %>개</div>
     </a>

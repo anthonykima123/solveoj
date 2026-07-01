@@ -8,8 +8,7 @@
       <%= contest.title %>
     </h1>
     <p class="page-desc" style="margin:4px 0 0">
-      <%= new Date(contest.start_at).toLocaleString('ko-KR') %>
-      ~ <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
+      <%= fmtKST(contest.start_at) %> ~ <%= fmtKST(contest.end_at) %>
       &nbsp;·&nbsp; 참가자 <strong><%= regCount %></strong>명
     </p>
   </div>

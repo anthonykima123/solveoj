@@ -5,6 +5,16 @@ const { isAdmin } = require('../utils/permissions');
 const { CONTEST_PRIZES } = require('../utils/shop');
 const router = express.Router();
 
+// datetime-local 입력(KST)을 UTC ISO 문자열로 변환
+function kstToUtc(dtLocal) {
+  return new Date(dtLocal + '+09:00').toISOString();
+}
+
+// UTC ISO → KST 표시용 문자열
+function fmtKST(isoStr) {
+  return new Date(isoStr).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+}
+
 function contestStatus(c) {
   const now = Date.now();
   const s = new Date(c.start_at).getTime();
@@ -85,7 +95,7 @@ function buildScoreboard(c) {
 // 목록
 router.get('/contests', (req, res) => {
   const contests = db.getContests().map(c => ({ ...c, status: contestStatus(c) }));
-  res.render('contests/list', { contests, isAdmin: isAdmin(db.getUserById((req.session.user || {}).id)) });
+  res.render('contests/list', { contests, isAdmin: isAdmin(db.getUserById((req.session.user || {}).id)), fmtKST });
 });
 
 // 생성 폼 (관리자)
@@ -102,10 +112,12 @@ router.post('/contests', requireAdminUser, (req, res) => {
 
   if (!title || !start_at || !end_at)
     return res.render('contests/new', { error: '제목, 시작/종료 시각은 필수입니다.', problems: db.getProblems() });
-  if (new Date(end_at) <= new Date(start_at))
+  const startUtc = kstToUtc(start_at);
+  const endUtc   = kstToUtc(end_at);
+  if (new Date(endUtc) <= new Date(startUtc))
     return res.render('contests/new', { error: '종료 시각이 시작 시각보다 늦어야 합니다.', problems: db.getProblems() });
 
-  const c = db.createContest({ title, description: description || '', start_at, end_at, problem_ids, registrations: [] });
+  const c = db.createContest({ title, description: description || '', start_at: startUtc, end_at: endUtc, problem_ids, registrations: [] });
   res.redirect('/contests/' + c.id);
 });
 
@@ -121,7 +133,7 @@ router.get('/contests/:id/scoreboard', (req, res) => {
   res.render('contests/scoreboard', {
     contest: c, status, problems,
     rows: sb.rows, pidList: sb.pidList, duration: sb.duration, startMs: sb.start,
-    isAdmin: isAdmin(me)
+    isAdmin: isAdmin(me), fmtKST
   });
 });
 
@@ -139,6 +151,7 @@ router.get('/contests/:id', (req, res) => {
   res.render('contests/detail', {
     contest: c, problems, status,
     isAdmin: isAdmin(me), registered, regCount,
+    fmtKST,
     awarded: req.query.awarded === '1',
     awardErr: req.query.err || null
   });

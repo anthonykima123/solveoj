@@ -11,8 +11,7 @@
         <h1 class="sb-title"><%= contest.title %></h1>
         <div class="sb-subtitle">
           <span class="contest-status status-<%= status.key %>"><%= status.label %></span>
-          &nbsp;<%= new Date(contest.start_at).toLocaleString('ko-KR') %> ~
-          <%= new Date(contest.end_at).toLocaleString('ko-KR') %>
+          &nbsp;<%= fmtKST(contest.start_at) %> ~ <%= fmtKST(contest.end_at) %>
         </div>
       </div>
     </div>
