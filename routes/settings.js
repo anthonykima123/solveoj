@@ -49,6 +49,24 @@ router.post('/settings/images', (req, res) => {
   res.render('settings', { success: '프로필 이미지가 저장되었습니다.', error: null });
 });
 
+router.post('/settings/external-accounts', (req, res) => {
+  const userId = req.session.user.id;
+  let { solvedac_handle, jungol_handle } = req.body;
+  solvedac_handle = (solvedac_handle || '').trim();
+  jungol_handle = (jungol_handle || '').trim();
+
+  if (solvedac_handle && !/^[a-zA-Z0-9_]{1,40}$/.test(solvedac_handle))
+    return res.render('settings', { error: 'solved.ac 아이디 형식이 올바르지 않습니다.', success: null });
+  if (jungol_handle && !/^[a-zA-Z0-9_]{1,40}$/.test(jungol_handle))
+    return res.render('settings', { error: '정올 아이디 형식이 올바르지 않습니다.', success: null });
+
+  db.updateUser(userId, {
+    solvedac_handle: solvedac_handle || null,
+    jungol_handle: jungol_handle || null
+  });
+  res.render('settings', { success: '외부 계정 연동이 저장되었습니다.', error: null });
+});
+
 router.post('/settings/password', (req, res) => {
   const { current_password, new_password, new_password2 } = req.body;
   const userId = req.session.user.id;

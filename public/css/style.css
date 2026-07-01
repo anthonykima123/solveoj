@@ -408,6 +408,15 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
 .settings-title { margin-bottom: 20px; font-size: 1.7rem; font-weight: 900; }
 .settings-grid, .profile-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .settings-card, .form-card, .post-view, .group-info, .contest-info { padding: 20px; }
+.settings-card-full { grid-column: 1 / -1; }
+.ext-accounts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.ext-account-label { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .9rem; margin-bottom: 6px; }
+.ext-input-row { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #f8fafc; }
+.ext-prefix { padding: 8px 10px; font-size: .8rem; color: #94a3b8; background: #f1f5f9; border-right: 1px solid var(--border); white-space: nowrap; }
+.ext-input { border: none !important; border-radius: 0 !important; background: transparent !important; flex: 1; }
+.ext-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .72rem; font-weight: 800; letter-spacing: .03em; }
+.ext-badge-solved { background: #f97316; color: #fff; }
+.ext-badge-jungol { background: #6366f1; color: #fff; }
 .form-card { max-width: 780px; display: flex; flex-direction: column; gap: 16px; }
 .checkbox-list { max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
 .checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -512,6 +521,10 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
 .pf-progress-track { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
 .pf-progress-fill { height: 100%; border-radius: 999px; transition: width .4s; }
 .pf-solved-sub { font-size: .88rem; color: #64748b; font-weight: 600; }
+.pf-ext-accounts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pf-ext-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; background: #f8fafc; border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; transition: background .15s; }
+.pf-ext-link:hover { background: #f1f5f9; }
+.pf-ext-handle { font-size: .83rem; font-weight: 600; color: #334155; }
 
 /* 탭 */
 .pf-tabs { display: flex; border-bottom: 2px solid var(--border); background: #fff; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 20px; margin-bottom: 20px; }
@@ -725,7 +738,7 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
   .hero-banner { min-height: 0; padding: 28px 20px; }
   .hero-content h1 { font-size: 2.3rem; }
   .hero-panel { display: none; }
-  .settings-grid, .profile-stats, .result-meta, .sample-io-grid { grid-template-columns: 1fr; }
+  .settings-grid, .profile-stats, .result-meta, .sample-io-grid, .ext-accounts-grid { grid-template-columns: 1fr; }
   .table-wrap { overflow-x: auto; }
   .table { min-width: 680px; }
   .filter-form, .filter-group, .search-group, .submit-footer, .submit-action { align-items: stretch; flex-direction: column; }

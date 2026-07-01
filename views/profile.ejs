@@ -40,6 +40,22 @@
       <div class="pf-progress-fill tier-fill-<%= tier.cls %>" style="width:<%= progress %>%"></div>
     </div>
     <div class="pf-solved-sub"><%= (profileUser.solved_count || 0).toLocaleString() %>문제 해결</div>
+    <% if (profileUser.solvedac_handle || profileUser.jungol_handle) { %>
+    <div class="pf-ext-accounts">
+      <% if (profileUser.solvedac_handle) { %>
+        <a href="https://solved.ac/profile/<%= profileUser.solvedac_handle %>" target="_blank" rel="noopener" class="pf-ext-link">
+          <span class="ext-badge ext-badge-solved">solved.ac</span>
+          <span class="pf-ext-handle">@<%= profileUser.solvedac_handle %></span>
+        </a>
+      <% } %>
+      <% if (profileUser.jungol_handle) { %>
+        <a href="https://jungol.co.kr" target="_blank" rel="noopener" class="pf-ext-link">
+          <span class="ext-badge ext-badge-jungol">정올</span>
+          <span class="pf-ext-handle">@<%= profileUser.jungol_handle %></span>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
   </div>
 
   <!-- 탭 -->
