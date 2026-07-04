@@ -31,10 +31,15 @@ app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.json({ limit: '2mb' }));
 
 app.use(session({
-  secret: 'judge-secret-2024',
+  secret: process.env.SESSION_SECRET || 'judge-secret-2024',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
 }));
 
 app.use((req, res, next) => {

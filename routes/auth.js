@@ -5,12 +5,15 @@ const router = express.Router();
 
 router.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/');
-  res.render('login', { error: null, next: req.query.next || '/' });
+  const next = req.query.next;
+  const safeNext = (next && next.startsWith('/') && !next.startsWith('//')) ? next : '/';
+  res.render('login', { error: null, next: safeNext });
 });
 
 router.post('/login', (req, res) => {
   const { username, password, next } = req.body;
-  const redirect = next || '/';
+  const safeNext = (next && next.startsWith('/') && !next.startsWith('//')) ? next : '/';
+  const redirect = safeNext;
   if (!username || !password)
     return res.render('login', { error: '아이디와 비밀번호를 입력하세요.', next: redirect });
 

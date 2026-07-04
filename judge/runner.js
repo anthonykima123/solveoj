@@ -162,8 +162,13 @@ function runTestCase(language, compileResult, input, tmpDir, id, timeLimit) {
       try { proc.kill('SIGKILL'); } catch (_) {}
     }, timeLimit);
 
-    proc.stdout.on('data', (d) => { output += d.toString(); });
-    proc.stderr.on('data', (d) => { errorOutput += d.toString(); });
+    const MAX_OUTPUT = 4 * 1024 * 1024; // 4MB
+    proc.stdout.on('data', (d) => {
+      if (output.length < MAX_OUTPUT) output += d.toString();
+    });
+    proc.stderr.on('data', (d) => {
+      if (errorOutput.length < MAX_OUTPUT) errorOutput += d.toString();
+    });
 
     proc.on('close', (code) => {
       if (finished) return;
