@@ -817,3 +817,12 @@ code { background: #eaf0f6; padding: 1px 5px; border-radius: 4px; font-family: C
 
 .sb-empty { text-align: center; color: #94a3b8; padding: 40px !important; font-size: .9rem; }
 .sb-refresh-note { margin-top: 12px; font-size: .78rem; color: #94a3b8; text-align: right; }
+
+/* 코드 잠금 / 열람 권한 */
+.code-section-header { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--border); background: #f8fafc; }
+.code-section-header h3 { margin: 0; color: var(--text-muted); font-size: .84rem; }
+.code-visible-reason { font-size: .78rem; color: var(--ac); font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; padding: 2px 10px; }
+.code-locked-box { display: flex; align-items: flex-start; gap: 16px; padding: 28px 24px; background: #f8fafc; border-radius: 8px; border: 1.5px dashed var(--border); }
+.code-locked-icon { font-size: 2rem; line-height: 1; }
+.code-locked-body strong { display: block; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.code-locked-body p { color: var(--text-muted); font-size: .9rem; margin: 0; }

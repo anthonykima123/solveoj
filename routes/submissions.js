@@ -82,11 +82,20 @@ router.get('/submissions/:id', (req, res) => {
 
   const problem = db.getProblemById(sub.problem_id);
   const author = db.getUserById(sub.user_id);
+  const me = req.session.user;
+
+  const isOwner = me?.id === sub.user_id;
+  const hasSolved = me ? db.isSolved(me.id, sub.problem_id) : false;
+  const canViewCode = isOwner || hasSolved;
+
   const enriched = {
     ...sub,
     problem_title: problem ? problem.title : '?',
     username: author ? author.username : '?',
-    code: req.session.user?.id === sub.user_id ? sub.code : null
+    code: canViewCode ? sub.code : null,
+    canViewCode,
+    isOwner,
+    loggedIn: !!me
   };
 
   res.render('result', { sub: enriched, LANG_LABELS });

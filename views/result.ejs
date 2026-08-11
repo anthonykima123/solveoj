@@ -45,9 +45,29 @@
 
   <% if (sub.code) { %>
   <div class="result-section">
-    <h3>제출한 코드</h3>
+    <div class="code-section-header">
+      <h3>제출한 코드</h3>
+      <% if (!sub.isOwner) { %>
+        <span class="code-visible-reason">이 문제를 풀었기 때문에 열람 가능합니다</span>
+      <% } %>
+    </div>
     <div class="code-display-wrap">
       <textarea id="result-code" class="code-textarea" readonly><%= sub.code %></textarea>
+    </div>
+  </div>
+  <% } else if (!sub.canViewCode) { %>
+  <div class="result-section">
+    <div class="code-locked-box">
+      <div class="code-locked-icon">🔒</div>
+      <div class="code-locked-body">
+        <strong>코드를 볼 수 없습니다</strong>
+        <% if (!sub.loggedIn) { %>
+          <p><a href="/login">로그인</a> 후 이 문제를 직접 풀면 코드를 열람할 수 있습니다.</p>
+        <% } else { %>
+          <p>이 문제를 직접 풀면 다른 사람의 코드를 열람할 수 있습니다.</p>
+          <a href="/problems/<%= sub.problem_id %>/submit" class="btn btn-primary btn-sm" style="margin-top:10px">지금 도전하기</a>
+        <% } %>
+      </div>
     </div>
   </div>
   <% } %>
