@@ -4,10 +4,25 @@
     const saved = localStorage.getItem('solvex-theme');
     if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
   } catch {}
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  const syncTheme = () => themeToggle?.setAttribute('aria-pressed', String(root.dataset.theme === 'light'));
+  syncTheme();
+  themeToggle?.addEventListener('click', () => {
     root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    syncTheme();
     try { localStorage.setItem('solvex-theme', root.dataset.theme); } catch {}
   });
+  for (const menu of document.querySelectorAll('.sx-menu')) {
+    document.addEventListener('click', event => {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+    menu.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary').focus();
+      }
+    });
+  }
   const form = document.querySelector('[data-lens]');
   if (!form) return;
   const fields = ['problem', 'answer', 'context'].map(name => form.elements.namedItem(name));
