@@ -2,4 +2,4 @@
 <div class="sx-grid sx-work"><section class="sx-panel"><h2>내 입력</h2><h3>문제</h3><pre><%= review.report.input.problem || '사진으로 제출' %></pre><h3>풀이</h3><pre><%= review.report.input.answer || '사진으로 제출' %></pre>
 <% if (review.report.input.context) { %><h3>참고 내용</h3><pre><%= review.report.input.context %></pre><% } %>
 <form method="post" action="/analysis-history/<%= id %>/delete"><input type="hidden" name="csrf" value="<%= csrfToken %>"><button class="sx-button" type="submit">기록 삭제</button></form></section>
-<%- include('report', {result:review.report.result, kind:review.kind, points:review.report.input.max, sample:false}) %></div><%- include('foot') %>
+<%- include('report', {result:review.report.result, kind:review.kind, points:review.report.input.max, sample:false, reviewProvider:review.report.provider || 'Gemini'}) %></div><%- include('foot') %>

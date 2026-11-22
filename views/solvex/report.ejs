@@ -1,4 +1,4 @@
-<section class="sx-panel sx-report"><p class="sx-kicker"><%= sample ? '고정 데모 / 분석 결과' : 'GEMINI / 분석 결과' %></p><h2>풀이 피드백</h2>
+<section class="sx-panel sx-report"><p class="sx-kicker"><%= sample ? '고정 데모' : (typeof reviewProvider !== 'undefined' ? reviewProvider : 'Gemini') %> / 분석 결과</p><h2>풀이 피드백</h2>
 <% if (kind === 'math') { %><p class="sx-score"><strong><%= result.min === result.max ? result.min : result.min + '–' + result.max %></strong><span>/ <%= points %>점<br>예상 점수</span></p><p class="sx-muted">학습용 예상 평가 · 공식 KMO 점수가 아닙니다.</p><% } else { %><p class="sx-muted">정적 분석 · 코드 실행 및 실제 채점 없음</p><% } %>
 <p><%= result.summary %></p>
 <% if (result.strengths) { %><h3>잘한 점</h3><p><%= result.strengths %></p><% } %>

@@ -1,5 +1,21 @@
 # AI 평가
 
+## OpenAI 서버 분석 시작하기
+
+OpenAI 서버 분석은 승인된 성인 검토 계정으로 시작합니다. OpenAI 프로젝트에 서비스용 API 키를 만들고 Render의 **기존 solveoj 서비스 → Environment**에서 아래 값을 입력합니다. 프로젝트의 결제·크레딧과 사용량이 별도로 적용됩니다. 키는 채팅, GitHub, 클라이언트 코드에 적지 않습니다.
+
+| Key | Value |
+| --- | --- |
+| `AI_PROVIDER` | `openai` |
+| `OPENAI_API_KEY` | OpenAI 프로젝트 API 키 |
+| `OPENAI_MODEL` | `gpt-6.2-sol` (옵션, 기본값) |
+| `OPENAI_REVIEWER_IDS` | 승인한 성인 검토 계정의 번호 목록. 내 번호는 슈퍼 관리자 로그인 후 `/admin/solvex`에서 확인 |
+| `AI_ENABLED` | 사용량과 비용에 동의하고 활성화할 때 `true` |
+
+기존 `DATABASE_URL`을 유지하세요. 먼저 승인된 본인만 연결하고, 실제 호스팅에서 개인정보 없는 짧은 증명 하나로 확인하세요. 기본 한도는 사용자당 하루 3회, 전체 하루 20회입니다. `AI_DAILY_GLOBAL_LIMIT`을 낮춰 시작할 수 있습니다. OpenAI 프로젝트의 월 예산 알림은 앱의 요청 제한과 별개입니다. [시작 가이드](https://developers.openai.com/api/docs/quickstart) · [API 가격](https://developers.openai.com/api/docs/pricing)
+
+전송 동의가 없거나 승인 목록에 없는 요청은 OpenAI에 전달하지 않습니다. 사진은 OpenAI 분석에서 지원하지 않습니다. OpenAI 요청의 `store:false`는 별도 Zero Data Retention 승인과 동일하지 않습니다. 성인 검토자만 승인하고 미성년자의 개인정보를 보내지 마세요. [데이터 제어 안내](https://developers.openai.com/api/docs/guides/your-data)
+
 공개 분석실은 브라우저의 WebGPU에서 Qwen2.5-1.5B-Instruct를 실행합니다. 로그인, API 키, 성인 인증 없이 직접 입력한 텍스트를 분석하며 입력과 결과를 서버로 보내거나 저장하지 않습니다. 첫 실행 시 Hugging Face에서 모델 파일을 내려받으므로 네트워크와 그래픽 메모리가 필요합니다. 공개 분석은 텍스트 입력을 지원하며 결과는 공식 점수가 아닙니다. 모델 로딩 실패 시 고정 예시를 확인할 수 있습니다.
 
 웹 앱은 npm에 고정한 WebLLM 런타임을 같은 출처에서 전송합니다. 모델은 별도 브라우저 작업 스레드에서 실행합니다. 공개 배포에 AI API 환경 변수나 별도 서버는 필요 없습니다.

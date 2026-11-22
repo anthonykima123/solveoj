@@ -7,18 +7,22 @@
 <%- include('report', {result:example.result, kind, points:example.max, sample:true}) %></div><% } %>
 <section class="sx-panel sx-lab"><h2>내 <%= math ? '풀이' : '코드' %> 분석하기</h2>
 <% if (!ready) { %><p class="sx-callout">로그인 없이 이 브라우저에서 분석합니다. 첫 실행에는 모델 다운로드가 필요합니다. 입력과 결과는 서버로 전송하거나 저장하지 않습니다.</p><% } %>
+<% if (cloudPilot && !ready) { %><p class="sx-callout">OpenAI 서버 분석은 승인된 계정에서 사용할 수 있습니다.
+<% if (!currentUser) { %><a href="/login?next=<%= encodeURIComponent('/lens/' + kind) %>">승인된 계정으로 로그인 ↗</a><% } %></p><% } %>
+<% if (ready && providerName === 'OpenAI') { %><p class="sx-callout">OpenAI 서버에서 분석합니다. 모델 다운로드나 WebGPU가 필요 없습니다.</p><% } %>
 <% const inputLimit = ready ? maxInput : Math.min(maxInput, 2500); %>
 <form data-lens data-max="<%= inputLimit %>" data-token="<%= csrfToken %>" <% if (ready) { %>action="/lens/<%= kind %>" method="post" enctype="multipart/form-data"<% } else { %>data-local-review="<%= kind %>" method="dialog"<% } %>>
 <div class="sx-grid sx-work"><label>문제 본문<textarea name="problem" rows="9" maxlength="<%= inputLimit %>" <%= ready ? '' : 'required' %> spellcheck="false" placeholder="조건이 포함된 문제를 입력하세요."><%= prefill.slice(0, inputLimit) %></textarea></label>
 <label><%= math ? '분석할 증명' : '분석할 코드' %><textarea class="<%= math ? '' : 'sx-code' %>" name="answer" rows="9" maxlength="<%= inputLimit %>" <%= ready ? '' : 'required' %> spellcheck="false" placeholder="<%= math ? '풀이 과정을 순서대로 적어 주세요.' : '분석할 소스 코드를 붙여넣으세요.' %>"></textarea></label></div>
 <div class="sx-form-group">
-<% if (math) { %><label>전체 배점 <input name="max" type="number" min="1" max="100" value="7" required></label><% if (ready) { %><label data-drop class="sx-drop">손글씨 사진 · PNG/JPEG, 최대 1MB<input name="image" type="file" accept="image/png,image/jpeg"><span data-file aria-live="polite"></span><img data-photo alt="첨부한 풀이 사진 미리보기" hidden></label><% } %>
+<% if (math) { %><label>전체 배점 <input name="max" type="number" min="1" max="100" value="7" required></label><% if (allowImages) { %><label data-drop class="sx-drop">손글씨 사진 · PNG/JPEG, 최대 1MB<input name="image" type="file" accept="image/png,image/jpeg"><span data-file aria-live="polite"></span><img data-photo alt="첨부한 풀이 사진 미리보기" hidden></label><% } %>
 <% } else { %><label>언어 <select name="language"><option>C++17</option><option>C++20</option><option>Python 3</option><option>Java 11</option></select></label><% } %>
 </div>
 <label><%= math ? '참고 풀이 또는 맥락' : '제한, 오류 메시지 또는 채점 결과' %> (선택)<textarea name="context" rows="3" maxlength="<%= inputLimit %>"></textarea></label>
 <p data-count class="sx-muted"></p>
-<% if (ready && currentUser) { %><label class="sx-consent"><input type="checkbox" name="consent" value="yes" required> 입력 내용과 첨부 사진을 Google Gemini로 전송하는 데 동의합니다. 이름 등 개인정보를 제거해 주세요.</label>
-<button class="sx-button primary" type="submit">분석 시작 ↗</button><% } else { %>
+<% if (ready && currentUser) { %><label class="sx-consent"><input type="checkbox" name="consent" value="<%= providerName === 'OpenAI' ? 'openai' : 'yes' %>" required>
+<%= providerName === 'OpenAI' ? '문제·풀이·코드와 참고 텍스트를 분석 목적으로 OpenAI에 전송하는 데 동의합니다. 이름, 학교 등 개인정보를 입력하지 마세요.' : '입력 내용과 첨부 사진을 Google Gemini로 전송하는 데 동의합니다. 이름 등 개인정보를 제거해 주세요.' %></label>
+<button class="sx-button primary" type="submit"><%= providerName === 'OpenAI' ? 'OpenAI로 분석' : '분석 시작 ↗' %></button><% } else { %>
 <button class="sx-button primary" type="submit" data-local-start disabled>AI 분석 시작</button>
 <button class="sx-button" type="button" data-local-cancel hidden>취소</button>
 <progress data-local-progress max="1" aria-label="모델 준비 진행률" hidden></progress>
