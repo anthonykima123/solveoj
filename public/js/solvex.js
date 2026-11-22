@@ -34,6 +34,7 @@
   };
   form.addEventListener('input', updateCount);
   updateCount();
+  if (form.hasAttribute('data-local-review')) return;
   const image = form.elements.namedItem('image');
   const drop = form.querySelector('[data-drop]');
   const photo = form.querySelector('[data-photo]');

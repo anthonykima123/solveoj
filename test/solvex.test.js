@@ -71,6 +71,38 @@ test('public application routes share the SOLVEX shell', async () => {
   }
 });
 
+test('public Lens loads local inference without an analysis POST', async () => {
+  for (const kind of ['math', 'code']) {
+    const html = await (await fetch(origin + '/lens/' + kind)).text();
+    assert.match(html, new RegExp('data-local-review="' + kind + '"'));
+    assert.match(html, /method="dialog"/);
+    assert.match(html, /data-local-start/);
+    assert.doesNotMatch(html, /name="consent"|name="image"|method="post" enctype="multipart\/form-data"/);
+  }
+  const worker = await fetch(origin + '/js/local-ai-worker.mjs');
+  assert.equal(worker.status, 200);
+  assert.match(worker.headers.get('content-type'), /javascript/);
+  assert.match(await worker.text(), /WebWorkerMLCEngineHandler/);
+  const runtime = await fetch(origin + '/vendor/web-llm-0.2.89.js');
+  assert.equal(runtime.status, 200);
+  assert.match(runtime.headers.get('content-type'), /javascript/);
+  assert.match(await runtime.text(), /Qwen2\.5-1\.5B-Instruct-q4f32_1-MLC/);
+});
+
+test('local AI prompts use entered content and reject invalid model feedback', async () => {
+  const { reviewRequest, parseReview } = await import('../public/js/local-review.mjs');
+  const input = { kind: 'math', max: 7, problem: '나눗셈의 성질', answer: '검증할 풀이' };
+  const request = reviewRequest(input);
+  assert.equal(JSON.parse(request.messages[1].content).answer, input.answer);
+  assert.equal(JSON.parse(request.response_format.schema).properties.score.maximum, 7);
+  const report = { summary: '일반화 근거를 보완해야 합니다.', score: 2, findings: [], hint: '', counterexample: '' };
+  const reply = value => ({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify(value) } }] });
+  assert.equal(parseReview(reply(report), input).score, 2);
+  assert.throws(() => parseReview(reply({ ...report, score: 8 }), input), /invalid_review/);
+  assert.throws(() => parseReview({ choices: [{ finish_reason: 'length' }] }, input), /invalid_review/);
+  assert.doesNotMatch(reviewRequest({ kind: 'code' }).response_format.schema, /"score"/);
+});
+
 test('legacy execution is disabled and existing code visibility stays restricted', async () => {
   const viewer = db.getUserByUsername('demo_student');
   db._d.problems.push({ id: 8888, title: 'Test fixture' });
