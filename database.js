@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { getDifficultyScore } = require('./utils/rating');
 
-const db = new JsonDB(path.join(__dirname, 'judge.db.json'));
+const db = new JsonDB(process.env.LOCAL_DB_FILE || path.join(__dirname, 'judge.db.json'));
 
 const TAGS = {
   1000:  ['수학', '구현', '사칙연산'],
@@ -267,7 +267,6 @@ async function initDB() {
   await db.initStore(); // Postgres 모드면 저장된 데이터를 먼저 로드
   seedProblems();
   seedExternalProblems();
-  removeOldJungol();
   migrateTags();
   migratePrivateField();
   migrateSpecialJudge();
@@ -279,7 +278,6 @@ async function initDB() {
   seedSteps();
   syncStepDescriptions();
   assignProblemSteps();
-  if (db._d.users.length === 0) seedUsers();
   migrateRoles();
   migrateBanFields();
   migrateShopFields();
@@ -287,7 +285,6 @@ async function initDB() {
   migrateContestRegistrations();
   migrateContestTimezones();
   bootstrapCoins();
-  autoSolveAllForAdmin();
 }
 
 // admin 계정이 아직 풀지 않은 모든 문제를 AC 처리한다. (요청에 의한 일괄 제출)

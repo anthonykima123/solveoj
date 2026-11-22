@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> · SOLVEX</title>
+<meta name="description" content="수학 증명과 알고리즘의 취약점을 찾아 개선하는 올림피아드 학습 플랫폼 SOLVEX.">
+<meta property="og:title" content="<%= title %> · SOLVEX"><meta property="og:description" content="정답을 넘어, 사고의 한계를 넘다.">
+<% if (typeof canonical !== 'undefined') { %><link rel="canonical" href="<%= baseUrl + canonical %>"><% } %>
+<link rel="icon" type="image/svg+xml" href="/solvex-mark.svg">
+<link rel="stylesheet" href="/css/solvex.css">
+<script defer src="/js/solvex.js"></script>
+</head><body>
+<a class="sx-skip" href="#main">본문으로 건너뛰기</a>
+<header class="sx-header"><div class="sx-width sx-bar">
+<a class="sx-logo" href="/" aria-label="SOLVEX 홈">SOLVE<img src="/solvex-mark.svg" alt="X" width="21" height="21"></a>
+<nav aria-label="주요 메뉴"><a href="/lens/math">수학</a><a href="/problems/all">정보 문제</a><a href="/lens">AI 분석실</a><a href="/contests">대회</a></nav>
+<div class="sx-account"><button type="button" data-theme-toggle aria-label="화면 테마 전환">◐</button>
+<% if (currentUser) { %><a href="/analysis-history">내 분석</a><a class="sx-account-extra" href="/user/<%= encodeURIComponent(currentUser.username) %>">프로필</a><% if (isSuperAdmin) { %><a href="/admin/solvex">관리</a><% } %>
+<% } else { %><a href="/login">로그인</a><a class="sx-account-extra" href="/register">가입</a><% } %></div>
+</div></header><main id="main" class="sx-width">

@@ -1,0 +1,4 @@
+<%- include('head', {title:'분석 운영'}) %><section class="sx-page"><h1>분석 운영</h1><a href="/admin">기존 문제 및 사용자 관리 ↗</a></section>
+<section class="sx-panel"><h2>오늘의 사용량 · 한국 시간</h2><p>모델 <%= model || '연결되지 않음' %></p><p>한도 · 계정당 <%= limits.personal %>회/일 · 전체 <%= limits.daily %>회/일 · <%= limits.minute %>회/분 · 동시 <%= limits.running %>회</p>
+<% if (stats) { %><p>요청 <%= stats.total %>건 · 성공 <%= stats.success %>건 · 실패 <%= stats.failed %>건</p><p>상태 <%= stats.paused ? '일시 중지' : ready ? '분석 가능' : '설정 필요' %></p>
+<form method="post"><input type="hidden" name="csrf" value="<%= csrfToken %>"><button class="sx-button" name="action" value="<%= stats.paused ? 'resume' : 'pause' %>"><%= stats.paused ? '분석 재개' : '분석 일시 중지' %></button></form><% } else { %><p>분석 저장소 미연결</p><% } %></section><%- include('foot') %>
