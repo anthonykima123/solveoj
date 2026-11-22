@@ -38,6 +38,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.get('/vendor/web-llm-0.2.89.js', (req, res) => {
+  res.sendFile(require.resolve('@mlc-ai/web-llm'), { maxAge: '7d', immutable: true });
+});
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.json({ limit: '2mb' }));
 app.use((req, res, next) => {

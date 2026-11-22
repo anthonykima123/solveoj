@@ -57,6 +57,9 @@ details p{color:var(--muted);margin:8px 0 2px}
 .sx-page h1{font-size:clamp(42px,7vw,75px);letter-spacing:-.067em}
 .sx-work{align-items:start}
 .sx-lab{margin-top:16px}
+.sx-local-result{margin-top:16px}
+[data-local-progress]{width:min(220px,100%);margin:10px;accent-color:var(--accent)}
+[data-local-cancel][hidden]{display:none}
 .sx-panel h3{margin-top:14px;font-size:1rem}
 main{min-height:65vh;padding-bottom:42px}
 textarea,select,input[type=number]{display:block;max-width:100%;border:1px solid var(--line);border-radius:7px;background:var(--input);color:var(--text);padding:10px;margin:5px 0 11px}
