@@ -56,6 +56,21 @@ test('register, login, redirect guard and private pages', async () => {
   assert.equal((await fetch(origin + '/logout', { method: 'POST', headers: { origin: 'https://unrelated.example' } })).status, 403);
 });
 
+test('public application routes share the SOLVEX shell', async () => {
+  for (const [url, status] of [['/login', 200], ['/register', 200], ['/contests', 200], ['/groups', 200],
+    ['/problems/all', 200], ['/community', 200], ['/ranking', 200], ['/status', 200], ['/tools', 200],
+    ['/classic', 200], ['/problems/987654321', 404]]) {
+    const response = await fetch(origin + url);
+    assert.equal(response.status, status, url);
+    const html = await response.text();
+    assert.match(html, /class="sx-header"/, url);
+    assert.match(html, /href="\/css\/solvex.css"/, url);
+    assert.match(html, /data-theme-toggle/, url);
+    assert.match(html, /개인정보 및 이용 안내/, url);
+    assert.doesNotMatch(html, /class="site-header"|SolveOJ &copy;/, url);
+  }
+});
+
 test('legacy execution is disabled and existing code visibility stays restricted', async () => {
   const viewer = db.getUserByUsername('demo_student');
   db._d.problems.push({ id: 8888, title: 'Test fixture' });
@@ -97,6 +112,7 @@ test('analysis POST handles CSRF, consent, mock quota, report ownership and dele
     const id = req.get('X-Test-Account') || 'one';
     req.session = { user: { id }, solvexToken: 'test-token' };
     res.locals.currentUser = req.session.user;
+    res.locals.isAdmin = false;
     res.locals.isSuperAdmin = false;
     next();
   });

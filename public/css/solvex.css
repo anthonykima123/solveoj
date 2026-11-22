@@ -78,3 +78,68 @@ footer{border-top:1px solid var(--line)}
 @media(max-width:820px){.sx-hero{gap:24px;padding:65px 0}.sx-width{width:calc(100% - 36px)}.sx-bar,.sx-bar nav{gap:12px}}
 @media(max-width:640px){.sx-hero,.sx-grid{grid-template-columns:1fr}.sx-hero{padding:42px 0;gap:26px}.sx-bar{flex-wrap:wrap;min-height:0;padding:12px 0;row-gap:10px}.sx-bar nav{width:100%;order:3;flex-wrap:wrap}.sx-account-extra{display:none}.sx-foot{gap:10px}.sx-foot p{width:100%;order:3}.sx-track{padding:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
+.sx-menu{position:relative;padding:0;border:0;white-space:nowrap}
+.sx-menu summary{font-weight:650}
+.sx-menu-popover{position:absolute;z-index:10;top:calc(100% + 9px);left:0;min-width:150px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:9px}
+.sx-menu-right{left:auto;right:0}
+.sx-menu-popover a,.sx-account .sx-menu-popover button{display:block;width:100%;height:auto;border:0;border-radius:5px;background:transparent;color:var(--text);padding:8px 10px;text-align:left}
+.sx-menu-popover a:hover,.sx-account .sx-menu-popover button:hover{background:var(--input);color:var(--accent)}
+.sx-header .sx-logo,.sx-foot .sx-logo{color:var(--text)}
+.sx-logo img{flex:none}
+@media(max-width:420px){.sx-bar nav .sx-menu-popover{left:auto;right:0}}
+
+/* Existing application layouts use the same tokens as the SOLVEX homepage. */
+.sx-application{
+  --primary:var(--accent);--primary-dark:var(--accent);--primary-light:color-mix(in srgb,var(--accent) 12%,var(--card));
+  --bg:#09090b;--surface:var(--card);--surface-soft:var(--input);--border:var(--line);--text-muted:var(--muted);
+  --shadow-sm:none;--shadow-md:none;--shadow-lg:none;
+  --ac:#75df95;--wa:#ff9da3;--tle:#f5b75a;--re:#c9a8ff;--ce:var(--muted);
+  --success-bg:#172a1c;--error-bg:#391d24;--warn-bg:#322416;
+  background:var(--bg)
+}
+[data-theme=light] .sx-application{
+  --bg:#fafafa;--ac:#176b33;--wa:#a12636;--tle:#87520a;--re:#6838a3;
+  --success-bg:#e9f8eb;--error-bg:#fff0f1;--warn-bg:#fff4df
+}
+.sx-application .main-container{width:min(1160px,calc(100% - 64px));padding:38px 0 54px}
+.sx-application main a:not(.btn):not(.card):not(.tag-chip):not(.badge):not(.daily-problem-link):not(.tab-links a):not(.pf-tab){color:var(--accent)}
+.sx-application .page-header{gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.sx-application .page-header h1,.sx-application .auth-title{font-size:clamp(2rem,5vw,3.35rem);letter-spacing:-.065em}
+.sx-application .auth-wrap{padding:clamp(22px,7vw,76px) 0}
+.sx-application .auth-card{padding:clamp(22px,5vw,35px);border-radius:13px}
+.sx-application .auth-eyebrow{font:700 .73rem/1.5 ui-monospace,Consolas,monospace;letter-spacing:.12em}
+.sx-application .card-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.sx-application .card-grid>.empty-state,.sx-application .card-grid>.empty-row{grid-column:1/-1;border:1px dashed var(--line);border-radius:12px}
+.sx-application :is(.card,.home-card,.table-wrap,.filter-bar,.problem-header,.problem-section,.sample-box,.auth-card,.settings-card,.contest-info,.form-card,.post-view,.group-info,.profile-card,.profile-section,.meta-item,.result-section,.pf-card,.pf-info,.pf-tabs,.ct-reg-card,.shop-card,.paint-toolbar,.home-stat-card,.daily-card,.home-ai-section,.sb-table,.compiler-wrap,.stat,.demo-accounts,.verdict-card){background:var(--card);border-color:var(--line);box-shadow:none}
+.sx-application :is(.card,.home-card,.table-wrap,.filter-bar,.problem-header,.problem-section,.auth-card,.form-card,.contest-info,.group-info){border-radius:12px}
+.sx-application :is(.contest-card,.group-card){display:block;padding:23px;border:1px solid var(--line);color:var(--text)}
+.sx-application :is(.contest-card,.group-card):hover{border-color:var(--accent);color:var(--text)}
+.sx-application :is(.table thead,.table tbody tr:hover,.home-card-title,.sample-box h2,.result-section h3,.more-link,.ext-input-row,.ext-prefix,.pf-ext-link,.pf-rank-pill,.shop-howto,.howto-item,.daily-problem-card:hover,.ai-rec-card:hover,.sb-table thead tr,.sb-table tbody tr:hover,.compiler-toolbar,.compiler-textarea){background:var(--input);border-color:var(--line)}
+.sx-application :is(.table th,.sb-table th,.sb-subtitle,.sb-rank-num,.pf-tier-next,.pf-solved-sub,.pf-tab,.pf-rank-sub,.pf-top100-label,.pf-ext-handle,.shop-desc,.shop-owned-label,.shop-howto h3,.howto-item,.ct-reg-info,.daily-date,.daily-problem-id,.daily-problem-meta,.home-ai-sub,.rank-num,.muted,.error-code){color:var(--muted)}
+.sx-application :is(.pf-top100-score,.daily-problem-title){color:var(--text)}
+.sx-application :is(.table-wrap,.sb-table-wrap){overflow-x:auto}
+.sx-application :is(.form-input,.filter-select,.filter-input,input:not([type=checkbox],[type=radio],[type=color],[type=range],[type=file]),textarea,select){background:var(--input);color:var(--text);border-color:var(--line)}
+.sx-application :is(.form-input,.filter-select,.filter-input):focus{border-color:var(--accent);box-shadow:none}
+.sx-application :is(.btn,.btn-outline,.btn-secondary){background:var(--card);color:var(--text);border-color:var(--line);box-shadow:none}
+.sx-application :is(.btn,.btn-outline,.btn-secondary):hover{border-color:var(--accent);color:var(--accent);transform:none}
+.sx-application .btn-primary,.sx-application .btn-primary:hover{background:var(--lime);color:#172008;border-color:var(--lime)}
+.sx-application :is(.btn-danger,.alert-error,.verdict-wa,.verdict-ce,.verdict-re,.sb-cell-wa){background:var(--error-bg);color:var(--wa)}
+.sx-application :is(.alert-success,.status-running,.ct-reg-yes,.verdict-ac,.sb-cell-ac,.solved-row){background:var(--success-bg)!important;color:var(--ac)}
+.sx-application :is(.verdict-tle,.verdict-mle,.ct-pending,.shop-balance){background:var(--warn-bg);color:var(--tle);border-color:var(--line)}
+.sx-application :is(.alert,.sb-table th){border-color:var(--line)}
+.sx-application :is(.status-upcoming,.status-ended,.tag-chip,.lang-tag,.lang-chip,.ai-tag,.member-chip,.perm-chip,.solved-chip){background:var(--input);color:var(--muted);border-color:var(--line)}
+.sx-application :is(.tab-links a.active,.tag-chip:hover,.tab-links a:hover){background:var(--primary-light);color:var(--accent);border-color:var(--line)}
+.sx-application :is(.sample-pre,.error-pre,.editor-toolbar,.compiler-output,code){background:var(--input);color:var(--text);border-color:var(--line)}
+.sx-application :is(.pf-progress-track,.progress-track,.hm-lv0,.sb-bar-track){background:var(--line)}
+.sx-application :is(.sb-cell-time,.sb-cell-score,.shop-balance-num,.shop-balance-label,.shop-price){color:inherit}
+.sx-application :is(.hero-banner,.profile-banner-default,.pf-banner-default){background:var(--card);color:var(--text);border:1px solid var(--line)}
+.sx-application .hero-banner::before{display:none}
+.sx-application :is(.hero-panel,.daily-header-main,.daily-header-coin){background:var(--input);color:var(--text);border-color:var(--line)}
+.sx-application :is(.hero-content p,.hero-kicker,.pf-hero-stat){color:var(--muted)}
+.sx-application :is(.code-line.accent,.judge-pill){color:var(--accent)}
+.sx-application .auth-wrap a{font-weight:700}
+.sx-application .restricted-code-box{background:var(--input);border-color:var(--line)}
+.sx-application .sx-competition-notice{background:var(--warn-bg);color:var(--tle);border:1px solid var(--line);padding:10px 16px;border-radius:8px;margin-bottom:16px}
+@media(max-width:820px){.sx-application .main-container{width:calc(100% - 36px)}}
+@media(max-width:640px){.sx-application .main-container{padding-top:25px}.sx-application .pf-tabs{overflow-x:auto}.sx-application .page-header{align-items:flex-start}}
