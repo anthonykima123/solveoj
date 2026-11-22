@@ -1,6 +1,9 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const { randomBytes } = require('node:crypto');
+const { createRouter } = require('./solvex/router');
+const { createStore } = require('./solvex/store');
 const { db, initDB } = require('./database');
 const { getTierInfo, getTierShort } = require('./utils/rating');
 const { isAdmin, isSuperAdmin, hasPermission } = require('./utils/permissions');
@@ -22,17 +25,37 @@ const shopRoutes = require('./routes/shop');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const production = process.env.NODE_ENV === 'production';
+if (production && (!process.env.DATABASE_URL || (process.env.SESSION_SECRET || '').length < 32)) {
+  throw new Error('Production requires DATABASE_URL and a SESSION_SECRET of at least 32 characters.');
+}
+const baseUrl = new URL(process.env.APP_BASE_URL || 'https://solveoj.onrender.com').origin;
+const reviewStore = createStore(process.env.DATABASE_URL);
 
-app.set('trust proxy', 1);
+app.set('trust proxy', production ? 1 : false);
+app.disable('x-powered-by');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.json({ limit: '2mb' }));
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  if (/^\/(?:admin|submissions|login|register|settings)(?:\/|$)/i.test(req.path)) {
+    res.set({ 'Cache-Control': 'private, no-store', 'X-Robots-Tag': 'noindex' });
+  }
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    const origin = req.get('Origin');
+    const currentOrigin = req.protocol + '://' + req.get('Host');
+    if (req.get('Sec-Fetch-Site') === 'cross-site' ||
+        (origin && origin !== (production ? baseUrl : currentOrigin))) return res.sendStatus(403);
+  }
+  next();
+});
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'judge-secret-2024',
+  secret: process.env.SESSION_SECRET || randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -99,7 +122,27 @@ function getAIRecommendations(userId, allProblems) {
   .map(x => x.p);
 }
 
-app.get('/', (req, res) => {
+app.get('/health', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  try {
+    if (reviewStore) await reviewStore.ping();
+    res.json({ status: 'ok', database: db.usePg ? 'postgres' : 'local', reviewStorage: Boolean(reviewStore) });
+  } catch {
+    res.status(503).json({ status: 'unavailable' });
+  }
+});
+app.get('/robots.txt', (req, res) => res.type('text').send([
+  'User-agent: *', 'Disallow: /admin', 'Disallow: /submissions', 'Disallow: /analysis-history',
+  'Sitemap: ' + baseUrl + '/sitemap.xml'
+].join('\n')));
+app.get('/sitemap.xml', (req, res) => res.type('xml').send(
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+  ['/', '/solvex-privacy', '/problems/all'].map(url => '<url><loc>' + baseUrl + url + '</loc></url>').join('') +
+  '</urlset>'
+));
+app.use('/', createRouter({ store: reviewStore, db, baseUrl }));
+
+app.get('/classic', (req, res) => {
   const allProblems = db.getProblems();
   const problems = allProblems.slice(0, 8);
   const topUsers = db.getAllUsers()
@@ -121,6 +164,11 @@ app.get('/', (req, res) => {
   res.render('index', { problems, topUsers, daily, doubleCoins, stats, aiRecs, aiLabel });
 });
 
+app.get('/problems/:id/submit', (req, res) => res.redirect('/lens/code?problem=' + encodeURIComponent(req.params.id)));
+app.post('/problems/:id/submit', (req, res) => res.status(503).send('격리 실행 환경을 준비 중입니다. Code Lens에서 정적 분석을 이용할 수 있습니다.'));
+app.get('/tools/compiler', (req, res) => res.redirect('/lens/code'));
+app.post('/tools/compiler/run', (req, res) => res.status(503).json({ error: '격리 실행 환경을 준비 중입니다.' }));
+
 app.use('/', authRoutes);
 app.use('/', problemRoutes);
 app.use('/', submissionRoutes);
@@ -136,13 +184,25 @@ app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));
 
-initDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`\n🚀 SolveOJ → http://localhost:${PORT} (${db.usePg ? 'Postgres' : 'local file'})\n`);
+async function start() {
+  await initDB();
+  if (reviewStore) await reviewStore.init();
+  const server = app.listen(PORT, () => console.log('SOLVEX listening on ' + server.address().port));
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    process.once(signal, () => {
+      setTimeout(() => process.exit(1), 30000).unref();
+      server.close(async () => {
+        await reviewStore?.close().catch(() => {});
+        process.exit(0);
+      });
     });
-  })
-  .catch(err => {
-    console.error('❌ DB 초기화 실패:', err);
-    process.exit(1);
-  });
+  }
+  return server;
+}
+
+if (require.main === module) start().catch(() => {
+  console.error(JSON.stringify({ event: 'solvex_startup_failed' }));
+  process.exit(1);
+});
+
+module.exports = { app, start };

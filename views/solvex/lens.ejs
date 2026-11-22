@@ -1,0 +1,21 @@
+<% const math = kind === 'math'; const name = math ? 'Math Lens' : 'Code Lens'; %>
+<%- include('head', {title:name, canonical:'/lens/' + kind}) %>
+<section class="sx-page"><p class="sx-kicker">SOLVEX / AI 분석실</p><h1><%= name %></h1>
+<p><%= math ? '증명의 연결을 검토하고, 어디에 근거를 보강해야 할지 확인하세요.' : '알고리즘의 약점과 경계 조건을 살펴보세요. 코드는 실행하지 않습니다.' %></p>
+<div class="sx-actions"><a class="sx-button <%= math ? 'primary' : '' %>" href="/lens/math">수학 풀이</a><a class="sx-button <%= !math ? 'primary' : '' %>" href="/lens/code">코드</a><a class="sx-button" href="/lens/<%= kind %>?example=1">고정 예시 열기 ↗</a></div></section>
+<% if (example) { %><div class="sx-grid sx-work"><section class="sx-panel"><p class="sx-kicker">고정 데모 / 입력</p><h2>문제</h2><p><%= example.problem %></p><h2><%= math ? '제출 예시' : '코드 예시' %></h2><pre><%= example.answer %></pre></section>
+<%- include('report', {result:example.result, kind, points:example.max, sample:true}) %></div><% } %>
+<section class="sx-panel sx-lab"><h2>내 <%= math ? '풀이' : '코드' %> 분석하기</h2>
+<% if (!ready) { %><p class="sx-callout">공개 데모에서는 고정 예시를 체험할 수 있습니다. 아래에서 입력 화면도 살펴볼 수 있습니다.</p><% } %>
+<form data-lens data-max="<%= maxInput %>" data-token="<%= csrfToken %>" action="/lens/<%= kind %>" method="post" enctype="multipart/form-data">
+<div class="sx-grid sx-work"><label>문제 본문<textarea name="problem" rows="9" maxlength="<%= maxInput %>" spellcheck="false" placeholder="조건이 포함된 문제를 입력하세요."><%= prefill %></textarea></label>
+<label><%= math ? '내 증명' : '내 코드' %><textarea class="<%= math ? '' : 'sx-code' %>" name="answer" rows="9" maxlength="<%= maxInput %>" spellcheck="false" placeholder="<%= math ? '풀이 과정을 순서대로 적어 주세요.' : '분석할 소스 코드를 붙여넣으세요.' %>"></textarea></label></div>
+<div class="sx-form-group">
+<% if (math) { %><label>전체 배점 <input name="max" type="number" min="1" max="100" value="7" required></label><label data-drop class="sx-drop">손글씨 사진 · PNG/JPEG, 최대 1MB<input name="image" type="file" accept="image/png,image/jpeg"><span data-file aria-live="polite"></span><img data-photo alt="첨부한 풀이 사진 미리보기" hidden></label>
+<% } else { %><label>언어 <select name="language"><option>C++17</option><option>C++20</option><option>Python 3</option><option>Java 11</option></select></label><% } %>
+</div>
+<label><%= math ? '참고 풀이 또는 맥락' : '제한, 오류 메시지 또는 채점 결과' %> (선택)<textarea name="context" rows="3" maxlength="<%= maxInput %>"></textarea></label>
+<p data-count class="sx-muted"></p>
+<% if (ready && currentUser) { %><label class="sx-consent"><input type="checkbox" name="consent" value="yes" required> 입력 내용과 첨부 사진을 Google Gemini로 전송하는 데 동의합니다. 이름 등 개인정보를 제거해 주세요.</label>
+<button class="sx-button primary" type="submit">분석 시작 ↗</button><noscript>직접 분석에는 JavaScript가 필요합니다.</noscript><p data-status role="status"></p><% } %>
+</form></section><%- include('foot') %>

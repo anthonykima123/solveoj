@@ -1,0 +1,19 @@
+<%- include('head', {title:'수학·정보올림피아드 분석', canonical:'/'}) %>
+<section class="sx-hero">
+<div class="sx-intro"><p class="sx-kicker"><i></i> OLYMPIAD INTELLIGENCE</p>
+<h1>Beyond the<br><em>Answer.</em></h1>
+<h2>정답을 넘어, 사고의 한계를 넘다.</h2>
+<p class="sx-lede">수학 증명의 논리적 결함부터 알고리즘 코드의 반례까지. 풀이의 약점을 발견하고, 다음 시도에서 무엇을 바꿀지 확인하세요.</p>
+<div class="sx-actions"><a class="sx-button primary" href="/lens/math">수학 풀이 분석 <span>↗</span></a><a class="sx-button" href="/lens/code">코드 분석 <span>↗</span></a></div>
+</div>
+<article class="sx-preview"><header><span><i></i> ANALYSIS PREVIEW</span><small>고정 데모</small></header>
+<div class="sx-preview-body"><p class="sx-kicker">MATH LENS / 증명 검토</p><h2>연속한 두 정수의 곱</h2>
+<div class="sx-score"><strong>1–2</strong><span>/ 7점<br>예상 점수</span></div>
+<div class="sx-callout"><strong>일반화 오류 · 마지막 문장</strong><p><%= examples.math.result.issues[0].reason %></p></div>
+<a class="sx-arrow" href="/lens/math?example=1">증명 예시 전체 보기 <span>↗</span></a></div></article>
+</section>
+<section class="sx-tracks"><div class="sx-section-head"><p class="sx-kicker">CHOOSE YOUR LENS</p><h2>어떤 풀이를 살펴볼까요?</h2></div>
+<div class="sx-grid"><a class="sx-track" href="/lens/math?example=1"><span class="sx-icon" aria-hidden="true">∑</span><div><h3>Math Lens</h3><p>증명의 논리적 연결, 빠진 조건, 예상 점수와 단계별 힌트.</p></div><span aria-hidden="true">↗</span></a>
+<a class="sx-track" href="/lens/code?example=1"><span class="sx-icon" aria-hidden="true">&lt;/&gt;</span><div><h3>Code Lens</h3><p>경계 조건, 시간 복잡도, 실행으로 확인할 수 있는 반례 후보.</p></div><span aria-hidden="true">↗</span></a></div></section>
+<section class="sx-faq"><h2>자주 묻는 질문</h2><details><summary>회원가입 없이 체험할 수 있나요?</summary><p>두 분석실에서 고정 예시를 바로 열 수 있습니다. 공개 데모에서 직접 작성한 입력은 외부 분석 서비스로 전송되지 않습니다.</p></details><details><summary>분석 결과가 실제 채점 점수인가요?</summary><p>수학 점수는 학습용 추정치입니다. Code Lens는 코드를 실행하지 않으며, 제안한 반례는 미검증 상태로 표시합니다.</p></details><details><summary>기존 문제와 제출 기록은 어디에 있나요?</summary><p><a href="/problems/all">정보 문제</a>와 <a href="/submissions">내 제출</a>에서 이어서 확인할 수 있습니다.</p></details></section>
+<%- include('foot') %>

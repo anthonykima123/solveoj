@@ -72,11 +72,8 @@
   <% } %>
 
   <div class="submit-action">
-    <% if (user) { %>
-      <a href="/problems/<%= problem.id %>/submit" class="btn btn-primary btn-lg">제출하기</a>
-    <% } else { %>
-      <a href="/login?next=/problems/<%= problem.id %>/submit" class="btn btn-primary btn-lg">로그인 후 제출</a>
-    <% } %>
+    <% if (!problem.is_private) { %><a href="/lens/code?problem=<%= problem.id %>" class="btn btn-primary btn-lg">Code Lens에서 분석</a><% } %>
+    <small>실행 채점은 격리 환경 준비 후 제공됩니다.</small>
     <a href="/problems" class="btn btn-outline">목록으로</a>
   </div>
 </div>

@@ -86,13 +86,15 @@ router.get('/submissions/:id', (req, res) => {
 
   const isOwner = me?.id === sub.user_id;
   const hasSolved = me ? db.isSolved(me.id, sub.problem_id) : false;
-  const canViewCode = isOwner || hasSolved;
+  if (problem?.is_private && !isOwner && !res.locals.isAdmin) return res.status(404).render('404');
+  const canViewCode = isOwner || Boolean(problem && !problem.is_private && hasSolved);
 
   const enriched = {
     ...sub,
     problem_title: problem ? problem.title : '?',
     username: author ? author.username : '?',
     code: canViewCode ? sub.code : null,
+    error_message: isOwner ? sub.error_message : null,
     canViewCode,
     isOwner,
     loggedIn: !!me
@@ -102,7 +104,7 @@ router.get('/submissions/:id', (req, res) => {
 });
 
 router.get('/status', (req, res) => {
-  const subs = db.getAllSubmissions(100).map(s => {
+  const subs = db.getAllSubmissions(100).filter(s => !db.getProblemById(s.problem_id)?.is_private).map(s => {
     const p = db.getProblemById(s.problem_id);
     const u = db.getUserById(s.user_id);
     return { ...s, problem_title: p?.title || '?', username: u?.username || '?' };

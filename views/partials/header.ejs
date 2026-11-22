@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>SolveOJ</title>
+  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>SOLVEX</title>
+  <link rel="icon" type="image/svg+xml" href="/solvex-mark.svg">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
@@ -13,7 +14,7 @@
   <div class="header-inner">
     <a href="/" class="logo">
       <span class="logo-mark">S</span>
-      <span>SolveOJ</span>
+      <span>SOLVEX</span>
     </a>
     <nav class="nav-main" aria-label="주요 메뉴">
       <div class="nav-item has-drop">
@@ -31,13 +32,14 @@
       <div class="nav-item has-drop">
         <a href="/tools">도구</a>
         <div class="nav-drop">
-          <a href="/tools/compiler">⚡ 온라인 컴파일러</a>
+          <a href="/lens/code">Code Lens</a>
           <a href="/tools/notes">📝 노트</a>
           <a href="/tools/paint">🎨 그림판</a>
         </div>
       </div>
       <a href="/status">채점 현황</a>
       <a href="/ranking">랭킹</a>
+      <a href="/lens">AI 분석실</a>
       <% if (user) { %><a href="/user/<%= user.username %>">프로필</a><% } %>
       <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
         <a href="/admin" class="nav-admin">관리자</a>
