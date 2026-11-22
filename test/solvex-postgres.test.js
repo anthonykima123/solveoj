@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
+const { Pool } = require('pg');
 const { createStore } = require('../solvex/store');
 
 test('Postgres serializes quota and keeps reports private', { skip: !process.env.SOLVEX_TEST_DATABASE_URL }, async t => {
@@ -27,4 +28,15 @@ test('Postgres serializes quota and keeps reports private', { skip: !process.env
   assert.equal(await store.get(owner, id), undefined);
   await store.pause(true);
   assert.equal((await store.reserve(randomUUID(), 'code', randomUUID(), limits)).reason, 'paused');
+  await store.pause(false);
+
+  const limitedOwner = randomUUID();
+  const limited = await store.reserve(limitedOwner, 'code', randomUUID(), limits);
+  assert.ok(limited.id);
+  await store.finish(limited.id, 'provider_quota');
+  assert.equal((await store.reserve(randomUUID(), 'code', randomUUID(), limits)).reason, 'provider_quota');
+  const pool = new Pool({ connectionString: process.env.SOLVEX_TEST_DATABASE_URL });
+  t.after(() => pool.end());
+  await pool.query("UPDATE solvex_reviews SET created_at = now() - interval '61 seconds' WHERE id = $1", [limited.id]);
+  assert.ok((await store.reserve(randomUUID(), 'code', randomUUID(), limits)).id);
 });
