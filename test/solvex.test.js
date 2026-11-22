@@ -135,13 +135,13 @@ test('Gemini adapter sends separate instructions and validates structured output
   assert.equal(imageType({ mimetype: 'image/png', buffer: Buffer.from('not a png') }), null);
 });
 
-test('analysis POST handles CSRF, consent, mock quota, report ownership and deletion', async t => {
+test('OpenAI analysis requires an allowlisted account and consent, then saves a private report', async t => {
   const isolated = express();
   isolated.set('view engine', 'ejs');
   isolated.set('views', join(__dirname, '..', 'views'));
   isolated.use(express.urlencoded({ extended: false }));
   isolated.use((req, res, next) => {
-    const id = req.get('X-Test-Account') || 'one';
+    const id = req.get('X-Test-Account') || '1';
     req.session = { user: { id }, solvexToken: 'test-token' };
     res.locals.currentUser = req.session.user;
     res.locals.isAdmin = false;
@@ -160,28 +160,61 @@ test('analysis POST handles CSRF, consent, mock quota, report ownership and dele
     async get(user, id) { const item = reports.get(id); return item?.user === user ? item : null; },
     async remove(user, id) { if (reports.get(id)?.user === user) reports.delete(id); }
   };
-  isolated.use(createRouter({ db, store, baseUrl: origin, provider: { async analyze() { return examples.math.result; } } }));
+  let calls = 0;
+  isolated.use(createRouter({
+    db, store, baseUrl: 'https://solveoj.onrender.com',
+    env: { AI_PROVIDER: 'openai', AI_ENABLED: 'true', OPENAI_API_KEY: 'test-only', OPENAI_REVIEWER_IDS: '1' },
+    async providerRequest(url, options) {
+      calls++;
+      assert.equal(url, 'https://api.openai.com/v1/responses');
+      assert.equal(options.headers.Authorization, 'Bearer test-only');
+      const payload = JSON.parse(options.body);
+      assert.equal(payload.model, 'gpt-6.2-sol');
+      assert.equal(payload.store, false);
+      assert.match(payload.safety_identifier, /^[a-f0-9]{64}$/);
+      assert.equal(payload.text.format.strict, true);
+      assert.equal(payload.text.format.schema.properties.issues.items.additionalProperties, false);
+      const content = payload.input[0].content;
+      assert.equal(content.length, 1);
+      assert.equal(content[0].type, 'input_text');
+      assert.equal(JSON.parse(content[0].text).answer, '풀이');
+      return Response.json({ status: 'completed', output: [{ type: 'message', role: 'assistant',
+        content: [{ type: 'output_text', text: JSON.stringify(examples.math.result) }] }] });
+    }
+  }));
   isolated.use((req, res) => res.sendStatus(404));
   isolated.use((error, req, res, next) => res.sendStatus(404));
   const instance = isolated.listen(0, '127.0.0.1');
   await once(instance, 'listening');
   t.after(() => new Promise(resolve => instance.close(resolve)));
   const host = 'http://127.0.0.1:' + instance.address().port;
-  function analyze({ token = 'test-token', consent = 'yes' } = {}) {
+  function analyze({ token = 'test-token', consent = 'openai', account = '1', image = false } = {}) {
     const body = new FormData();
     for (const [key, value] of Object.entries({ problem: '증명 문제', answer: '풀이', max: '7', consent })) body.set(key, value);
-    return fetch(host + '/lens/math', { method: 'POST', headers: { 'X-Solvex-Token': token }, body });
+    if (image) body.set('image', new Blob(['test image'], { type: 'image/jpeg' }), 'test.jpg');
+    return fetch(host + '/lens/math', { method: 'POST', headers: { 'X-Solvex-Token': token, 'X-Test-Account': account }, body });
   }
+  const allowedPage = await (await fetch(host + '/lens/math')).text();
+  assert.match(allowedPage, /OpenAI로 분석/);
+  assert.doesNotMatch(allowedPage, /name="image"|test-only/);
+  assert.match(await (await fetch(host + '/lens/math', { headers: { 'X-Test-Account': '2' } })).text(), /data-local-review="math"/);
+  assert.equal((await analyze({ account: '2' })).status, 403);
   assert.equal((await analyze({ token: 'bad' })).status, 403);
   assert.equal((await analyze({ consent: '' })).status, 400);
+  assert.equal((await analyze({ consent: 'yes' })).status, 400);
+  assert.equal((await analyze({ image: true })).status, 400);
+  assert.equal(calls, 0);
   const accepted = await analyze();
   assert.equal(accepted.status, 200);
   const { url } = await accepted.json();
-  assert.match(await (await fetch(host + url)).text(), /일반화 오류/);
-  assert.equal((await fetch(host + url, { headers: { 'X-Test-Account': 'two' } })).status, 404);
+  const review = await (await fetch(host + url)).text();
+  assert.match(review, /일반화 오류/);
+  assert.match(review, /OpenAI \/ 분석 결과/);
+  assert.equal((await fetch(host + url, { headers: { 'X-Test-Account': '2' } })).status, 404);
   assert.equal((await analyze()).status, 429);
   assert.equal((await fetch(host + url + '/delete', {
     method: 'POST', body: new URLSearchParams({ csrf: 'test-token' }), redirect: 'manual'
   })).status, 303);
   assert.equal((await fetch(host + url)).status, 404);
+  assert.equal(calls, 1);
 });
