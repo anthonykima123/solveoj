@@ -54,3 +54,24 @@ export function parseReview(reply, input) {
   }
   return review;
 }
+
+export function verifyConsecutiveProductProof(input) {
+  if (input.kind !== 'math') return null;
+  const problem = input.problem.normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+  const asksParity = /even|짝수/.test(problem) && /(?:everyinteger|allintegers|(?:모든|임의의)정수)/.test(problem);
+  if (!problem.includes('n(n+1)') || !asksParity) return null;
+
+  const number = '(-?\\d{1,8})';
+  const first = '(?:for\\s+)?n\\s*=\\s*' + number + '\\s*(?:,\\s*)?(?:일\\s*때\\s*|the\\s+result\\s+is\\s+|it\\s+is\\s+|is\\s+)?' + number;
+  const split = input.answer.normalize('NFKC').trim().split(/(?:\btherefore\b|\bthus\b|그러므로|따라서)/i);
+  if (split.length !== 2 || !/(?:every integer|all integers|(?:모든|임의의)\s*정수)/i.test(split[1])) return null;
+  const instances = split[0].trim().replace(/[.\s]+$/, '').split(/\s*(?:[,;.]\s*(?:and\s+)?|\s+and\s+|\s+그리고\s+)\s*(?=(?:for\s+)?n\s*=)/i);
+  if (instances.length < 2 || instances.length > 8) return null;
+  const pattern = new RegExp('^' + first + '(?:이다|입니다)?$', 'i');
+  const matches = instances.map(instance => instance.match(pattern));
+  if (matches.some(match => !match)) return null;
+  const invalid = matches.find(match => BigInt(match[1]) * (BigInt(match[1]) + 1n) !== BigInt(match[2]));
+  return invalid
+    ? { where: '수치 대입', reason: '제출한 대입값 중 n(n+1)을 직접 계산한 값과 일치하지 않는 것이 있습니다.' }
+    : { where: '마지막 결론', reason: '몇 가지 정수에서 성립한다는 사실만으로 모든 정수에서 성립한다고 결론 내릴 수 없습니다.' };
+}

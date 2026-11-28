@@ -277,3 +277,13 @@ test('counterexample checker grades actual values with no account or AI provider
   assert.equal(wasm.status, 200);
   assert.match(wasm.headers.get('content-type'), /application\/wasm/);
 });
+
+test('recognizes example-only reasoning for the consecutive product proof without relying on AI', async () => {
+  const { verifyConsecutiveProductProof } = await import('../public/js/local-review.mjs');
+  const input = { kind: 'math', problem: 'Prove that n(n+1) is even for every integer n.',
+    answer: 'For n=1 the result is 2 and for n=2 it is 6. Therefore n(n+1) is even for every integer n.' };
+  assert.equal(verifyConsecutiveProductProof(input)?.where, '마지막 결론');
+  assert.equal(verifyConsecutiveProductProof({ ...input, answer: 'Consecutive integers have opposite parity. Therefore the product is even for every integer.' }), null);
+  assert.equal(verifyConsecutiveProductProof({ kind: 'math', problem: '모든 정수 n에 대해 n(n+1)은 짝수임을 증명하시오.',
+    answer: 'n=1일 때 2이다. n=2일 때 6이다. 따라서 모든 정수에서 성립한다.' })?.where, '마지막 결론');
+});

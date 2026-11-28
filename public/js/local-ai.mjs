@@ -1,5 +1,5 @@
 import { prepareCpuReview } from './cpu-review.mjs';
-import { reviewRequest, parseReview } from './local-review.mjs';
+import { reviewRequest, parseReview, verifyConsecutiveProductProof } from './local-review.mjs';
 
 const MODEL = 'Qwen2.5-1.5B-Instruct-q4f32_1-MLC';
 const form = document.querySelector('[data-local-review]');
@@ -43,15 +43,13 @@ function element(tag, value, className) {
 function renderReview(result, input) {
   output.replaceChildren(element('p', completeCpu ? '브라우저 AI · Qwen3 (CPU)' : '브라우저 AI · Qwen2.5', 'sx-kicker'),
     element('h2', '풀이 피드백'), element('p', result.summary));
-  if (input.kind === 'math') {
-    output.append(element('p', '예상 점수 ' + result.score + ' / ' + input.max + '점 · 검토용', 'sx-muted'));
-  } else output.append(element('p', '정적 분석 · 코드 실행 없음', 'sx-muted'));
+  if (input.kind === 'code') output.append(element('p', '정적 분석 · 코드 실행 없음', 'sx-muted'));
   for (const issue of result.findings) {
     const card = element('div', '', 'sx-callout');
     card.append(element('strong', issue.where), element('p', issue.reason));
     output.append(card);
   }
-  output.append(element('p', 'AI의 설명과 점수는 틀릴 수 있습니다. 중요한 판단은 원문과 직접 대조하세요.', 'sx-muted'));
+  output.append(element('p', 'AI의 설명은 틀릴 수 있습니다. 중요한 판단은 원문과 직접 대조하세요.', 'sx-muted'));
   output.hidden = false;
   output.focus();
 }
@@ -109,6 +107,15 @@ form.addEventListener('submit', async event => {
   const input = readInput();
   if (!input) {
     status.textContent = '문제와 풀이를 입력하고 전체 글자 수 및 배점을 확인해 주세요.';
+    return;
+  }
+  const verified = verifyConsecutiveProductProof(input);
+  if (verified) {
+    output.replaceChildren(element('p', 'SOLVEX · 규칙 기반 검증', 'sx-kicker'),
+      element('h2', verified.where), element('p', verified.reason));
+    output.hidden = false;
+    output.focus();
+    status.textContent = '논리 검증이 완료되었습니다.';
     return;
   }
   const controller = new AbortController();
