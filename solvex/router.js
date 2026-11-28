@@ -1,3 +1,4 @@
+const { problem: counterexampleProblem, checkCounterexample } = require('./counterexample');
 const express = require('express');
 const multer = require('multer');
 const { randomUUID, randomBytes, createHmac } = require('node:crypto');
@@ -117,6 +118,18 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     }
     res.redirect(303, req.path);
   }));
+  router.get('/lens/math/counterexample', privatePage, (req, res) => {
+    render(res, 'counterexample', { problem: counterexampleProblem, fields: {}, result: null });
+  });
+  router.post('/lens/math/counterexample', privatePage, (req, res) => {
+    const fields = Object.fromEntries(['n', 'first', 'second'].map(key => [
+      key, typeof req.body?.[key] === 'string' ? req.body[key].slice(0, 30) : ''
+    ]));
+    const result = checkCounterexample(fields);
+    if (result.status === 'input') res.status(400);
+    if (req.accepts(['html', 'json']) === 'json') return res.json(result);
+    render(res, 'counterexample', { problem: counterexampleProblem, fields, result });
+  });
   router.get('/lens', (req, res) => res.redirect('/lens/math'));
   router.get('/lens/:kind', privatePage, (req, res, next) => {
     const kind = req.params.kind;

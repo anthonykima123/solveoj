@@ -38,6 +38,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/vendor/web-llm-0.2.89.js', (req, res) => {
   res.sendFile(require.resolve('@mlc-ai/web-llm'), { maxAge: '7d', immutable: true });
 });
+const cpuRuntime = path.dirname(require.resolve('@wllama/wllama'));
+app.get('/vendor/wllama-4.0.0.js', (req, res) => {
+  res.sendFile(path.join(cpuRuntime, 'index.js'), { maxAge: '7d', immutable: true });
+});
+app.get('/vendor/wllama-4.0.0.wasm', (req, res) => {
+  res.sendFile(path.join(cpuRuntime, 'wasm', 'wllama.wasm'), { maxAge: '7d', immutable: true });
+});
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.json({ limit: '2mb' }));
 app.use((req, res, next) => {

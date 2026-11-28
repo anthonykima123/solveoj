@@ -255,3 +255,24 @@ test('retired learning paths redirect and profile displays the SOLVEX learning l
   assert.doesNotMatch(html, /코인 상점/);
   assert.match(await (await fetch(origin + '/ranking')).text(), /SOLVEX 리더보드/);
 });
+
+test('counterexample checker grades actual values with no account or AI provider', async () => {
+  const path = '/lens/math/counterexample';
+  const page = await fetch(origin + path);
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /반례 검증/);
+  const check = async (n, first, second) => {
+    const response = await fetch(origin + path, {
+      method: 'POST', headers: { Accept: 'application/json' }, body: new URLSearchParams({ n, first, second })
+    });
+    return [response.status, await response.json()];
+  };
+  assert.equal((await check('40', '41', '41'))[1].valid, true);
+  assert.equal((await check('41', '41', '43'))[1].valid, true);
+  assert.equal((await check('40', '41', '40'))[1].location, '인수의 곱');
+  assert.equal((await check('40', '1', '1681'))[1].valid, false);
+  assert.equal((await check('2e1', '7', '9'))[0], 400);
+  const wasm = await fetch(origin + '/vendor/wllama-4.0.0.wasm', { method: 'HEAD' });
+  assert.equal(wasm.status, 200);
+  assert.match(wasm.headers.get('content-type'), /application\/wasm/);
+});

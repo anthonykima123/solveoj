@@ -1,0 +1,15 @@
+<%- include('head', { title: '반례 검증', canonical: '/lens/math/counterexample' }) %>
+<section class="sx-page"><h1>반례 검증</h1><p><%= problem %></p>
+<p class="sx-muted">제출한 값을 서버에서 직접 계산해 검증합니다. 로그인이나 AI 다운로드 없이 시도할 수 있어요.</p></section>
+<section class="sx-panel sx-lab">
+<form method="post" action="/lens/math/counterexample">
+<div class="sx-grid sx-work">
+  <label>n<input name="n" inputmode="numeric" maxlength="19" required value="<%= fields.n || '' %>"></label>
+  <label>첫 번째 인수<input name="first" inputmode="numeric" maxlength="19" required value="<%= fields.first || '' %>"></label>
+  <label>두 번째 인수<input name="second" inputmode="numeric" maxlength="19" required value="<%= fields.second || '' %>"></label>
+</div>
+<button class="sx-button primary" type="submit">제출하고 검증</button>
+</form>
+<% if (result) { %><section class="sx-callout" aria-live="polite"><h2><%= result.valid ? '정답' : result.location %></h2><p><%= result.reason %></p></section><% } %>
+</section>
+<%- include('foot') %>
