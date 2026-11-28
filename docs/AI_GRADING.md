@@ -1,5 +1,11 @@
 # AI 평가
 
+## 무료 공개 문제 힌트
+
+공개 문제 페이지의 **AI 풀이 방향**은 Cloudflare Workers AI의 `@cf/openai/gpt-oss-120b`를 사용합니다. Workers Free 계정에서 Workers AI를 사용할 수 있는 API 토큰을 발급하고 기존 Render 서비스에 `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `FREE_AI_HINTS_ENABLED=true`를 추가합니다. 유료 Workers 플랜이나 유료 AI Gateway를 연결하지 않습니다. [무료 한도](https://developers.cloudflare.com/workers-ai/platform/pricing/)
+
+슈퍼 관리자만 생성할 수 있습니다. 생성 전 전송 동의가 필요하며, Cloudflare에 공개 문제 본문만 보냅니다. 풀이 제출 기록과 비공개 문제는 포함하지 않습니다. 문제 본문이 바뀌기 전까지 저장된 결과를 재사용합니다.
+
 ## OpenAI 서버 분석 시작하기
 
 OpenAI 서버 분석은 승인된 성인 검토 계정으로 시작합니다. OpenAI 프로젝트에 서비스용 API 키를 만들고 Render의 **기존 solveoj 서비스 → Environment**에서 아래 값을 입력합니다. 프로젝트의 결제·크레딧과 사용량이 별도로 적용됩니다. 키는 채팅, GitHub, 클라이언트 코드에 적지 않습니다.

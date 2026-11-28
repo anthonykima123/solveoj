@@ -58,6 +58,7 @@ details p{color:var(--muted);margin:8px 0 2px}
 .sx-work{align-items:start}
 .sx-lab{margin-top:16px}
 .sx-local-result{margin-top:16px}
+.problem-description{white-space:pre-wrap;overflow-wrap:anywhere}
 [data-local-progress]{width:min(220px,100%);margin:10px;accent-color:var(--accent)}
 [data-local-cancel][hidden]{display:none}
 .sx-panel h3{margin-top:14px;font-size:1rem}

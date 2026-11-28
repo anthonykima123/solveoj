@@ -10,6 +10,7 @@
       <% if (isSolved) { %><span class="solved-tag">✔ 풀었음</span><% } %>
     </div>
     <h1 class="problem-title"><%= problem.title %></h1>
+    <% if (!problem.is_private) { %><p><a href="/problems/<%= problem.id %>/ai-hint">AI 풀이 방향 ↗</a></p><% } %>
     <div class="problem-limits">
       <span>시간 제한: <strong><%= problem.time_limit %>ms</strong></span>
       <span>메모리 제한: <strong><%= problem.memory_limit %>MB</strong></span>

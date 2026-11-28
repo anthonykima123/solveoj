@@ -3,6 +3,7 @@ const multer = require('multer');
 const { randomUUID, randomBytes, createHmac } = require('node:crypto');
 const { gemini, openai, DEFAULT_OPENAI_MODEL } = require('./provider');
 const examples = require('./examples');
+const { cloudflareHints, publicStatement, fingerprint, model: hintModel } = require('./problem-hints');
 const { requireSuperAdmin } = require('../middleware/admin');
 const { requireLogin } = require('../middleware/auth');
 
@@ -57,6 +58,7 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     reviewers.size && key && model && /^[a-z0-9][a-z0-9.-]{1,100}$/.test(model);
   const service = providerConfigured ? (isOpenAI ? openai : gemini)({ key, model, request: providerRequest }) : null;
   const ready = Boolean(service && store);
+  const generateHint = cloudflareHints(env);
   const canAnalyze = user => Boolean(ready && user && reviewers.has(String(user.id)));
   const hashKey = process.env.SESSION_SECRET || randomBytes(32);
   const render = (res, page, data = {}) => res.render(`solvex/${page}`, { baseUrl, ready, providerName, ...data });
@@ -82,6 +84,39 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     next();
   };
   router.get('/', (req, res) => render(res, 'home', { examples }));
+  function publicHintProblem(req) {
+    const id = /^\d{1,9}$/.test(req.params.id) ? Number(req.params.id) : 0;
+    const problem = id ? db.getProblemById(id) : null;
+    const statement = publicStatement(problem);
+    return statement ? { id, problem, statement, key: fingerprint(statement) } : null;
+  }
+  router.get('/problems/:id/ai-hint', privatePage, guarded(async (req, res) => {
+    const entry = publicHintProblem(req);
+    if (!entry) return res.status(404).render('404');
+    const hint = store ? await store.getHint(entry.id, entry.key) : null;
+    const canGenerate = Boolean(!hint && store && generateHint && res.locals.isSuperAdmin && entry.statement.length <= 6000);
+    render(res, 'problem-hint', { problem: entry.problem, hint, hintModel, canGenerate,
+      csrfToken: canGenerate ? token(req) : '' });
+  }));
+  router.post('/problems/:id/ai-hint', privatePage, requireSuperAdmin, csrf, guarded(async (req, res) => {
+    const entry = publicHintProblem(req);
+    if (!entry) return res.status(404).render('404');
+    if (!store || !generateHint || entry.statement.length > 6000 || req.body.consent !== 'cloudflare') return res.sendStatus(400);
+    const claim = await store.claimHint(entry.id, entry.key);
+    if (claim) {
+      try {
+        const hint = await generateHint(entry.statement);
+        await store.saveHint(entry.id, claim, hint);
+      } catch (error) {
+        const quota = error.message === 'free_limit';
+        return render(res.status(quota ? 429 : 503), 'notice', {
+          title: quota ? 'Cloudflare 무료 한도에 도달했습니다' : 'AI 풀이 방향을 만들지 못했습니다',
+          message: quota ? '무료 한도가 초기화된 뒤 다시 시도해 주세요.' : '잠시 후 다시 시도해 주세요.'
+        });
+      }
+    }
+    res.redirect(303, req.path);
+  }));
   router.get('/lens', (req, res) => res.redirect('/lens/math'));
   router.get('/lens/:kind', privatePage, (req, res, next) => {
     const kind = req.params.kind;

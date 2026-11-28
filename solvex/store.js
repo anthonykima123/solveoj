@@ -14,9 +14,30 @@ function createStore(connectionString) {
     CREATE INDEX IF NOT EXISTS solvex_reviews_created_idx ON solvex_reviews (created_at);
     CREATE INDEX IF NOT EXISTS solvex_reviews_owner_idx ON solvex_reviews (user_id, created_at DESC);
     CREATE TABLE IF NOT EXISTS solvex_controls (id boolean PRIMARY KEY, paused boolean NOT NULL);
+    CREATE TABLE IF NOT EXISTS solvex_problem_hints (
+      problem_id bigint PRIMARY KEY, fingerprint text NOT NULL, claim uuid NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now(), hint text
+    );
   `);
   return {
     init, close: () => pool.end(), ping: () => pool.query('SELECT 1'),
+    async getHint(problem, fingerprint) {
+      const { rows: [entry] } = await pool.query('SELECT hint FROM solvex_problem_hints WHERE problem_id=$1 AND fingerprint=$2', [problem, fingerprint]);
+      return entry?.hint;
+    },
+    async claimHint(problem, fingerprint) {
+      const claim = randomUUID();
+      const result = await pool.query(`
+        INSERT INTO solvex_problem_hints (problem_id, fingerprint, claim) VALUES ($1,$2,$3)
+        ON CONFLICT (problem_id) DO UPDATE SET fingerprint=$2, claim=$3, updated_at=now(), hint=NULL
+        WHERE solvex_problem_hints.fingerprint <> $2 OR
+          (solvex_problem_hints.hint IS NULL AND solvex_problem_hints.updated_at < now() - interval '90 seconds')
+      `, [problem, fingerprint, claim]);
+      return result.rowCount ? claim : null;
+    },
+    saveHint: (id, claim, hint) => pool.query(
+      'UPDATE solvex_problem_hints SET hint=$3,updated_at=now() WHERE problem_id=$1 AND claim=$2', [id, claim, hint]
+    ),
     async reserve(user, kind, fingerprint, limits) {
       const client = await pool.connect();
       try {

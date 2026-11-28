@@ -1,0 +1,22 @@
+<%- include('head', {title: 'AI 풀이 방향'}) %>
+<section class="sx-hero"><div>
+  <p class="sx-kicker">SOLVEX · AI 힌트</p>
+  <h1>AI 풀이 방향</h1>
+  <p><a href="/problems/<%= problem.id %>">← <%= problem.title %></a></p>
+</div></section>
+<section class="sx-panel">
+  <% if (hint) { %>
+    <p class="sx-muted"><%= hintModel %> · AI가 작성한 힌트에는 오류가 있을 수 있습니다.</p>
+    <p class="problem-description"><%= hint %></p>
+  <% } else { %>
+    <p>이 문제에 저장된 힌트가 없습니다.</p>
+    <% if (canGenerate) { %>
+      <form method="post">
+        <input type="hidden" name="csrf" value="<%= csrfToken %>">
+        <label><input name="consent" type="checkbox" value="cloudflare" required> 공개 문제 본문을 Cloudflare로 보내고 생성 결과를 공개하는 데 동의합니다.</label>
+        <button type="submit" class="sx-button primary">AI 풀이 방향 생성</button>
+      </form>
+    <% } %>
+  <% } %>
+</section>
+<%- include('foot') %>

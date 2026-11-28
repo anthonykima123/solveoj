@@ -15,9 +15,29 @@ const { db } = require('../database');
 const { createRouter, imageType } = require('../solvex/router');
 const { gemini, validate } = require('../solvex/provider');
 const examples = require('../solvex/examples');
+const { cloudflareHints, publicStatement, fingerprint, model: hintModel } = require('../solvex/problem-hints');
 let server;
 let origin;
 let studentCookie;
+
+test('Cloudflare hints use only the public statement and the selected free-tier model', async () => {
+  const problem = { title: '최댓값', description: '정수 중 최댓값을 구하세요.', code: 'private code', test_cases: 'secret' };
+  const statement = publicStatement(problem);
+  assert.equal(publicStatement({ ...problem, is_private: true }), null);
+  assert.equal(statement, '최댓값\n\n정수 중 최댓값을 구하세요.');
+  assert.notEqual(fingerprint(statement), fingerprint(statement + '수정'));
+  assert.equal(cloudflareHints({}), null);
+  const account = 'a'.repeat(32);
+  const generate = cloudflareHints({ FREE_AI_HINTS_ENABLED: 'true', CLOUDFLARE_ACCOUNT_ID: account,
+    CLOUDFLARE_API_TOKEN: 'test-token' }, async (url, options) => {
+    assert.equal(url, 'https://api.cloudflare.com/client/v4/accounts/' + account + '/ai/v1/chat/completions');
+    const payload = JSON.parse(options.body);
+    assert.equal(payload.model, hintModel);
+    assert.equal(payload.messages[1].content, statement);
+    return Response.json({ choices: [{ finish_reason: 'stop', message: { content: '배열을 한 번 순회하세요.' } }] });
+  });
+  assert.equal(await generate(statement), '배열을 한 번 순회하세요.');
+});
 
 before(async () => {
   server = app.listen(0, '127.0.0.1');
