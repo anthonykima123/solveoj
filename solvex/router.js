@@ -1,3 +1,4 @@
+const { qwenReview } = require('./qwen-review');
 const { problem: counterexampleProblem, checkCounterexample } = require('./counterexample');
 const express = require('express');
 const multer = require('multer');
@@ -60,6 +61,7 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
   const service = providerConfigured ? (isOpenAI ? openai : gemini)({ key, model, request: providerRequest }) : null;
   const ready = Boolean(service && store);
   const generateHint = cloudflareHints(env);
+  const reviewWithQwen = store && qwenReview(env, providerRequest);
   const canAnalyze = user => Boolean(ready && user && reviewers.has(String(user.id)));
   const hashKey = process.env.SESSION_SECRET || randomBytes(32);
   const render = (res, page, data = {}) => res.render(`solvex/${page}`, { baseUrl, ready, providerName, ...data });
@@ -130,6 +132,31 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     if (req.accepts(['html', 'json']) === 'json') return res.json(result);
     render(res, 'counterexample', { problem: counterexampleProblem, fields, result });
   });
+  const showQwen = (req, res, data = {}) => render(res, 'qwen-review', {
+    configured: Boolean(reviewWithQwen), csrfToken: res.locals.currentUser ? token(req) : '',
+    fields: {}, result: null, message: '', ...data
+  });
+  router.get('/lens/math/qwen', privatePage, (req, res) => showQwen(req, res));
+  router.post('/lens/math/qwen', privatePage, requireLogin, csrf, guarded(async (req, res) => {
+    if (!reviewWithQwen) return showQwen(req, res.status(503));
+    const fields = { problem: field(req.body.problem).slice(0, 4001), answer: field(req.body.answer).slice(0, 4001) };
+    if (req.body.consent !== 'cloudflare' || !fields.problem || !fields.answer || fields.problem.length + fields.answer.length > 4000) {
+      return showQwen(req, res.status(400), { fields, message: '문제와 풀이 합계 4,000자 이내로 입력하고 Cloudflare 전송에 동의해 주세요.' });
+    }
+    const digest = createHmac('sha256', hashKey).update('qwen-review:' + JSON.stringify(fields)).digest('hex');
+    const reservation = await store.reserve(String(res.locals.currentUser.id), 'math', digest,
+      { personal: 2, daily: 8, minute: 2, running: 1 });
+    if (!reservation.id) return showQwen(req, res.status(429), { fields, message: errors[reservation.reason] || errors.limit });
+    try {
+      const result = await reviewWithQwen(fields);
+      await store.finish(reservation.id, 'success');
+      showQwen(req, res, { fields, result });
+    } catch (error) {
+      const outcome = error.name === 'TimeoutError' ? 'provider_timeout' : Object.hasOwn(errors, error.message) ? error.message : 'failed';
+      await store.finish(reservation.id, outcome).catch(() => {});
+      showQwen(req, res.status(outcome === 'provider_quota' ? 429 : 503), { fields, message: errors[outcome] });
+    }
+  }));
   router.get('/lens', (req, res) => res.redirect('/lens/math'));
   router.get('/lens/:kind', privatePage, (req, res, next) => {
     const kind = req.params.kind;
@@ -142,7 +169,7 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
       : '';
     const accountReady = req.query.mode === 'server' && canAnalyze(res.locals.currentUser);
     render(res, 'lens', { kind, example, prefill, maxInput, ready: accountReady,
-      allowImages: accountReady && !isOpenAI,
+      qwenReady: Boolean(reviewWithQwen), allowImages: accountReady && !isOpenAI,
       csrfToken: accountReady ? token(req) : '' });
   });
   router.post('/lens/:kind', privatePage, requireLogin, (req, res, next) => {

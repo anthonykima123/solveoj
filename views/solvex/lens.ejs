@@ -3,6 +3,7 @@
 <section class="sx-page"><p class="sx-kicker">SOLVEX / AI 분석실</p><h1><%= name %></h1>
 <p><%= math ? '증명의 연결을 검토하고, 어디에 근거를 보강해야 할지 확인하세요.' : '알고리즘의 약점과 경계 조건을 살펴보세요. 코드는 실행하지 않습니다.' %></p>
 <div class="sx-actions"><a class="sx-button <%= math ? 'primary' : '' %>" href="/lens/math">수학 풀이</a><a class="sx-button <%= !math ? 'primary' : '' %>" href="/lens/code">코드</a><a class="sx-button" href="/lens/<%= kind %>?example=1">고정 예시 열기 ↗</a></div></section>
+<% if (math && qwenReady) { %><p><a class="sx-button primary" href="/lens/math/qwen">Qwen 27B 논리 검토</a></p><% } %>
 <% if (math) { %><p><a class="sx-button" href="/lens/math/counterexample">지금 바로 반례 제출·검증 ↗</a></p><% } %>
 <% if (example) { %><div class="sx-grid sx-work"><section class="sx-panel"><p class="sx-kicker">고정 데모 / 입력</p><h2>문제</h2><p><%= example.problem %></p><h2><%= math ? '제출 예시' : '코드 예시' %></h2><pre><%= example.answer %></pre></section>
 <%- include('report', {result:example.result, kind, points:example.max, sample:true}) %></div><% } %>
