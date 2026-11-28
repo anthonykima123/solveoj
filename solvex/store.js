@@ -51,9 +51,10 @@ function createStore(connectionString) {
             count(*) FILTER (WHERE outcome = 'pending' AND created_at > now() - interval '45 seconds')::int AS running,
             bool_or(outcome = 'provider_quota' AND created_at >= date_trunc('day', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul') AS quota,
             bool_or(user_id = $1 AND fingerprint = $2 AND created_at > now() - interval '1 minute') AS duplicate
-          FROM solvex_reviews WHERE created_at >= date_trunc('day', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
-            OR created_at > now() - interval '1 minute'
-        `, [user, fingerprint]);
+          FROM solvex_reviews WHERE (kind = 'math-qwen') = (::text = 'math-qwen')
+            AND (created_at >= date_trunc('day', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
+            OR created_at > now() - interval '1 minute')
+        `, [user, fingerprint, kind]);
         let reason;
         if (usage.paused) reason = 'paused';
         else if (usage.quota) reason = 'provider_quota';

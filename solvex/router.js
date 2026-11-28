@@ -144,7 +144,7 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
       return showQwen(req, res.status(400), { fields, message: '문제와 풀이 합계 4,000자 이내로 입력하고 Cloudflare 전송에 동의해 주세요.' });
     }
     const digest = createHmac('sha256', hashKey).update('qwen-review:' + JSON.stringify(fields)).digest('hex');
-    const reservation = await store.reserve(String(res.locals.currentUser.id), 'math', digest,
+    const reservation = await store.reserve(String(res.locals.currentUser.id), 'math-qwen', digest,
       { personal: 2, daily: 8, minute: 2, running: 1 });
     if (!reservation.id) return showQwen(req, res.status(429), { fields, message: errors[reservation.reason] || errors.limit });
     try {
@@ -153,8 +153,8 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
       showQwen(req, res, { fields, result });
     } catch (error) {
       const outcome = error.name === 'TimeoutError' ? 'provider_timeout' : Object.hasOwn(errors, error.message) ? error.message : 'failed';
-      await store.finish(reservation.id, outcome).catch(() => {});
-      showQwen(req, res.status(outcome === 'provider_quota' ? 429 : 503), { fields, message: errors[outcome] });
+      await store.finish(reservation.id, outcome === 'provider_quota' ? 'qwen_rate_limited' : outcome).catch(() => {});
+      showQwen(req, res.status(outcome === 'provider_quota' ? 429 : 503), { fields, message: outcome === 'provider_quota' ? 'Cloudflare가 요청을 제한했습니다. 잠시 후 다시 시도해 주세요.' : errors[outcome] });
     }
   }));
   router.get('/lens', (req, res) => res.redirect('/lens/math'));
