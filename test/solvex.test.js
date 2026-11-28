@@ -216,7 +216,8 @@ test('OpenAI analysis requires an allowlisted account and consent, then saves a 
     if (image) body.set('image', new Blob(['test image'], { type: 'image/jpeg' }), 'test.jpg');
     return fetch(host + '/lens/math', { method: 'POST', headers: { 'X-Solvex-Token': token, 'X-Test-Account': account }, body });
   }
-  const allowedPage = await (await fetch(host + '/lens/math')).text();
+  assert.match(await (await fetch(host + '/lens/math')).text(), /data-local-review=/);
+  const allowedPage = await (await fetch(host + '/lens/math?mode=server')).text();
   assert.match(allowedPage, /OpenAI로 분석/);
   assert.doesNotMatch(allowedPage, /name="image"|test-only/);
   assert.match(await (await fetch(host + '/lens/math', { headers: { 'X-Test-Account': '2' } })).text(), /data-local-review="math"/);

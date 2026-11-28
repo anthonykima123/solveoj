@@ -140,9 +140,9 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     const prefill = problem && !problem.is_private
       ? [problem.title, problem.description, problem.input_desc, problem.output_desc, problem.constraints].filter(Boolean).join('\n\n').slice(0, maxInput)
       : '';
-    const accountReady = canAnalyze(res.locals.currentUser);
+    const accountReady = req.query.mode === 'server' && canAnalyze(res.locals.currentUser);
     render(res, 'lens', { kind, example, prefill, maxInput, ready: accountReady,
-      cloudPilot: ready && isOpenAI, allowImages: accountReady && !isOpenAI,
+      allowImages: accountReady && !isOpenAI,
       csrfToken: accountReady ? token(req) : '' });
   });
   router.post('/lens/:kind', privatePage, requireLogin, (req, res, next) => {

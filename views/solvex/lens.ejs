@@ -7,9 +7,7 @@
 <% if (example) { %><div class="sx-grid sx-work"><section class="sx-panel"><p class="sx-kicker">고정 데모 / 입력</p><h2>문제</h2><p><%= example.problem %></p><h2><%= math ? '제출 예시' : '코드 예시' %></h2><pre><%= example.answer %></pre></section>
 <%- include('report', {result:example.result, kind, points:example.max, sample:true}) %></div><% } %>
 <section class="sx-panel sx-lab"><h2>내 <%= math ? '풀이' : '코드' %> 분석하기</h2>
-<% if (!ready) { %><p class="sx-callout">로그인 없이 이 브라우저에서 분석합니다. 첫 실행에는 모델 다운로드가 필요합니다. WebGPU가 없으면 CPU가 실행하며 처음에는 약 1.3GB를 내려받습니다. 입력과 결과는 서버로 전송하거나 저장하지 않습니다.</p><% } %>
-<% if (cloudPilot && !ready) { %><p class="sx-callout">OpenAI 서버 분석은 승인된 계정에서 사용할 수 있습니다.
-<% if (!currentUser) { %><a href="/login?next=<%= encodeURIComponent('/lens/' + kind) %>">승인된 계정으로 로그인 ↗</a><% } %></p><% } %>
+<% if (!ready) { %><p class="sx-callout">로그인 없이 이 브라우저에서 분석합니다. 첫 실행에는 모델 다운로드가 필요합니다. WebGPU가 없으면 CPU가 실행하며 처음에는 약 390MB를 내려받습니다. 입력과 결과는 서버로 전송하거나 저장하지 않습니다.</p><% } %>
 <% if (ready && providerName === 'OpenAI') { %><p class="sx-callout">OpenAI 서버에서 분석합니다. 모델 다운로드나 WebGPU가 필요 없습니다.</p><% } %>
 <% const inputLimit = ready ? maxInput : Math.min(maxInput, 2500); %>
 <form data-lens data-max="<%= inputLimit %>" data-token="<%= csrfToken %>" <% if (ready) { %>action="/lens/<%= kind %>" method="post" enctype="multipart/form-data"<% } else { %>data-local-review="<%= kind %>" method="dialog"<% } %>>

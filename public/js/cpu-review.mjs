@@ -1,4 +1,4 @@
-const MODEL_URL = 'https://huggingface.co/ggml-org/Qwen3-1.7B-GGUF/resolve/daeb8e2d528a760970442092f6bf1e55c3b659eb/Qwen3-1.7B-Q4_K_M.gguf';
+const MODEL_URL = 'https://huggingface.co/QuantFactory/Qwen3-0.6B-GGUF/resolve/e7e05d713acaa2baccdfb52e967eaba8ba562ba8/Qwen3-0.6B.Q3_K_S.gguf';
 
 export async function prepareCpuReview(signal, onProgress, onCreate) {
   const { Wllama } = await import('/vendor/wllama-4.0.0.js');
@@ -6,7 +6,7 @@ export async function prepareCpuReview(signal, onProgress, onCreate) {
   const client = new Wllama({ default: new URL('/vendor/wllama-4.0.0.wasm', location.origin).href });
   onCreate(client);
   await client.loadModelFromUrl(MODEL_URL, {
-    n_gpu_layers: 0, n_ctx: 4096, n_threads: 1,
+    n_gpu_layers: 0, n_ctx: 4096, n_threads: 1, connections: 1, signal,
     progressCallback: ({ loaded, total }) => onProgress(total > 0 ? loaded / total : 0)
   });
   signal.throwIfAborted();
