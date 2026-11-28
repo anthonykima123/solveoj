@@ -46,20 +46,7 @@ router.get('/problems/koi', listByContest('koi'));
 router.get('/problems/icpc', listByContest('icpc'));
 router.get('/problems/usaco', listByContest('usaco'));
 
-// 단계별 문제: 단계(step) 목록과 각 단계에 속한 문제들
-router.get('/problems/steps', (req, res) => {
-  const admin = getAdminStatus(req);
-  const steps = db.getSteps();
-  const solvedSet = new Set(req.session.user ? db.getSolvedIds(req.session.user.id) : []);
-  const byStep = steps.map(s => {
-    // step에 problem_ids가 지정돼 있으면 그것을, 아니면 problem.step === s.id 인 문제들을 사용
-    let probs = (s.problem_ids && s.problem_ids.length)
-      ? s.problem_ids.map(id => db.getProblemById(id)).filter(Boolean).filter(p => admin || !p.is_private)
-      : db.getProblems({ includePrivate: admin }).filter(p => p.step === s.id);
-    return { step: s, problems: probs };
-  });
-  res.render('problems-steps', { byStep, solvedSet });
-});
+router.get('/problems/steps', (req, res) => res.redirect(301, '/problems/all'));
 
 router.get('/problems/:id', (req, res) => {
   const problem = db.getProblemById(parseInt(req.params.id));

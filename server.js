@@ -16,12 +16,9 @@ const submissionRoutes = require('./routes/submissions');
 const rankingRoutes = require('./routes/ranking');
 const adminRoutes = require('./routes/admin');
 const settingsRoutes = require('./routes/settings');
-const communityRoutes = require('./routes/community');
 const contestRoutes = require('./routes/contests');
 const groupRoutes = require('./routes/groups');
-const toolsRoutes = require('./routes/tools');
 const profileRoutes = require('./routes/profile');
-const shopRoutes = require('./routes/shop');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +26,7 @@ const production = process.env.NODE_ENV === 'production';
 if (production && (!process.env.DATABASE_URL || (process.env.SESSION_SECRET || '').length < 32)) {
   throw new Error('Production requires DATABASE_URL and a SESSION_SECRET of at least 32 characters.');
 }
-const baseUrl = new URL(process.env.APP_BASE_URL || 'https://solveoj.onrender.com').origin;
+const baseUrl = new URL(process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:' + PORT).origin;
 const reviewStore = createStore(process.env.DATABASE_URL);
 
 app.set('trust proxy', production ? 1 : false);
@@ -145,14 +142,15 @@ app.get('/sitemap.xml', (req, res) => res.type('xml').send(
 ));
 app.use('/', createRouter({ store: reviewStore, db, baseUrl }));
 
-app.get('/classic', (req, res) => {
+app.get('/classic', (req, res) => res.redirect(301, '/dashboard'));
+app.get('/dashboard', (req, res) => {
   const allProblems = db.getProblems();
   const problems = allProblems.slice(0, 8);
   const topUsers = db.getAllUsers()
     .filter(u => u.role !== 'superadmin' && !u.ranking_banned)
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 5);
-  const { daily, doubleCoins } = getDailyData(allProblems);
+  const { daily } = getDailyData(allProblems);
   const stats = {
     problems: allProblems.length,
     users: db.getAllUsers().length,
@@ -164,25 +162,20 @@ app.get('/classic', (req, res) => {
   const aiLabel = userId && db.getSolvedIds(userId).length > 0
     ? '풀이 패턴 분석 기반 추천'
     : '인기 문제 추천';
-  res.render('index', { problems, topUsers, daily, doubleCoins, stats, aiRecs, aiLabel });
+  res.render('index', { problems, topUsers, daily, stats, aiRecs, aiLabel });
 });
 
 app.get('/problems/:id/submit', (req, res) => res.redirect('/lens/code?problem=' + encodeURIComponent(req.params.id)));
 app.post('/problems/:id/submit', (req, res) => res.status(503).send('격리 실행 환경을 준비 중입니다. Code Lens에서 정적 분석을 이용할 수 있습니다.'));
-app.get('/tools/compiler', (req, res) => res.redirect('/lens/code'));
-app.post('/tools/compiler/run', (req, res) => res.status(503).json({ error: '격리 실행 환경을 준비 중입니다.' }));
 
 app.use('/', authRoutes);
 app.use('/', problemRoutes);
 app.use('/', submissionRoutes);
 app.use('/', rankingRoutes);
 app.use('/admin', adminRoutes);
-app.use('/', communityRoutes);
 app.use('/', contestRoutes);
 app.use('/', groupRoutes);
-app.use('/', toolsRoutes);
 app.use('/', profileRoutes);
-app.use('/', shopRoutes);
 app.use('/', settingsRoutes);
 
 app.use((req, res) => res.status(404).render('404'));

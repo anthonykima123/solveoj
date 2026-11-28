@@ -1,50 +1,35 @@
-<% locals.title = '랭킹' %>
+<% locals.title = 'SOLVEX 리더보드' %>
 <%- include('partials/header') %>
-
-<div class="page-header">
+<% const myIndex = user ? users.findIndex(entry => entry.username === user.username) : -1; %>
+<section class="sx-learning-hero">
   <div>
-    <h1>랭킹</h1>
-    <p class="page-desc">레이팅과 해결한 문제 수를 기준으로 실력을 비교해보세요.</p>
+    <h1>SOLVEX 리더보드</h1>
+    <p>문제 해결 기록을 바탕으로 집계한 레이팅 순위입니다.</p>
   </div>
-</div>
+  <% if (myIndex >= 0) { %>
+    <a class="sx-learning-score" href="/user/<%= encodeURIComponent(user.username) %>"><span>내 순위</span><strong><%= myIndex + 1 %>위</strong></a>
+  <% } %>
+</section>
 
-<div class="table-wrap">
-  <table class="table ranking-table">
-    <thead>
-      <tr>
-        <th class="col-rank">순위</th>
-        <th>사용자</th>
-        <th>티어</th>
-        <th>레이팅</th>
-        <th>해결 문제</th>
-        <th>가입일</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% const sorted = users.slice().sort((a, b) => (b.rating || 0) - (a.rating || 0)) %>
-      <% sorted.forEach((u, i) => { %>
-        <% const tierInfo = getTierInfo(u.rating || 0) %>
-        <tr class="<%= user && user.username === u.username ? 'my-row' : '' %>">
-          <td class="col-rank"><span class="rank-num"><%= i + 1 %></span></td>
-          <td>
-            <a href="/user/<%= encodeURIComponent(u.username) %>" class="rank-username profile-link <%= user && user.username === u.username ? 'is-me' : '' %>">
-              <%= u.username %>
-              <% if (user && user.username === u.username) { %><span class="me-tag">나</span><% } %>
-            </a>
-          </td>
-          <td>
-            <span class="tier-badge tier-badge-<%= tierInfo.cls %>" title="<%= tierInfo.tier %>">
-              <span class="tier-icon"><%= getTierShort(tierInfo.tier) %></span>
-              <span class="tier-name"><%= tierInfo.tier %></span>
-            </span>
-          </td>
-          <td><strong class="rating-score"><%= (u.rating || 0).toLocaleString() %></strong></td>
-          <td><%= u.solved_count %> 문제</td>
-          <td><%= new Date(u.created_at).toLocaleDateString('ko-KR') %></td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
-</div>
-
+<% if (!users.length) { %>
+  <p class="pf-card">아직 리더보드에 등록된 학습자가 없습니다.</p>
+<% } else { %>
+  <div class="table-wrap sx-learning-table">
+    <table class="table ranking-table">
+      <thead><tr><th scope="col">순위</th><th scope="col">학습자</th><th scope="col">티어</th><th scope="col">레이팅</th><th scope="col">해결한 문제</th></tr></thead>
+      <tbody>
+        <% users.forEach((entry, index) => { %>
+          <% const tier = getTierInfo(entry.rating || 0); %>
+          <tr class="<%= index === myIndex ? 'my-row' : '' %>">
+            <td><span class="rank-num"><%= index + 1 %></span></td>
+            <td><a class="profile-link" href="/user/<%= encodeURIComponent(entry.username) %>"><%= entry.username %></a><% if (index === myIndex) { %> <span class="me-tag">나</span><% } %></td>
+            <td><span class="tier-badge tier-badge-<%= tier.cls %>"><%= tier.tier %></span></td>
+            <td><strong class="rating-score"><%= (entry.rating || 0).toLocaleString('ko-KR') %></strong></td>
+            <td><%= (entry.solved_count || 0).toLocaleString('ko-KR') %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
 <%- include('partials/footer') %>

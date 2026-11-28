@@ -23,12 +23,12 @@
 <nav aria-label="주요 메뉴">
   <a href="/lens/math">수학</a><a href="/problems/all">정보 문제</a><a href="/lens">AI 분석실</a><a href="/contests">대회</a><a href="/groups">그룹</a>
   <details class="sx-menu"><summary>더 보기</summary><div class="sx-menu-popover">
-    <a href="/problems/steps">단계별 문제</a><a href="/community">커뮤니티</a><a href="/status">채점 현황</a><a href="/ranking">랭킹</a><a href="/tools">도구</a>
+    <a href="/status">채점 현황</a><a href="/ranking">리더보드</a>
   </div></details>
 </nav>
 <div class="sx-account"><button type="button" data-theme-toggle aria-label="화면 테마 전환">◐</button>
 <% if (currentUser) { %><details class="sx-menu"><summary><%= currentUser.username %></summary><div class="sx-menu-popover sx-menu-right">
-  <a href="/user/<%= encodeURIComponent(currentUser.username) %>">프로필</a><a href="/analysis-history">내 분석</a><a href="/submissions">내 제출</a><a href="/shop">코인 상점</a><a href="/settings">설정</a>
+  <a href="/user/<%= encodeURIComponent(currentUser.username) %>">내 학습 프로필</a><a href="/analysis-history">내 분석</a><a href="/submissions">내 제출</a><a href="/settings">설정</a>
   <% if (isAdmin) { %><a href="/admin">관리자</a><% } %><% if (isSuperAdmin) { %><a href="/admin/solvex">분석 운영</a><% } %>
   <form action="/logout" method="post"><button type="submit">로그아웃</button></form>
 </div></details>

@@ -4,7 +4,7 @@ const { db } = require('../database');
 const { requireLogin } = require('../middleware/auth');
 const router = express.Router();
 
-router.use(requireLogin);
+router.use('/settings', requireLogin);
 
 router.get('/settings', (req, res) => {
   res.render('settings', { success: null, error: null });
@@ -28,7 +28,7 @@ router.post('/settings/username', (req, res) => {
   res.render('settings', { success: '아이디가 변경되었습니다.', error: null });
 });
 
-// 아바타 이미지만 저장 (배너는 코인 샵에서 착용)
+// 프로필 아바타 저장
 const MAX_IMG = 1500000;
 function validImg(v) {
   if (typeof v !== 'string') return false;

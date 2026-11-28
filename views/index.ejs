@@ -47,7 +47,7 @@
   </div>
 </div>
 
-<!-- 오늘의 문제 / 코인 2배 -->
+<!-- 오늘의 문제 -->
 <div class="home-daily-grid">
 
   <!-- 오늘의 문제 -->
@@ -76,35 +76,6 @@
     <% } %>
   </div>
 
-  <!-- 오늘의 코인 2배 문제 -->
-  <div class="daily-card">
-    <div class="daily-card-header daily-header-coin">
-      <span class="daily-icon">🪙</span>
-      <span class="daily-label">오늘의 코인 2배</span>
-      <span class="daily-badge-x2">×2</span>
-    </div>
-    <div class="double-coin-list">
-      <% if (doubleCoins.length === 0) { %>
-        <p class="muted" style="padding:16px">문제가 없습니다.</p>
-      <% } %>
-      <% doubleCoins.forEach(dp => { %>
-        <a href="/problems/<%= dp.id %>" class="daily-problem-link">
-          <div class="daily-problem-card double-coin-problem-card">
-            <div class="daily-problem-top">
-              <span class="daily-problem-id">#<%= dp.id %></span>
-              <span class="badge badge-<%= dp.difficulty.toLowerCase() %>"><%= dp.difficulty %></span>
-              <span class="coin-x2-tag">🪙×2</span>
-            </div>
-            <div class="daily-problem-title"><%= dp.title %></div>
-            <div class="daily-problem-meta">
-              <span>⏱ <%= dp.time_limit %>ms</span>
-              <span>정답률 <%= dp.submission_count > 0 ? Math.round(dp.accepted_count / dp.submission_count * 100) + '%' : '-' %></span>
-            </div>
-          </div>
-        </a>
-      <% }) %>
-    </div>
-  </div>
 
 </div>
 
@@ -113,7 +84,7 @@
   <div class="home-ai-header">
     <span class="home-ai-icon">🤖</span>
     <div>
-      <h2 class="home-ai-title">AI 추천 문제</h2>
+      <h2 class="home-ai-title">추천 문제</h2>
       <p class="home-ai-sub"><%= aiLabel %></p>
     </div>
   </div>

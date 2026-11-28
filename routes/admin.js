@@ -5,7 +5,6 @@ const AdmZip = require('adm-zip');
 const { db } = require('../database');
 const { requireAdmin, requireSuperAdmin, requirePermission } = require('../middleware/admin');
 const { PERMISSIONS, PERMISSION_KEYS } = require('../utils/permissions');
-const { BANNERS, getBannerById } = require('../utils/shop');
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -67,7 +66,7 @@ router.post('/role', requireSuperAdmin, (req, res) => {
 // ─────────────────────────── 유저 관리 ('users' 권한) ───────────────────────────
 router.get('/users', requirePermission('users'), (req, res) => {
   const users = db.getAllUsers();
-  res.render('admin/users', { users, query: req.query, me: req.adminUser, BANNERS });
+  res.render('admin/users', { users, query: req.query, me: req.adminUser });
 });
 
 // 유저 삭제
@@ -98,17 +97,6 @@ router.post('/users/:id/toggle-ranking-ban', requirePermission('users'), (req, r
   res.redirect('/admin/users?' + (next ? 'rankban=' : 'rankunban=') + encodeURIComponent(target.username));
 });
 
-// 커뮤니티 밴 토글
-router.post('/users/:id/toggle-community-ban', requirePermission('users'), (req, res) => {
-  const id = parseInt(req.params.id);
-  const target = db.getUserById(id);
-  if (!target) return res.redirect('/admin/users?err=notfound');
-  if (target.role === 'superadmin') return res.redirect('/admin/users?err=superadmin');
-  const next = !target.community_banned;
-  db.updateUser(id, { community_banned: next });
-  res.redirect('/admin/users?' + (next ? 'comban=' : 'comunban=') + encodeURIComponent(target.username));
-});
-
 // 비밀번호 초기화(reset1234)
 router.post('/users/:id/reset-password', requirePermission('users'), (req, res) => {
   const id = parseInt(req.params.id);
@@ -119,28 +107,6 @@ router.post('/users/:id/reset-password', requirePermission('users'), (req, res) 
 
   db.updateUser(id, { password: bcrypt.hashSync('reset1234', 10) });
   res.redirect('/admin/users?pwreset=' + encodeURIComponent(target.username));
-});
-
-// 배너 지급 (관리자)
-router.post('/users/:id/grant-banner', requirePermission('users'), (req, res) => {
-  const id = parseInt(req.params.id);
-  const target = db.getUserById(id);
-  if (!target) return res.redirect('/admin/users?err=notfound');
-  const bannerId = req.body.banner_id;
-  if (!getBannerById(bannerId)) return res.redirect('/admin/users?err=notfound');
-  db.grantBannerItem(id, bannerId);
-  res.redirect('/admin/users?bannergrant=' + encodeURIComponent(target.username));
-});
-
-// 코인 지급 (관리자)
-router.post('/users/:id/grant-coins', requirePermission('users'), (req, res) => {
-  const id = parseInt(req.params.id);
-  const target = db.getUserById(id);
-  if (!target) return res.redirect('/admin/users?err=notfound');
-  const amount = parseInt(req.body.amount) || 0;
-  if (amount <= 0) return res.redirect('/admin/users?err=notfound');
-  db.addCoins(id, amount);
-  res.redirect('/admin/users?coingrant=' + encodeURIComponent(target.username));
 });
 
 // ─────────────────────────── 문제 관리 ('problems' 권한) ───────────────────────────
@@ -191,24 +157,24 @@ router.get('/problems', requirePermission('problems'), (req, res) => {
 });
 
 router.get('/problems/new', requirePermission('problems'), (req, res) => {
-  res.render('admin/problem-form', { problem: null, tiers: ALL_TIERS, steps: db.getSteps(), error: null });
+  res.render('admin/problem-form', { problem: null, tiers: ALL_TIERS, error: null });
 });
 
 router.post('/problems/new', requirePermission('problems'), (req, res) => {
   const { id, title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step, contest, visibility,
+          sample_output, constraints, test_cases_raw, contest, visibility,
           special_judge, checker_code } = req.body;
 
   const pid = parseInt(id);
   if (!pid || !title || !difficulty || !description) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: '필수 항목을 모두 입력하세요.'
+      problem: req.body, tiers: ALL_TIERS, error: '필수 항목을 모두 입력하세요.'
     });
   }
   if (db.getProblemById(pid)) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: `문제 번호 ${pid}가 이미 존재합니다.`
+      problem: req.body, tiers: ALL_TIERS, error: `문제 번호 ${pid}가 이미 존재합니다.`
     });
   }
 
@@ -217,7 +183,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     test_cases = JSON.stringify(JSON.parse(test_cases_raw || '[]'));
   } catch (e) {
     return res.render('admin/problem-form', {
-      problem: req.body, tiers: ALL_TIERS, steps: db.getSteps(), error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
+      problem: req.body, tiers: ALL_TIERS, error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
     });
   }
 
@@ -228,7 +194,6 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
     memory_limit: parseInt(memory_limit) || 256,
     description, input_desc, output_desc,
     sample_input, sample_output, constraints,
-    step: parseInt(step) || null,
     contest: ['jungol', 'koi', 'icpc', 'usaco'].includes(contest) ? contest : null,
     is_private: visibility === 'private',
     special_judge: isSpecialJudge,
@@ -242,7 +207,7 @@ router.post('/problems/new', requirePermission('problems'), (req, res) => {
 router.get('/problems/:id/edit', requirePermission('problems'), (req, res) => {
   const problem = db.getProblemById(parseInt(req.params.id));
   if (!problem) return res.status(404).render('404');
-  res.render('admin/problem-form', { problem, tiers: ALL_TIERS, steps: db.getSteps(), error: null });
+  res.render('admin/problem-form', { problem, tiers: ALL_TIERS, error: null });
 });
 
 router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
@@ -252,12 +217,12 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
 
   const { title, difficulty, time_limit, memory_limit,
           description, input_desc, output_desc, sample_input,
-          sample_output, constraints, test_cases_raw, step, contest, visibility,
+          sample_output, constraints, test_cases_raw, contest, visibility,
           special_judge, checker_code } = req.body;
 
   if (!title || !difficulty || !description) {
     return res.render('admin/problem-form', {
-      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, steps: db.getSteps(), error: '필수 항목을 모두 입력하세요.'
+      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, error: '필수 항목을 모두 입력하세요.'
     });
   }
 
@@ -266,7 +231,7 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     test_cases = JSON.stringify(JSON.parse(test_cases_raw || '[]'));
   } catch (e) {
     return res.render('admin/problem-form', {
-      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, steps: db.getSteps(), error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
+      problem: { ...problem, ...req.body, id: pid }, tiers: ALL_TIERS, error: '테스트 케이스 JSON 형식이 올바르지 않습니다.'
     });
   }
 
@@ -277,7 +242,6 @@ router.post('/problems/:id/edit', requirePermission('problems'), (req, res) => {
     memory_limit: parseInt(memory_limit) || 256,
     description, input_desc, output_desc,
     sample_input, sample_output, constraints,
-    step: parseInt(step) || null,
     contest: ['jungol', 'koi', 'icpc', 'usaco'].includes(contest) ? contest : null,
     is_private: visibility === 'private',
     special_judge: isSpecialJudge,

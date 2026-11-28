@@ -9,6 +9,7 @@ const { randomUUID } = require('node:crypto');
 const temp = mkdtempSync(join(tmpdir(), 'solvex-test-'));
 delete process.env.DATABASE_URL;
 process.env.NODE_ENV = 'test';
+process.env.APP_BASE_URL = 'https://solvex.example.test';
 process.env.LOCAL_DB_FILE = join(temp, 'test.json');
 const { app } = require('../server');
 const { db } = require('../database');
@@ -52,7 +53,7 @@ after(async () => {
 test('homepage, fixed examples, SEO and health work without provider', async () => {
   for (const [url, expected] of [['/', /Beyond the/], ['/lens/math?example=1', /일반화 오류/],
     ['/lens/code?example=1', /반례 후보 · 미검증/], ['/solvex-privacy', /Google Gemini/],
-    ['/health', /"status":"ok"/], ['/sitemap.xml', /https:\/\/solveoj.onrender.com/]]) {
+    ['/health', /"status":"ok"/], ['/sitemap.xml', /https:\/\/solvex\.example\.test/]]) {
     const response = await fetch(origin + url);
     assert.equal(response.status, 200, url);
     assert.match(await response.text(), expected);
@@ -78,8 +79,8 @@ test('register, login, redirect guard and private pages', async () => {
 
 test('public application routes share the SOLVEX shell', async () => {
   for (const [url, status] of [['/login', 200], ['/register', 200], ['/contests', 200], ['/groups', 200],
-    ['/problems/all', 200], ['/community', 200], ['/ranking', 200], ['/status', 200], ['/tools', 200],
-    ['/classic', 200], ['/problems/987654321', 404]]) {
+    ['/problems/all', 200], ['/community', 404], ['/ranking', 200], ['/status', 200], ['/tools', 404], ['/tools/notes', 404], ['/shop', 404], ['/dashboard', 200],
+    ['/problems/987654321', 404]]) {
     const response = await fetch(origin + url);
     assert.equal(response.status, status, url);
     const html = await response.text();
@@ -87,6 +88,7 @@ test('public application routes share the SOLVEX shell', async () => {
     assert.match(html, /href="\/css\/solvex.css"/, url);
     assert.match(html, /data-theme-toggle/, url);
     assert.match(html, /개인정보 및 이용 안내/, url);
+    assert.doesNotMatch(html, /href=.(?:\/community|\/tools|\/shop|\/problems\/steps)./, url);
     assert.doesNotMatch(html, /class="site-header"|SolveOJ &copy;/, url);
   }
 });
@@ -125,7 +127,7 @@ test('local AI prompts use entered content and reject invalid model feedback', a
 
 test('legacy execution is disabled and existing code visibility stays restricted', async () => {
   const viewer = db.getUserByUsername('demo_student');
-  db._d.problems.push({ id: 8888, title: 'Test fixture' });
+  db._d.problems.push({ id: 8888, title: 'Test fixture', difficulty: 'Bronze 5' });
   const submission = db.createSubmission({
     user_id: 7000, problem_id: 8888, verdict: 'CE', execution_time: 0, language: 'cpp',
     code: 'MARKED_TEST_SOURCE', error_message: 'MARKED_SOURCE_IN_DIAGNOSTIC'
@@ -136,7 +138,7 @@ test('legacy execution is disabled and existing code visibility stays restricted
   db.addSolved(viewer.id, 8888);
   assert.match(await request(), /MARKED_TEST_SOURCE/);
   assert.equal((await fetch(origin + '/problems/8888/submit', { method: 'POST' })).status, 503);
-  assert.equal((await fetch(origin + '/tools/compiler/run', { method: 'POST' })).status, 503);
+  assert.equal((await fetch(origin + '/tools/compiler/run', { method: 'POST' })).status, 404);
 });
 
 test('Gemini adapter sends separate instructions and validates structured output', async () => {
@@ -237,4 +239,19 @@ test('OpenAI analysis requires an allowlisted account and consent, then saves a 
   })).status, 303);
   assert.equal((await fetch(host + url)).status, 404);
   assert.equal(calls, 1);
+});
+
+test('retired learning paths redirect and profile displays the SOLVEX learning layout', async () => {
+  for (const [path, destination] of [['/problems/steps', '/problems/all'], ['/classic', '/dashboard']]) {
+    const response = await fetch(origin + path, { redirect: 'manual' });
+    assert.equal(response.status, 301);
+    assert.equal(response.headers.get('location'), destination);
+  }
+  const response = await fetch(origin + '/user/demo_student');
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /demo_student의 학습 프로필/);
+  assert.match(html, /최근 제출/);
+  assert.doesNotMatch(html, /코인 상점/);
+  assert.match(await (await fetch(origin + '/ranking')).text(), /SOLVEX 리더보드/);
 });

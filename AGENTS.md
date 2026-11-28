@@ -1,8 +1,8 @@
 # SOLVEX 저장소 안내
 
-SOLVEX는 수학 증명과 알고리즘의 사고 과정을 검토하는 올림피아드 학습 플랫폼이다. 기존 SolveOJ의 Express, EJS, 인증 및 Postgres 기록과 Render 주소를 재사용한다.
+SOLVEX는 수학 증명과 알고리즘의 사고 과정을 검토하는 올림피아드 학습 플랫폼이다. Express, EJS, 인증 및 Postgres 기록을 사용한다.
 
-- `server.js`에서 SOLVEX와 기존 경로를 연결한다. 기존 홈은 `/classic`이다.
+- `server.js`에서 SOLVEX와 기존 경로를 연결한다. 학습 대시보드는 `/dashboard`다.
 - `solvex/router.js`에서 Math/Code Lens, 분석 기록 및 운영 도구를 관리한다.
 - `solvex/provider.js`에서 Gemini 요청과 응답 검증을 처리한다. `solvex/examples.js`에는 공개용 고정 예시가 들어 있다.
 - `solvex/store.js`가 별도 Postgres 분석 테이블과 사용량 제한을 관리한다.
