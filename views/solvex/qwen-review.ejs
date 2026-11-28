@@ -3,18 +3,20 @@
 <section class="sx-panel sx-lab">
 <% if (message) { %><p class="sx-callout" role="status"><%= message %></p><% } %>
 <% if (!configured) { %><p>서버 검토가 아직 열리지 않았습니다.</p><% } else if (!currentUser) { %><a class="sx-button primary" href="/login?next=%2Flens%2Fmath%2Fqwen">로그인 후 검토</a><% } else { %>
-<form action="/lens/math/qwen" method="post">
+<form action="/lens/math/qwen" method="post" data-qwen-form>
   <input type="hidden" name="csrf" value="<%= csrfToken %>">
   <label>문제<textarea name="problem" rows="5" required maxlength="4000"><%= fields.problem || '' %></textarea></label>
   <label>내 풀이<textarea name="answer" rows="8" required maxlength="4000"><%= fields.answer || '' %></textarea></label>
   <label class="sx-consent"><input type="checkbox" name="consent" value="cloudflare" required> 문제와 풀이를 검토를 위해 Cloudflare로 보내는 데 동의합니다. 이름과 학교 등 개인정보는 지워 주세요.</label>
   <button class="sx-button primary" type="submit">논리 오류 검토</button>
-</form>
+<p role="status" data-qwen-status></p>
+</form><script defer src="/js/qwen-review.js"></script>
 <% } %>
-<% if (result) { %><section class="sx-callout" aria-live="polite">
+<section class="sx-callout" aria-live="polite" data-qwen-result tabindex="-1" <%= result ? '' : 'hidden' %>>
+<% if (result) { %>
 <h2><%= { error: '논리적 오류 후보', no_error_found: '검토 범위에서 오류를 찾지 못함', uncertain: '판단하기 어려움' }[result.status] %></h2>
 <% if (result.location) { %><p><strong><%= result.location %></strong></p><% } %>
 <p><%= result.reason %></p>
-</section><% } %>
+<% } %></section>
 </section>
 <%- include('foot') %>

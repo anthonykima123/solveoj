@@ -136,25 +136,31 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     configured: Boolean(reviewWithQwen), csrfToken: res.locals.currentUser ? token(req) : '',
     fields: {}, result: null, message: '', ...data
   });
+  const replyQwen = (req, res, data = {}) => {
+    if (req.accepts(['html', 'json']) === 'json') {
+      return res.json(data.result ? { result: data.result } : { error: data.message || '현재 Qwen 검토를 사용할 수 없습니다.' });
+    }
+    return showQwen(req, res, data);
+  };
   router.get('/lens/math/qwen', privatePage, (req, res) => showQwen(req, res));
   router.post('/lens/math/qwen', privatePage, requireLogin, csrf, guarded(async (req, res) => {
-    if (!reviewWithQwen) return showQwen(req, res.status(503));
+    if (!reviewWithQwen) return replyQwen(req, res.status(503));
     const fields = { problem: field(req.body.problem).slice(0, 4001), answer: field(req.body.answer).slice(0, 4001) };
     if (req.body.consent !== 'cloudflare' || !fields.problem || !fields.answer || fields.problem.length + fields.answer.length > 4000) {
-      return showQwen(req, res.status(400), { fields, message: '문제와 풀이 합계 4,000자 이내로 입력하고 Cloudflare 전송에 동의해 주세요.' });
+      return replyQwen(req, res.status(400), { fields, message: '문제와 풀이 합계 4,000자 이내로 입력하고 Cloudflare 전송에 동의해 주세요.' });
     }
     const digest = createHmac('sha256', hashKey).update('qwen-review:' + JSON.stringify(fields)).digest('hex');
     const reservation = await store.reserve(String(res.locals.currentUser.id), 'math-qwen', digest,
       { daily: 8, minute: 2, running: 1 });
-    if (!reservation.id) return showQwen(req, res.status(429), { fields, message: errors[reservation.reason] || errors.limit });
+    if (!reservation.id) return replyQwen(req, res.status(429), { fields, message: reservation.reason === 'duplicate' ? '같은 풀이를 이미 제출했습니다. 잠시 후 다시 시도해 주세요.' : errors[reservation.reason] || errors.limit });
     try {
       const result = await reviewWithQwen(fields);
       await store.finish(reservation.id, 'success');
-      showQwen(req, res, { fields, result });
+      replyQwen(req, res, { fields, result });
     } catch (error) {
       const outcome = error.name === 'TimeoutError' ? 'provider_timeout' : Object.hasOwn(errors, error.message) ? error.message : 'failed';
       await store.finish(reservation.id, outcome === 'provider_quota' ? 'qwen_rate_limited' : outcome).catch(() => {});
-      showQwen(req, res.status(outcome === 'provider_quota' ? 429 : 503), { fields, message: outcome === 'provider_quota' ? 'Cloudflare가 요청을 제한했습니다. 잠시 후 다시 시도해 주세요.' : errors[outcome] });
+      replyQwen(req, res.status(outcome === 'provider_quota' ? 429 : 503), { fields, message: outcome === 'provider_quota' ? 'Cloudflare가 요청을 제한했습니다. 잠시 후 다시 시도해 주세요.' : errors[outcome] });
     }
   }));
   router.get('/lens', (req, res) => res.redirect('/lens/math'));
