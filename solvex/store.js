@@ -59,7 +59,7 @@ function createStore(connectionString) {
         if (usage.paused) reason = 'paused';
         else if (usage.quota) reason = 'provider_quota';
         else if (usage.duplicate) reason = 'duplicate';
-        else if (usage.daily >= limits.daily || usage.personal >= limits.personal ||
+        else if (usage.daily >= limits.daily || (limits.personal != null && usage.personal >= limits.personal) ||
                  usage.minute >= limits.minute || usage.running >= limits.running) reason = 'limit';
         const id = randomUUID();
         if (!reason) await client.query('INSERT INTO solvex_reviews (id,user_id,kind,fingerprint) VALUES ($1,$2,$3,$4)', [id, user, kind, fingerprint]);

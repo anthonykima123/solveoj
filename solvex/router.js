@@ -145,7 +145,7 @@ function createRouter({ store, db, baseUrl, env = process.env, providerRequest }
     }
     const digest = createHmac('sha256', hashKey).update('qwen-review:' + JSON.stringify(fields)).digest('hex');
     const reservation = await store.reserve(String(res.locals.currentUser.id), 'math-qwen', digest,
-      { personal: 2, daily: 8, minute: 2, running: 1 });
+      { daily: 8, minute: 2, running: 1 });
     if (!reservation.id) return showQwen(req, res.status(429), { fields, message: errors[reservation.reason] || errors.limit });
     try {
       const result = await reviewWithQwen(fields);
